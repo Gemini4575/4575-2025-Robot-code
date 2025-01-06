@@ -4,60 +4,117 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import org.springframework.stereotype.Component;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
+
+
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Commands.DriveTrain;
+import frc.robot.Commands.TelopSwerve;
+import frc.robot.Constanst.JoystickConstants;
+import frc.robot.Subsystems.*;
+
+// @Component
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  /* Test mode choosers */
+    /* Initail */
+      private final SendableChooser<String> TestMode = new SendableChooser<>();
+      private final String Xbox = "Use Xbox controller";
+      private final String Input = "Use Inputs";
+      private String TestModeSelected;
+    
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /* Controllers */
+    private final Joystick driver = new Joystick(JoystickConstants.DRIVER_USB);
+    private final Joystick operator = new Joystick(JoystickConstants.OPERATOR_USB);
+
+  /* Driver Buttons */
+    private final JoystickButton zeroGyro = new JoystickButton(driver, JoystickConstants.BACK_BUTTON);
+
+  /* Subsystems */
+    private final DriveTrain s_swerve = new DriveTrain();
+    private final TestMode test = new TestMode();
+    // private final CameraSubsystem cam = new CameraSubsystem();
+
+  /* Pathplanner stuff */
+    // private final SendableChooser<Command> autoChoosers;
+
   public RobotContainer() {
-    // Configure the trigger bindings
+
+    /* Starting the Test Mode selectors*/
+      test.start();
+      TestMode.setDefaultOption("Use Xbox controller", Xbox);
+      TestMode.addOption("Use Inputs", Input);
+      TestModeSelected = TestMode.getSelected();
+      SmartDashboard.putData(TestMode);
+
+    // autoChoosers = AutoBuilder.buildAutoChooser();
+    
+      s_swerve.setDefaultCommand(
+        new TelopSwerve(
+          s_swerve,
+          () -> driver.getRawAxis(Constanst.JoystickConstants.LEFT_Y_AXIS),
+          () -> -driver.getRawAxis(Constanst.JoystickConstants.LEFT_X_AXIS), 
+          () -> -driver.getTwist()
+          )
+      );
+    
+    
     configureBindings();
+
+      
+
+        // SmartDashboard.putData("Auto Chooser", autoChoosers);
+  }
+  
+  public void testPeriodic() {
+   switch (TestModeSelected) {
+        case Input:
+          s_swerve.setDefaultCommand(
+            new TelopSwerve(
+              s_swerve,
+              () -> test.translate(),
+              () -> test.strafe(),
+              () -> test.rotate()
+              )
+          );
+
+
+          break;
+      
+        default:
+          s_swerve.setDefaultCommand(
+            new TelopSwerve(
+              s_swerve,
+              () -> driver.getRawAxis(Constanst.JoystickConstants.LEFT_Y_AXIS),
+              () -> -driver.getRawAxis(Constanst.JoystickConstants.LEFT_X_AXIS), 
+              () -> -driver.getTwist()
+              )
+          );
+
+          break;
+      }
   }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+    
+    /* Driver Controls */
+      zeroGyro.onTrue (new InstantCommand(() -> s_swerve.ResetDrives()));
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    /* Operator Controls */
+      /* Flag Controls */
+        // new JoystickButton(operator, Constanst.JoystickConstants.GREEN_BUTTON).onTrue(new RunGreenFlagCommand(flag));
+        // new JoystickButton(operator, Constanst.JoystickConstants.RED_BUTTON).onTrue(new RunRedFlagCommand(flag));
+        // new JoystickButton(operator, Constanst.JoystickConstants.YELLOW_BUTTON).onTrue(new RunYellowFlagCommand(flag));
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
-  }
+//   public Command getAutonomousCommand() {
+//     return autoChoosers.getSelected();
+//   }
 }
