@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 // import org.springframework.stereotype.Component;
 
 
@@ -11,7 +13,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Commands.DriveTrain;
@@ -43,7 +45,7 @@ public class RobotContainer {
     // private final CameraSubsystem cam = new CameraSubsystem();
 
   /* Pathplanner stuff */
-    // private final SendableChooser<Command> autoChoosers;
+  private final SendableChooser<Command> autoChoosers;
 
   public RobotContainer() {
 
@@ -53,9 +55,7 @@ public class RobotContainer {
       TestMode.addOption("Use Inputs", Input);
       TestModeSelected = TestMode.getSelected();
       SmartDashboard.putData(TestMode);
-
-    // autoChoosers = AutoBuilder.buildAutoChooser();
-    
+   
       s_swerve.setDefaultCommand(
         new TelopSwerve(
           s_swerve,
@@ -67,10 +67,9 @@ public class RobotContainer {
     
     
     configureBindings();
-
       
-
-        // SmartDashboard.putData("Auto Chooser", autoChoosers);
+    autoChoosers = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChoosers);
   }
   
   public void testPeriodic() {
@@ -114,7 +113,7 @@ public class RobotContainer {
         // new JoystickButton(operator, Constanst.JoystickConstants.YELLOW_BUTTON).onTrue(new RunYellowFlagCommand(flag));
   }
 
-//   public Command getAutonomousCommand() {
-//     return autoChoosers.getSelected();
-//   }
+   public Command getAutonomousCommand() {
+     return autoChoosers.getSelected();
+   }
 }
