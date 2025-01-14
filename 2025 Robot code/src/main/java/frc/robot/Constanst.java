@@ -1,13 +1,34 @@
 package frc.robot;
 
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.Commands.DriveTrain;
+import frc.robot.Subsystems.DriveTrain;
 
 public class Constanst {
     public static final double stickDeadband = 0.3;
     
+    public static final class Vision {
+        public static final String kCameraName = "Arducam1";
+        public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
+        //TODO update with real value
+        public static final Transform3d kRobotToCam =
+                new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+                // The standard deviations of our vision estimated poses, which affect correction rate
+        // (Fake values. Experiment and determine estimation noise on an actual robot.)
+        public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+    }
+
     public static final class SwerveConstants {
          // these are distance from the center to the wheel in meters. .381 is 1.25 feet or 16 inches
         // swerve drive has 35.5 inch diagonals
@@ -17,26 +38,27 @@ public class Constanst {
         private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
         private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
 */
-/*  These numbers are for 28.5 swerve
-private final Translation2d m_frontLeftLocation = new Translation2d(0.4445, 0.4445);
-private final Translation2d m_frontRightLocation = new Translation2d(0.4445, -0.4445);
-private final Translation2d m_backLeftLocation = new Translation2d(-0.4445, 0.4445);
-private final Translation2d m_backRightLocation = new Translation2d(-0.4445, -0.4445);
-*/
+/*  These numbers are for 28.5 swerve */
+public static final Translation2d m_frontLeftLocation = new Translation2d(0.4445, 0.4445);
+public static final Translation2d m_frontRightLocation = new Translation2d(0.4445, -0.4445);
+public static final Translation2d m_backLeftLocation = new Translation2d(-0.4445, 0.4445);
+public static final Translation2d m_backRightLocation = new Translation2d(-0.4445, -0.4445);
+
 /*  These numbers are for 29.5 swerve
 0.45085
 private final Translation2d m_frontLeftLocation = new Translation2d(0.45085, 0.45085);
 private final Translation2d m_frontRightLocation = new Translation2d(0.45085, -0.45085);
 private final Translation2d m_backLeftLocation = new Translation2d(-0.45085, 0.45085);
 private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0.45085);
-*/
-// These numbers are for the weird rectangle swerve
+
+//These numbers are for the weird rectangle swerve
 //0.2032 X
 //0.2794 Y
         public static final Translation2d m_frontLeftLocation = new Translation2d(0.2032, 0.2794);
         public static final Translation2d m_frontRightLocation = new Translation2d(0.2032, -0.2794);
         public static final Translation2d m_backLeftLocation = new Translation2d(-0.2032, 0.2794);
         public static final Translation2d m_backRightLocation = new Translation2d(-0.2032, -0.2794);
+        */
         /* Ints */
             public static final int kEncoderResolution = 4096;
         /* Doubles */
@@ -126,6 +148,10 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public final static double P = 0.0;
             public final static double I = 0.0;
             public final static double D = 0.0;
+            public final static double L1Position = 0.0;
+            public final static double L2Position = 0.0;
+            public final static double L3Position = 0.0;
+            public final static double L4Position = 0.0;
             public final static double maxSpeed = 0.0;
             public final static double maxAcceleration = 0.0;
             

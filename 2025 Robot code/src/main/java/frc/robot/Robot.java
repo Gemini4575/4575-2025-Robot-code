@@ -4,12 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTable;
 
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.stereotype.Component;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
+  private Timer m_gcTimer = new Timer();
   // @Autowired
   private RobotContainer m_robotContainer;
 
@@ -26,6 +27,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    m_gcTimer.start();
     // No longer needed since we use Spring to wire components
     m_robotContainer = new RobotContainer();
   }
@@ -39,6 +41,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    if (m_gcTimer.advanceIfElapsed(5)) {
+      System.gc();
+    } else {
+      
+    }
+    this.m_robotContainer.teleopPeriodic();
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic

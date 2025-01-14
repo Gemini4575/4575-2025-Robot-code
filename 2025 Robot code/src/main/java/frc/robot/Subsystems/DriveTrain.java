@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Commands;
+package frc.robot.Subsystems;
 
 import java.io.IOException;
 
@@ -17,6 +17,9 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,22 +27,23 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constanst;
-// import frc.robot.MetricsProvider;
-import frc.robot.Subsystems.SwerveModule;
 
 
 
 /** Represents a swerve drive style drivetrain. */
 // @Component
 public class DriveTrain extends SubsystemBase {
-
+  Field2d field = new Field2d();
   int ii = 0;
   public static final double kMaxSpeed = 12; // was 4.47 meters per second
   public static final double kMaxAngularSpeed = 4.41 * 2 * Math.PI; // was Math.PI for 1/2 rotation per second
@@ -74,18 +78,20 @@ private double rot_cur;
       new SwerveDriveKinematics(
           m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-  private final SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
-          m_kinematics,
-          m_gyro.getRotation2d(),
-          new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_backLeft.getPosition(),
-            m_backRight.getPosition()
-          },
-          new Pose2d(new Translation2d(),new Rotation2d(Units.degreesToRadians(180)))
-          );
+  // private final SwerveDriveOdometry m_odometry =
+  //     new SwerveDriveOdometry(
+  //         m_kinematics,
+  //         m_gyro.getRotation2d(),
+  //         new SwerveModulePosition[] {
+  //           m_frontLeft.getPosition(),
+  //           m_frontRight.getPosition(),
+  //           m_backLeft.getPosition(),
+  //           m_backRight.getPosition()
+  //         },
+  //         new Pose2d(new Translation2d(),new Rotation2d(Units.degreesToRadians(180)))
+  //         );
+
+  private final SwerveDrivePoseEstimator poseEstimator;
 
   // private final DifferentialDrivetrainSim simDrive;
   // @Autowired
@@ -123,6 +129,17 @@ private double rot_cur;
       e.printStackTrace();
       throw new RuntimeException(e);
     }
+
+    var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
+    var visionStdDevs = VecBuilder.fill(1, 1, 1);
+    poseEstimator =
+            new SwerveDrivePoseEstimator(
+                    m_kinematics,
+                    m_gyro.getRotation2d(),
+                    getModulePositions(),
+                    new Pose2d(),
+                    stateStdDevs,
+                    visionStdDevs);
 
     // Configure AutoBuilder last
     AutoBuilder.configure(
@@ -177,6 +194,7 @@ private double rot_cur;
     }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    SmartDashboard.putNumber("Gyro", m_gyro.getAngle());
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
             fieldRelative
@@ -207,30 +225,29 @@ private double rot_cur;
   }
 
   /** Updates the field relative position of the robot. */
-  public void updateOdometry() {
-    m_odometry.update(
-        m_gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_backLeft.getPosition(),
-          m_backRight.getPosition()
-        });
+  // public void updateOdometry() {
+  //   m_odometry.update(
+  //       m_gyro.getRotation2d(),
+  //       getModulePositions());
+  // }
+
+  private SwerveModulePosition[] getModulePositions() {
+    return new SwerveModulePosition[] {
+      m_frontLeft.getPosition(),
+      m_frontRight.getPosition(),
+      m_backLeft.getPosition(),
+      m_backRight.getPosition()
+    };
   }
 
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters() ;
+    return poseEstimator.getEstimatedPosition();
   } 
 
   public void resetPose(Pose2d aPose2d) {
-    m_odometry.resetPosition(m_gyro.getRotation2d(),
-         new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_backLeft.getPosition(),
-          m_backRight.getPosition()
-        }, aPose2d );
-  
+//    m_odometry.resetPosition(m_gyro.getRotation2d(),
+//         getModulePositions(), aPose2d );
+    poseEstimator.resetPosition(m_gyro.getRotation2d(), getModulePositions(), aPose2d);
   }
   
   /* adding some gyro output so other classes don't need to access it directly */
@@ -240,7 +257,10 @@ private double rot_cur;
 
   @Override
   public void periodic() {
+      poseEstimator.update(m_gyro.getRotation2d(), getModulePositions());
+      field.setRobotPose(poseEstimator.getEstimatedPosition());
     
+      SmartDashboard.putData("robotpose", field);
       /*super.simulationPeriodic();
 
       //FIXME this is probably not the right speed calculation.. need to figure out where to get the speed
@@ -251,5 +271,16 @@ private double rot_cur;
       simDrive.update(0.02);
       
       metricsProvider.updateLocation(simDrive.getPose());*/
+    }
+
+    /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double)}. */
+    public void addVisionMeasurement(Pose2d visionMeasurement, double timestampSeconds) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+    }
+
+    /** See {@link SwerveDrivePoseEstimator#addVisionMeasurement(Pose2d, double, Matrix)}. */
+    public void addVisionMeasurement(
+            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 }
