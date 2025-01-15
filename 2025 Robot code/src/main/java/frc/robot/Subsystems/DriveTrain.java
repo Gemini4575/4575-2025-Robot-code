@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 // import com.pathplanner.lib.config.PIDConstants;
 // import com.pathplanner.lib.config.RobotConfig;
 import com.studica.frc.AHRS;
@@ -220,6 +221,10 @@ private double rot_cur;
     rot_cur = rot;
   }
 
+  public void stop() {
+    drive(0, 0, 0, true);
+  }
+
   public ChassisSpeeds getSpeed() {
     return new ChassisSpeeds( xSpeed_cur, ySpeed_cur, rot_cur);
   }
@@ -254,6 +259,21 @@ private double rot_cur;
   public double getYaw() {
     return (m_gyro.getAngle());
   }
+
+  public Rotation2d getFacing() {
+    return m_gyro.getRotation2d();
+  }
+
+  
+
+    public PathConstraints getChassisConstrains() {
+        return new PathConstraints(
+          3.000,
+          3.000,
+          Units.degreesToRadians(540.000),
+          Units.degreesToRadians(720.000)
+        );
+    }
 
   @Override
   public void periodic() {

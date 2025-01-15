@@ -5,6 +5,15 @@
 package frc.robot;
 
 
+
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.junction.Logger;
+import com.pathplanner.lib.commands.FollowPathCommand;
+
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.stereotype.Component;
 
@@ -14,7 +23,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // @Component
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
+  private static final Constants.RobotMode JAVA_SIM_MODE = Constants.RobotMode.REPLAY;
+    public static final Constants.RobotMode CURRENT_ROBOT_MODE = isReal() ? Constants.RobotMode.REAL : JAVA_SIM_MODE;
+    public static final boolean IS_COMPETITION = true;
   private Command m_autonomousCommand;
 
   private Timer m_gcTimer = new Timer();
@@ -26,10 +38,37 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
   @Override
-  public void robotInit() {
+  public void robotInit () {
+    // Record metadata
+
+        // Set up data receivers & replay source
+        switch (CURRENT_ROBOT_MODE) {
+            case REAL -> { // Running on a real robot, log to a USB stick ("/U/logs")
+                Logger.addDataReceiver(new WPILOGWriter());
+                if (!IS_COMPETITION) Logger.addDataReceiver(new NT4Publisher());
+            }
+            case SIM -> // Running a physics simulator, send everything to networktables
+                Logger.addDataReceiver(new NT4Publisher());
+            case REPLAY -> {
+                // Replaying a log, set up replay source
+                setUseTiming(false); // Run as fast as possible
+                String logPath = LogFileUtil.findReplayLog();
+                Logger.setReplaySource(new WPILOGReader(logPath));
+                Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_replayed")));
+            }
+        }
+
+        // Instantiate our RobotContainer. This will perform all our button bindings,
+        // and put our autonomous chooser on the dashboard.
+        m_robotContainer = new RobotContainer();
+
+        // Start AdvantageKit logger
+        Logger.start();
+
+        FollowPathCommand.warmupCommand().schedule();
+
     m_gcTimer.start();
     // No longer needed since we use Spring to wire components
-    m_robotContainer = new RobotContainer();
   }
 
   /**

@@ -17,10 +17,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Commands.Blue_Side_G;
-import frc.robot.Commands.TelopSwerve;
 import frc.robot.Constanst.JoystickConstants;
 import frc.robot.Subsystems.*;
+import frc.robot.commands.Blue_Side_G;
+import frc.robot.commands.TelopSwerve;
+import frc.robot.commands.drive.DriveToPose;
 
 // @Component
 public class RobotContainer {
@@ -54,16 +55,21 @@ public class RobotContainer {
 
   public RobotContainer() {
 
-    /* Starting the Test Mode selectors*/
-      test.start();
-      TestMode.setDefaultOption("Use Xbox controller", Xbox);
-      TestMode.addOption("Use Inputs", Input);
-      TestModeSelected = TestMode.getSelected();
-      SmartDashboard.putData(TestMode);
+
 
       //cam.getCurrentCommand();
    
-      s_swerve.setDefaultCommand(
+      
+    
+    
+    configureBindings();
+      
+    autoChoosers = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChoosers);
+  }
+
+  public void teleopInit() {
+    s_swerve.setDefaultCommand(
         new TelopSwerve(
           s_swerve,
           () -> driver.getRawAxis(Constanst.JoystickConstants.LEFT_Y_AXIS),
@@ -71,12 +77,6 @@ public class RobotContainer {
           () -> -driver.getTwist()
           )
       );
-    
-    
-    configureBindings();
-      
-    autoChoosers = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChoosers);
   }
   
   public void teleopPeriodic() {
@@ -94,32 +94,7 @@ public class RobotContainer {
             });
   }
   public void testPeriodic() {
-   switch (TestModeSelected) {
-        case Input:
-          s_swerve.setDefaultCommand(
-            new TelopSwerve(
-              s_swerve,
-              () -> test.translate(),
-              () -> test.strafe(),
-              () -> test.rotate()
-              )
-          );
-
-
-          break;
-      
-        default:
-          s_swerve.setDefaultCommand(
-            new TelopSwerve(
-              s_swerve,
-              () -> driver.getRawAxis(Constanst.JoystickConstants.LEFT_Y_AXIS),
-              () -> -driver.getRawAxis(Constanst.JoystickConstants.LEFT_X_AXIS), 
-              () -> -driver.getTwist()
-              )
-          );
-
-          break;
-      }
+   
   }
 
   private void configureBindings() {
@@ -129,7 +104,7 @@ public class RobotContainer {
 
     /* Operator Controls */
       /* Automation */
-        new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new Blue_Side_G(cam, s_swerve, 18));
+      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveToPose(s_swerve, null, null, 0));
   }
 
    public Command getAutonomousCommand() {
