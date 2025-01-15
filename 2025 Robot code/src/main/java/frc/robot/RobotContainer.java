@@ -4,7 +4,13 @@
 
 package frc.robot;
 
+import static frc.robot.Constanst.Vision.kTagLayout;
+
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.geometry.Pose2d;
 
 // import org.springframework.stereotype.Component;
 
@@ -19,14 +25,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constanst.JoystickConstants;
 import frc.robot.Subsystems.*;
-import frc.robot.commands.Blue_Side_G;
 import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.drive.DriveToPose;
+import frc.robot.commands.drive.PathFindToPose;
 
 // @Component
 public class RobotContainer {
 
-  Field2d field = new Field2d();
+  Field2d visionPoseEstimate = new Field2d();
   /* Test mode choosers */
     /* Initail */
       private final SendableChooser<String> TestMode = new SendableChooser<>();
@@ -46,26 +52,17 @@ public class RobotContainer {
     
     private final DriveTrain s_swerve = new DriveTrain();
     private final TestMode test = new TestMode();
-    // private final CameraSubsystem cam = new CameraSubsystem();
   /* util */    
     private final Vision vision = new Vision();
-    private final VisionSubsystem cam = new VisionSubsystem(vision);
   /* Pathplanner stuff */
   private final SendableChooser<Command> autoChoosers;
 
   public RobotContainer() {
-
-
-
-      //cam.getCurrentCommand();
-   
-      
-    
-    
     configureBindings();
       
     autoChoosers = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChoosers);
+    SmartDashboard.putData("Vision Pose Estimate", visionPoseEstimate);
   }
 
   public void teleopInit() {
@@ -79,32 +76,48 @@ public class RobotContainer {
       );
   }
   
-  public void teleopPeriodic() {
+  public void periodic() {
     var visionEst = vision.getEstimatedGlobalPose();
     visionEst.ifPresent(
-            est -> {
-                // Change our trust in the measurement based on the tags we can see
-                var estStdDevs = vision.getEstimationStdDevs();
+        est -> {
+          // Change our trust in the measurement based on the tags we can see
+          var estStdDevs = vision.getEstimationStdDevs();
 
-                s_swerve.addVisionMeasurement(
-                        est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+          s_swerve.addVisionMeasurement(
+              est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 
-                field.setRobotPose(est.estimatedPose.toPose2d());
-                SmartDashboard.putData(field);
-            });
+          visionPoseEstimate.setRobotPose(est.estimatedPose.toPose2d());
+        });
   }
+  
   public void testPeriodic() {
    
   }
 
   private void configureBindings() {
-    
+
     /* Driver Controls */
-      zeroGyro.onTrue (new InstantCommand(() -> s_swerve.ResetDrives()));
+    zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
 
     /* Operator Controls */
-      /* Automation */
-      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveToPose(s_swerve, null, null, 0));
+    /* Automation */
+
+    // drive towards targeted april tag
+    Supplier<Pose2d> bestTargetSupplier = () -> {
+      var target = vision.getTargets();
+      if (target != null && kTagLayout.getTagPose(target.fiducialId).isPresent()) {
+        return kTagLayout.getTagPose(target.fiducialId).get().toPose2d();
+      }
+      return null;
+    };
+    new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
+        .onTrue(new DriveToPose(s_swerve, bestTargetSupplier, null, 0));
+
+    // alternative option using PathPlanner - only if target is far enough
+    new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)
+        .and(() -> {
+          return bestTargetSupplier.get().getTranslation().getDistance(s_swerve.getPose().getTranslation()) > 2.0;
+        }).onTrue(new PathFindToPose(s_swerve, bestTargetSupplier, 1));
   }
 
    public Command getAutonomousCommand() {

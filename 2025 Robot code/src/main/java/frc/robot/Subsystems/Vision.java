@@ -29,18 +29,13 @@
  import edu.wpi.first.math.Matrix;
  import edu.wpi.first.math.VecBuilder;
  import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
  import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 
-import java.security.PublicKey;
 import java.util.List;
  import java.util.Optional;
  import org.photonvision.EstimatedRobotPose;
@@ -53,8 +48,6 @@ import java.util.List;
  import org.photonvision.targeting.PhotonTrackedTarget;
  
  public class Vision extends SubsystemBase{
-    private Sendable trasnform3d;
-    private Field2d field = new Field2d();
      private final PhotonCamera camera;
      private final PhotonPoseEstimator photonEstimator;
      private Matrix<N3, N1> curStdDevs;
@@ -95,15 +88,15 @@ import java.util.List;
      }
 
      public PhotonTrackedTarget getTargets() {
-        if (camera.getLatestResult().hasTargets()) {
-       return camera.getLatestResult().getBestTarget();
-        }
-        return null;
+         if (camera.getLatestResult().hasTargets()) {
+             return camera.getLatestResult().getBestTarget();
+         }
+         return null;
      }
 
      public PhotonCamera getCamera() {
-        return camera;
-      }
+         return camera;
+     }
 
      
  
@@ -118,14 +111,6 @@ import java.util.List;
       *     used for estimation.
       */
      public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        var result = camera.getLatestResult();
-        if (result.getMultiTagResult().isPresent()) {
-            Transform3d fieldToCamera = result.getMultiTagResult().get().estimatedPose.best;
-            Pose3d newPose = new Pose3d().transformBy(fieldToCamera);
-            field.setRobotPose(newPose.toPose2d());
-            SmartDashboard.putData("RobotPose3d", field);
-        }
-
          Optional<EstimatedRobotPose> visionEst = Optional.empty();
          for (var change : camera.getAllUnreadResults()) {
              visionEst = photonEstimator.update(change);
@@ -142,30 +127,10 @@ import java.util.List;
                          });
              }
          }
-         
-         
+                 
          return visionEst;
      }
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose2() {
-        Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        var result = camera.getLatestResult();
-        if (result.getMultiTagResult().isPresent()) {
-            Transform3d fieldToCamera = result.getMultiTagResult().get().estimatedPose.best;
-            Pose3d field = new Pose3d().transformBy(fieldToCamera);
-            Field2d feild = new Field2d(); feild.setRobotPose(field.toPose2d());
-            SmartDashboard.putData("RobotPose3d", feild);
-            for (var change : camera.getAllUnreadResults()) {
-                visionEst = photonEstimator.update(change);
-                updateEstimationStdDevs(visionEst, change.getTargets());
-            visionEst = photonEstimator.update(change);
-             updateEstimationStdDevs(visionEst, change.getTargets());
-            return visionEst;
-            }
-        }
-    
 
-        return visionEst;
-    }
      /**
       * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard
       * deviations based on number of tags, estimation strategy, and distance from the tags.
