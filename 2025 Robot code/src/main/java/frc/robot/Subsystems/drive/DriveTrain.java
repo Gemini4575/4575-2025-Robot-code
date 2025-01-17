@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Subsystems;
+package frc.robot.Subsystems.drive;
 
 import java.io.IOException;
 
@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constanst;
+import frc.robot.Constants;
 
 
 
@@ -58,16 +58,16 @@ public class DriveTrain extends SubsystemBase {
   
   SendableChooser<Pose2d> ahhhhhh;
 
-private final Translation2d m_frontLeftLocation = Constanst.SwerveConstants.m_frontLeftLocation;
-private final Translation2d m_frontRightLocation = Constanst.SwerveConstants.m_frontRightLocation;
-private final Translation2d m_backLeftLocation = Constanst.SwerveConstants.m_backLeftLocation;
-private final Translation2d m_backRightLocation = Constanst.SwerveConstants.m_backRightLocation;
+private final Translation2d m_frontLeftLocation = Constants.SwerveConstants.m_frontLeftLocation;
+private final Translation2d m_frontRightLocation = Constants.SwerveConstants.m_frontRightLocation;
+private final Translation2d m_backLeftLocation = Constants.SwerveConstants.m_backLeftLocation;
+private final Translation2d m_backRightLocation = Constants.SwerveConstants.m_backRightLocation;
 
 
-private final SwerveModule m_backLeft = new SwerveModule(Constanst.SwerveConstants.Mod3.constants);
-private final SwerveModule m_backRight = new SwerveModule(Constanst.SwerveConstants.Mod2.constants);
-private final SwerveModule m_frontLeft = new SwerveModule(Constanst.SwerveConstants.Mod0.constants);
-private final SwerveModule m_frontRight = new SwerveModule(Constanst.SwerveConstants.Mod1.constants);
+private final SwerveModule m_backLeft = new SwerveModule(Constants.SwerveConstants.Mod3.constants);
+private final SwerveModule m_backRight = new SwerveModule(Constants.SwerveConstants.Mod2.constants);
+private final SwerveModule m_frontLeft = new SwerveModule(Constants.SwerveConstants.Mod0.constants);
+private final SwerveModule m_frontRight = new SwerveModule(Constants.SwerveConstants.Mod1.constants);
 
 //  private final Gyro_EPRA m_gyro = new Gyro_EPRA();
 private final AHRS m_gyro = new AHRS(NavXComType.kI2C);
@@ -283,7 +283,7 @@ private double rot_cur;
       SmartDashboard.putData("robotpose", field);
       /*super.simulationPeriodic();
 
-      //FIXME this is probably not the right speed calculation.. need to figure out where to get the speed
+      // this is probably not the right speed calculation.. need to figure out where to get the speed
       m_frontLeft.getDriveMotorSim().iterate(xSpeed_cur + ySpeed_cur, m_frontLeft.getDriveMotorSim().getBusVoltage(), 0.02);
       m_frontRight.getDriveMotorSim().iterate(xSpeed_cur + ySpeed_cur, m_frontRight.getDriveMotorSim().getBusVoltage(), 0.02);
 

@@ -5,8 +5,8 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constanst;
-import frc.robot.Subsystems.DriveTrain;
+import frc.robot.Constants;
+import frc.robot.Subsystems.drive.DriveTrain;
 
 
 public class TelopSwerve extends Command {    
@@ -61,9 +61,9 @@ public class TelopSwerve extends Command {
 */
 
         /* Get Values, Deadband*/
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constanst.stickDeadband);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constanst.stickDeadband);
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constanst.stickDeadband);
+        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
+        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
         // if(autoTargeting.getAsBoolean()) {
         //     rotationVal = targetingUtil.calculateRotation();

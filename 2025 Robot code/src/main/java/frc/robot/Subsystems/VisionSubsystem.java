@@ -12,13 +12,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constanst;
+import frc.robot.Constants;
 
 public class VisionSubsystem extends SubsystemBase {
     Vision vision;
     boolean targetVisible = false;
     Rotation2d targetYaw;
     double targetRange = 0.0;
+
     public VisionSubsystem(Vision vision) {
         this.vision = vision;
         // Initialize vision components here
@@ -37,7 +38,7 @@ public class VisionSubsystem extends SubsystemBase {
             return 0.0;
         }
     }
-    
+
     public double getYSpeed(int side) {
         ChassisSpeeds speeds = processImage(side);
         if (speeds != null) {
@@ -46,7 +47,7 @@ public class VisionSubsystem extends SubsystemBase {
             return 0.0;
         }
     }
-    
+
     public double getOmegaSpeed(int side) {
         ChassisSpeeds speeds = processImage(side);
         if (speeds != null) {
@@ -55,9 +56,12 @@ public class VisionSubsystem extends SubsystemBase {
             return 0.0;
         }
     }
-    
-    
-       public ChassisSpeeds processImage(int Side) {
+
+    public int getFiducialId() {
+        return vision.getCamera().getLatestResult().getBestTarget().fiducialId;
+    }
+
+    public ChassisSpeeds processImage(int Side) {
         var results = vision.getCamera().getAllUnreadResults();
 
         if (!results.isEmpty()) {
@@ -69,22 +73,20 @@ public class VisionSubsystem extends SubsystemBase {
                 for (var target : result.getTargets()) {
                     if (target.getFiducialId() == Side) {
                         Pose3d robotpose = vision.getEstimatedGlobalPose().get().estimatedPose;
-                        Pose3d targetPose = Constanst.Vision.kTagLayout.getTagPose(Side).get();
+                        Pose3d targetPose = Constants.Vision.kTagLayout.getTagPose(Side).get();
                         targetYaw = PhotonUtils.getYawToPose(robotpose.toPose2d(), targetPose.toPose2d());
                         targetRange = PhotonUtils.getDistanceToPose(robotpose.toPose2d(), targetPose.toPose2d());
                         SmartDashboard.putNumber("fowrad", (targetRange * Math.cos(targetYaw.getRadians())));
                         SmartDashboard.putNumber("Strafe", targetRange * Math.sin(targetYaw.getRadians()));
                         ChassisSpeeds speeds = new ChassisSpeeds(
-                            targetRange * Math.cos(targetYaw.getRadians()),
-                            targetRange * Math.sin(targetYaw.getRadians()),
-                            0
-                        );
+                                targetRange * Math.cos(targetYaw.getRadians()),
+                                targetRange * Math.sin(targetYaw.getRadians()),
+                                0);
                         return speeds;
                     }
                 }
             }
         }
-
 
         ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 0);
         return speeds;
