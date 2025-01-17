@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Subsystems;
+package frc.robot.Subsystems.drive;
 
 // import com.revrobotics.spark.SparkSim;
 import com.revrobotics.RelativeEncoder;
@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.Constanst;
+import frc.robot.Constants;
 
 public class SwerveModule extends Command {
 
@@ -60,7 +60,7 @@ public class SwerveModule extends Command {
           0,
           0,
           new TrapezoidProfile.Constraints(
-              Constanst.SwerveConstants.kModuleMaxAngularVelocity, Constanst.SwerveConstants.kModuleMaxAngularAcceleration));
+              Constants.SwerveConstants.kModuleMaxAngularVelocity, Constants.SwerveConstants.kModuleMaxAngularAcceleration));
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 1.5); // this was 3, changed to 1.5 because it was driving too far
@@ -218,11 +218,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
       m_turningMotor.setVoltage(turnOutput + turnFeedforward);
     }
     
-    if (ahhhhhhhhhhh < SmartDashboard.getNumber("tueing" , 0) || iii == 3000) {
-      ahhhhhhhhhhh = (turnOutput + turnFeedforward);
-      SmartDashboard.putNumber("tueing", (turnOutput + turnFeedforward));
-      iii ++;
-    }
+    
     SmartDashboard.putNumber("turnOutput",turnOutput);
      SmartDashboard.putNumber("Drive", (driveOutput + driveFeedforward) /2.1);
     SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));

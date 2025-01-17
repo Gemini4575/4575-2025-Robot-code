@@ -34,7 +34,7 @@ public class MapleMultiTagPoseEstimator {
         }
     }
 
-    public static final boolean LOG_DETAILED_FILTERING_DATA = Robot.CURRENT_ROBOT_MODE != Constants.RobotMode.REAL;
+    public static final boolean LOG_DETAILED_FILTERING_DATA = false;
 
     private final AprilTagFieldLayout fieldLayout;
     private final VisionResultsFilter filter;
@@ -94,7 +94,7 @@ public class MapleMultiTagPoseEstimator {
 
         applyFilteringToRawRobotPose3dEstimations();
 
-        if (Robot.CURRENT_ROBOT_MODE != Constants.RobotMode.REAL)
+        if (!Robot.isReal())
             logFilteringData();
 
         return getEstimationResultFromValidObservations();

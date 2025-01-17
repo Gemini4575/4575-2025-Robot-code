@@ -1,13 +1,14 @@
-package frc.robot.commands;
+
+package frc.robot.commands.reef;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.ElevatorSubsystem;
 
-public class L3 extends Command {
+public class L1 extends Command {
 
     private final ElevatorSubsystem elevator;
 
-    public L3(ElevatorSubsystem subsystem) {
+    public L1(ElevatorSubsystem subsystem) {
         elevator = subsystem;
         addRequirements(elevator);
     }
@@ -20,7 +21,9 @@ public class L3 extends Command {
     @Override
     public void execute() {
         // Code to move the elevator
-        elevator.L3();
+        if (elevator.L1()) {
+            end(false);
+        }
     }
 
     @Override
@@ -34,4 +37,4 @@ public class L3 extends Command {
         // Condition to end the command
         return false;
     }
-    }
+}

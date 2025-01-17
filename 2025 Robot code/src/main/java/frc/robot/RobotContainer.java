@@ -17,8 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constanst.JoystickConstants;
+import frc.robot.Constants.JoystickConstants;
 import frc.robot.Subsystems.*;
+import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.commands.Blue_Side_G;
 import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.drive.DriveToPose;
@@ -72,8 +73,8 @@ public class RobotContainer {
     s_swerve.setDefaultCommand(
         new TelopSwerve(
           s_swerve,
-          () -> driver.getRawAxis(Constanst.JoystickConstants.LEFT_Y_AXIS),
-          () -> -driver.getRawAxis(Constanst.JoystickConstants.LEFT_X_AXIS), 
+          () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_Y_AXIS),
+          () -> -driver.getRawAxis(Constants.JoystickConstants.LEFT_X_AXIS), 
           () -> -driver.getTwist()
           )
       );

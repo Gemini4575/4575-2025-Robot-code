@@ -137,7 +137,7 @@ public interface LEDAnimation {
         public void play(AddressableLEDBuffer buffer, double t) {
             t = Math.min(Math.max(t/duration, 0), 1);
 
-            // TODO charging animation
+            //  charging animation
         }
     }
 

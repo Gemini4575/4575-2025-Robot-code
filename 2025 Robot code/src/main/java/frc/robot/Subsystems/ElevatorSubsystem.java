@@ -2,58 +2,88 @@ package frc.robot.Subsystems;
 
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkMaxAlternateEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constanst;
+import frc.robot.Constants;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
     SparkMax armMotor;
+    Spark TopWheel;
+    Spark BottomWheel;
+    DigitalInput CoralSensor;
 
-    private final ProfiledPIDController ArmPidController =
-      new ProfiledPIDController(
-          Constanst.ArmConstants.P,
-          Constanst.ArmConstants.I,
-          Constanst.ArmConstants.D,
-          new TrapezoidProfile.Constraints(
-              Constanst.ArmConstants.maxSpeed, Constanst.ArmConstants.maxAcceleration));
+    private final ProfiledPIDController ArmPidController = new ProfiledPIDController(
+            Constants.ArmConstants.P,
+            Constants.ArmConstants.I,
+            Constants.ArmConstants.D,
+            new TrapezoidProfile.Constraints(
+                    Constants.ArmConstants.maxSpeed, Constants.ArmConstants.maxAcceleration));
 
     public ElevatorSubsystem() {
-        armMotor = new SparkMax(Constanst.ArmConstants.ARM_MOTOR, MotorType.kBrushless);
+        armMotor = new SparkMax(Constants.ArmConstants.ARM_MOTOR, MotorType.kBrushless);
+        TopWheel = new Spark(Constants.ArmConstants.TOP_Wheel);
+        BottomWheel = new Spark(Constants.ArmConstants.BOTTOM_Wheel);
+        CoralSensor = new DigitalInput(Constants.ArmConstants.CoralSensor);
+        BottomWheel.setInverted(true);
     }
 
     public void stop() {
         armMotor.set(0);
+        TopWheel.set(0);
+        BottomWheel.set(0);
     }
 
-    public void L1() {
+    public boolean L1() {
         // Move the arm
-        moveArm(armMotor.getAbsoluteEncoder(), Constanst.ArmConstants.L1Position);
-    }
-    
-    public void L2() {
-        // Stop the arm
-        moveArm(armMotor.getAbsoluteEncoder(), Constanst.ArmConstants.L2Position);
-    }
-    
-    public void L3() {
-        // Reset the arm
-        moveArm(armMotor.getAbsoluteEncoder(), Constanst.ArmConstants.L3Position);
+        moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L1Position);
+        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L1Position;
     }
 
-    public void L4(){
+    public boolean L2() {
+        // Stop the arm
+        moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L2Position);
+        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L2Position;
+    }
+
+    public boolean L3() {
+        // Reset the arm
+        moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L3Position);
+        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L3Position;
+    }
+
+    public boolean L4() {
         // Move the arm to a specific position
-        moveArm(armMotor.getAbsoluteEncoder(), Constanst.ArmConstants.L4Position);
+        moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L4Position);
+        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L4Position;
+    }
+
+    public boolean CoralStation() {
+        // Move the arm to the coral station
+        moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.CoralStationPosition);
+        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.CoralStationPosition;
+    }
+    
+    public boolean intakeCoral() {
+        // Intake the coral
+        TopWheel.set(Constants.ArmConstants.IntakeSpeed);
+        BottomWheel.set(Constants.ArmConstants.IntakeSpeed);
+        if(!CoralSensor.get()){
+            TopWheel.set(0);
+            BottomWheel.set(0);
+            return true;
+        }
+        return false;
     }
 
     public void moveArm(SparkAbsoluteEncoder encoder, double position) {
-        final 
-        double ArmOutput = ArmPidController.calculate(encoder.getPosition(), position);
+        final double ArmOutput = ArmPidController.calculate(encoder.getPosition(), position);
         armMotor.set(ArmOutput);
     }
-    
+
 }

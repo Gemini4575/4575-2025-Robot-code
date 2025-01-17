@@ -124,7 +124,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    // this.m_robotContainer.teleopInit();
+    this.m_robotContainer.teleopInit();
   }
 
   /** This function is called periodically during operator control. */
