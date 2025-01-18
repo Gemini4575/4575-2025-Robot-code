@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -29,11 +28,14 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.lib.util.RotationsToInch;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.utils.MechanismControl.MaplePIDController;
 
 public class Constants {
+    public static RotationsToInch rotationsToInch = new RotationsToInch();
+
     public enum RobotMode {
         /**
          * Running on a real robot.
@@ -122,11 +124,11 @@ public class Constants {
 
     static {
       // Initialize faces
-      centerFaces[-1] =
-          new Pose2d(
-              Units.inchesToMeters(144.003),
-              Units.inchesToMeters(158.500),
-              Rotation2d.fromDegrees(180));
+    //   centerFaces[-1] =
+    //       new Pose2d(
+    //           Units.inchesToMeters(144.003),
+    //           Units.inchesToMeters(158.500),
+    //           Rotation2d.fromDegrees(180));
       centerFaces[0] =
           new Pose2d(
               Units.inchesToMeters(144.003),
@@ -198,8 +200,8 @@ public class Constants {
                       Units.degreesToRadians(level.pitch),
                       poseDirection.getRotation().getRadians())));
         }
-        branchPositions.add((face * 2) + 1, fillRight);
-        branchPositions.add((face * 2) + 2, fillLeft);
+        // branchPositions.add((face * 2) + 1, fillRight);
+        // branchPositions.add((face * 2) + 2, fillLeft);
       }
     }
   }
@@ -500,7 +502,7 @@ public class Constants {
         private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
         private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
 */
-/*  These numbers are for 28.5 swerve */
+/*  These numbers are for 28.5 swerve 
 public static final Translation2d m_frontLeftLocation = new Translation2d(0.4445, 0.4445);
 public static final Translation2d m_frontRightLocation = new Translation2d(0.4445, -0.4445);
 public static final Translation2d m_backLeftLocation = new Translation2d(-0.4445, 0.4445);
@@ -521,6 +523,13 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
         public static final Translation2d m_backLeftLocation = new Translation2d(-0.2032, 0.2794);
         public static final Translation2d m_backRightLocation = new Translation2d(-0.2032, -0.2794);
         */
+        // These number are for a 25 by 25 swerve
+        // 0.33333
+        public static final Translation2d m_frontLeftLocation = new Translation2d(0.3333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333, 0.33333);
+        public static final Translation2d m_frontRightLocation = new Translation2d(0.33333, -0.33333);
+        public static final Translation2d m_backLeftLocation = new Translation2d(-0.33333, 0.33333);
+        public static final Translation2d m_backRightLocation = new Translation2d(-0.33333, -0.33333);
+
         /* Ints */
             public static final int kEncoderResolution = 4096;
         /* Doubles */
@@ -613,7 +622,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public final static double P = 0.0;
             public final static double I = 0.0;
             public final static double D = 0.0;
-            public final static double L1Position = 0.0;
+            public final static double L1Position = rotationsToInch.calculateTicks(I, I);
             public final static double L2Position = 0.0;
             public final static double L3Position = 0.0;
             public final static double L4Position = 0.0;
@@ -624,5 +633,13 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             
     }
 
-    
+    public final static class ClimbingConstants {
+        /* Ints */
+            public final static int ClimbingMotor1 = 14;
+            public final static int ClimbingMotor2 = 15;
+            //TODO get the real values
+            public final static int ClimbingMotorPoseition = 0;
+        /* Doubles */
+            public final static double ClimbingSpeed = 0.5;
+    }
 }

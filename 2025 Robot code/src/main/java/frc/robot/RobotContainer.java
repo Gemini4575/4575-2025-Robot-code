@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import static frc.robot.Constanst.Vision.kTagLayout;
+import static frc.robot.Constants.Vision.kTagLayout;
 
 import java.util.function.Supplier;
 
@@ -26,23 +26,16 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Subsystems.*;
 import frc.robot.Subsystems.drive.DriveTrain;
-import frc.robot.commands.Blue_Side_G;
 import frc.robot.commands.TelopSwerve;
+import frc.robot.commands.automation.reef.GoToReefSideAndPlace;
 import frc.robot.commands.drive.DriveToPose;
 import frc.robot.commands.drive.PathFindToPose;
+import frc.robot.utils.MapleShooterOptimization;
 
 // @Component
 public class RobotContainer {
 
   Field2d visionPoseEstimate = new Field2d();
-  /* Test mode choosers */
-    /* Initail */
-      private final SendableChooser<String> TestMode = new SendableChooser<>();
-      private final String Xbox = "Use Xbox controller";
-      private final String Input = "Use Inputs";
-      private String TestModeSelected;
-    
-
   /* Controllers */
     private final Joystick driver = new Joystick(JoystickConstants.DRIVER_USB);
     private final Joystick operator = new Joystick(JoystickConstants.OPERATOR_USB);
@@ -51,11 +44,11 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, JoystickConstants.BACK_BUTTON);
 
   /* Subsystems */
-    
+    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     private final DriveTrain s_swerve = new DriveTrain();
     private final TestMode test = new TestMode();
-  /* util */    
     private final Vision vision = new Vision();
+    private final VisionSubsystem visionSubsystem = new VisionSubsystem(vision);
   /* Pathplanner stuff */
   private final SendableChooser<Command> autoChoosers;
 
@@ -102,9 +95,11 @@ public class RobotContainer {
     zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
 
     /* Operator Controls */
-    /* Automation */
-
-    // drive towards targeted april tag
+      /* Automation */
+        new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).
+          toggleOnTrue(new GoToReefSideAndPlace(elevatorSubsystem, 
+            s_swerve, vision, 0, 4, visionSubsystem));
+    /* drive towards targeted april tag
     Supplier<Pose2d> bestTargetSupplier = () -> {
       var target = vision.getTargets();
       if (target != null && kTagLayout.getTagPose(target.fiducialId).isPresent()) {
@@ -120,7 +115,8 @@ public class RobotContainer {
         .and(() -> {
           return bestTargetSupplier.get().getTranslation().getDistance(s_swerve.getPose().getTranslation()) > 2.0;
         }).onTrue(new PathFindToPose(s_swerve, bestTargetSupplier, 1));
-  }
+        */
+      }
 
    public Command getAutonomousCommand() {
      return autoChoosers.getSelected();

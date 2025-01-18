@@ -21,6 +21,6 @@ public class AprilTagToSide {
         } else if (tagID == 20 || tagID == 9){
             return 5;
         }
-        return -1;
+        return 1;
     }
 }

@@ -69,10 +69,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.CoralStationPosition;
     }
     
-    public boolean intakeCoral() {
+    public boolean intakeCoral(boolean InRange) {
         // Intake the coral
+        if (InRange) {
         TopWheel.set(Constants.ArmConstants.IntakeSpeed);
         BottomWheel.set(Constants.ArmConstants.IntakeSpeed);
+        } else {
+            TopWheel.set(0);
+            BottomWheel.set(0);
+        }
         if(!CoralSensor.get()){
             TopWheel.set(0);
             BottomWheel.set(0);

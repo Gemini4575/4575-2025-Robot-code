@@ -81,8 +81,6 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     if (m_gcTimer.advanceIfElapsed(5)) {
       System.gc();
-    } else {
-      
     }
     this.m_robotContainer.periodic();
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled

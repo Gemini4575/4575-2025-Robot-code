@@ -1,24 +1,23 @@
 package frc.robot.Subsystems;
 
-import java.util.function.DoubleSupplier;
 
 import org.photonvision.PhotonUtils;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.Translation3dToTranslation2d;
 import frc.robot.Constants;
 
 public class VisionSubsystem extends SubsystemBase {
     Vision vision;
-    boolean targetVisible = false;
+    boolean InRange = false;
     Rotation2d targetYaw;
     double targetRange = 0.0;
+    private Translation3dToTranslation2d translation3dToTranslation2d;
 
     public VisionSubsystem(Vision vision) {
         this.vision = vision;
@@ -28,6 +27,22 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+    }
+
+    public boolean InRange() {
+        var results = vision.getCamera().getAllUnreadResults();
+
+        if (!results.isEmpty()) {
+            if (translation3dToTranslation2d
+                    .calculate(vision.getCamera().getLatestResult().getBestTarget().bestCameraToTarget.getTranslation())
+                    .getDistance(new Translation2d(0.127, 0.127)) > 0.2) {
+                InRange = true;
+            } else {
+                InRange = false;
+            }
+            return InRange;
+        }
+        return false;
     }
 
     public double getXSpeed(int side) {
