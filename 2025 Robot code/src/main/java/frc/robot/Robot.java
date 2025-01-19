@@ -14,15 +14,22 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.stereotype.Component;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Subsystems.ClimbingSubsystem;
 
 // @Component
 public class Robot extends LoggedRobot {
+  private Field2d field = new Field2d();
   private static final Constants.RobotMode JAVA_SIM_MODE = Constants.RobotMode.REPLAY;
     public static final Constants.RobotMode CURRENT_ROBOT_MODE = isReal() ? Constants.RobotMode.REAL : JAVA_SIM_MODE;
     public static final boolean IS_COMPETITION = true;
@@ -38,6 +45,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit () {
+   
     // Record metadata
 
         // Set up data receivers & replay source
@@ -88,6 +96,8 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    field.setRobotPose(4.911, -0.622, new Rotation2d(90));
+    SmartDashboard.putData("hehe", field);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -126,7 +136,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    this.m_robotContainer.teleopPeriodic();
+  }
 
   @Override
   public void testInit() {

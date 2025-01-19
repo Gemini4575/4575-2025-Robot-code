@@ -47,9 +47,11 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
-    private final PhotonCamera camera;
+    private final PhotonCamera tagCamera;
     private final PhotonPoseEstimator photonEstimator;
     private Matrix<N3, N1> curStdDevs;
+
+    private final PhotonCamera algaeCamera;
 
     // Simulation
     private PhotonCameraSim cameraSim;
@@ -57,10 +59,13 @@ public class Vision extends SubsystemBase {
 
     public Vision() {
         super();
-        camera = new PhotonCamera(kCameraName);
+        tagCamera = new PhotonCamera(kTagCameraName);
 
         photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        algaeCamera = new PhotonCamera(kAlgaeCameraName);
+        algaeCamera.setPipelineIndex(0);
 
         // ----- Simulation
         if (Robot.isSimulation()) {
@@ -81,7 +86,7 @@ public class Vision extends SubsystemBase {
             // Create a PhotonCameraSim which will update the linked PhotonCamera's values
             // with visible
             // targets.
-            cameraSim = new PhotonCameraSim(camera, cameraProp);
+            cameraSim = new PhotonCameraSim(tagCamera, cameraProp);
             // Add the simulated camera to view the targets on this simulated field.
             visionSim.addCamera(cameraSim, kRobotToCam);
 
@@ -89,15 +94,19 @@ public class Vision extends SubsystemBase {
         }
     }
 
+    public PhotonTrackedTarget getAlgaeTarget() {
+        return algaeCamera.getLatestResult().getBestTarget();//algaeCamera.getLatestResult().hasTargets() ? algaeCamera.getLatestResult().getBestTarget() : null;
+    }
+
     public PhotonTrackedTarget getTargets() {
-        if (camera.getLatestResult().hasTargets()) {
-            return camera.getLatestResult().getBestTarget();
+        if (tagCamera.getLatestResult().hasTargets()) {
+            return tagCamera.getLatestResult().getBestTarget();
         }
         return null;
     }
 
-    public PhotonCamera getCamera() {
-        return camera;
+    public PhotonCamera getTagCamera() {
+        return tagCamera;
     }
 
     /**
@@ -116,7 +125,7 @@ public class Vision extends SubsystemBase {
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        for (var change : camera.getAllUnreadResults()) {
+        for (var change : tagCamera.getAllUnreadResults()) {
             visionEst = photonEstimator.update(change);
             updateEstimationStdDevs(visionEst, change.getTargets());
 

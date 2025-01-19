@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.AprilTagToSide;
 import frc.lib.util.SideOffSetCalculation;
-import frc.lib.util.Translation3dToTranslation2d;
+import frc.lib.util.PoseTools;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Subsystems.ElevatorSubsystem;
 import frc.robot.Subsystems.VisionSubsystem;
@@ -19,7 +19,7 @@ public class GoToReefSideAndPlace extends Command {
         private VisionSubsystem visionSubsystem;
         private AprilTagToSide aprilTagToSide;
         private SideOffSetCalculation sideOffSetCalculation;
-        private Translation3dToTranslation2d translation3dToTranslation2d;
+        private PoseTools translation3dToTranslation2d;
         private int level = 0;
         private int side = 0;
 
@@ -36,7 +36,7 @@ public class GoToReefSideAndPlace extends Command {
                 this.visionSubsystem = visionSubsystem;
                 aprilTagToSide = new AprilTagToSide();
                 sideOffSetCalculation = new SideOffSetCalculation();
-                translation3dToTranslation2d = new Translation3dToTranslation2d();
+                translation3dToTranslation2d = new PoseTools();
 
                 addRequirements(elevator, driveTrain, vision, visionSubsystem);
         }
@@ -58,10 +58,10 @@ public class GoToReefSideAndPlace extends Command {
                                                 return FieldConstants.Reef.BlueBargeSidePassthough.getTranslation();
                                         }
                                 },
-                                () -> translation3dToTranslation2d.calculate(vision.getCamera().getLatestResult().getBestTarget().bestCameraToTarget.getTranslation()),
+                                () -> translation3dToTranslation2d.calculate(vision.getTagCamera().getLatestResult().getBestTarget().bestCameraToTarget.getTranslation()),
                                 level,
                                 aprilTagToSide.calculate(
-                                                vision.getCamera().getLatestResult().getBestTarget().fiducialId));
+                                                vision.getTagCamera().getLatestResult().getBestTarget().fiducialId));
 
                 // Initialization code here
         }

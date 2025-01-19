@@ -482,7 +482,8 @@ public class Constants {
     public static final double stickDeadband = 0.3;
     
     public static final class Vision {
-        public static final String kCameraName = "Arducam1";
+        public static final String kTagCameraName = "Arducam1";
+        public static final String kAlgaeCameraName = "ArducamColor";
         public static final AprilTagFieldLayout kTagLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
         //TODO update with real value
         public static final Transform3d kRobotToCam =

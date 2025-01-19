@@ -1,15 +1,18 @@
 package frc.robot.Subsystems;
 
+import java.lang.reflect.Field;
 
 import org.photonvision.PhotonUtils;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.Translation3dToTranslation2d;
+import frc.lib.util.PoseTools;
 import frc.robot.Constants;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -17,24 +20,29 @@ public class VisionSubsystem extends SubsystemBase {
     boolean InRange = false;
     Rotation2d targetYaw;
     double targetRange = 0.0;
-    private Translation3dToTranslation2d translation3dToTranslation2d;
+    private PoseTools translation3dToTranslation2d;
 
     public VisionSubsystem(Vision vision) {
         this.vision = vision;
-        // Initialize vision components here
     }
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        // publish relative algae position
+        var algae = vision.getAlgaeTarget();
+        if (algae != null) {
+            SmartDashboard.putString("Algae X translation", algae.getBestCameraToTarget().getMeasureX().toString());
+            SmartDashboard.putString("Algae Y translation", algae.getBestCameraToTarget().getMeasureY().toString());
+        }
     }
 
     public boolean InRange() {
-        var results = vision.getCamera().getAllUnreadResults();
+        var results = vision.getTagCamera().getAllUnreadResults();
 
         if (!results.isEmpty()) {
             if (translation3dToTranslation2d
-                    .calculate(vision.getCamera().getLatestResult().getBestTarget().bestCameraToTarget.getTranslation())
+                    .calculate(
+                            vision.getTagCamera().getLatestResult().getBestTarget().bestCameraToTarget.getTranslation())
                     .getDistance(new Translation2d(0.127, 0.127)) > 0.2) {
                 InRange = true;
             } else {
@@ -73,11 +81,11 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public int getFiducialId() {
-        return vision.getCamera().getLatestResult().getBestTarget().fiducialId;
+        return vision.getTagCamera().getLatestResult().getBestTarget().fiducialId;
     }
 
     public ChassisSpeeds processImage(int Side) {
-        var results = vision.getCamera().getAllUnreadResults();
+        var results = vision.getTagCamera().getAllUnreadResults();
 
         if (!results.isEmpty()) {
             // Camera processed a new frame since last
@@ -105,5 +113,20 @@ public class VisionSubsystem extends SubsystemBase {
 
         ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 0);
         return speeds;
+    }
+
+    public void getAlgaeTarget() {
+        //Field2d field = new Field2d();
+        var algae = vision.getAlgaeTarget();
+         if (algae != null) {
+            SmartDashboard.putNumber("Algae pitch", algae.getPitch());
+            SmartDashboard.putNumber("Algae skew", algae.getSkew());
+            SmartDashboard.putNumber("Algae yaw", algae.getYaw());
+            SmartDashboard.putNumber("Algae area", algae.getArea());
+            //var translation = algae.getBestCameraToTarget().getTranslation();
+            //Pose2d algaePose = new Pose2d(translation.getX(), translation.getY(), new Rotation2d());
+            //field.setRobotPose(algaePose);
+            //SmartDashboard.putData("Algae Pose", field);
+        }
     }
 }

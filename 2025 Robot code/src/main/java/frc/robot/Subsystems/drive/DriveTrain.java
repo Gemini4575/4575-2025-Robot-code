@@ -207,7 +207,7 @@ private double rot_cur;
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
 
-    if(RobotState.isTest()) {
+    //if(RobotState.isTest()) {
       SmartDashboard.putString("gyro", m_gyro.getRotation2d().toString());
 
       SmartDashboard.putString("module 0", swerveModuleStates[0].toString());
@@ -215,7 +215,7 @@ private double rot_cur;
       SmartDashboard.putString("module 2", swerveModuleStates[2].toString());
       SmartDashboard.putString("module 3", swerveModuleStates[3].toString());
 
-    }
+   // }
     xSpeed_cur = xSpeed;
     ySpeed_cur = ySpeed;
     rot_cur = rot;
@@ -281,6 +281,7 @@ private double rot_cur;
       field.setRobotPose(poseEstimator.getEstimatedPosition());
     
       SmartDashboard.putData("robotpose", field);
+      
       /*super.simulationPeriodic();
 
       // this is probably not the right speed calculation.. need to figure out where to get the speed

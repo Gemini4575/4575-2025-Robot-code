@@ -49,6 +49,7 @@ public class RobotContainer {
     private final TestMode test = new TestMode();
     private final Vision vision = new Vision();
     private final VisionSubsystem visionSubsystem = new VisionSubsystem(vision);
+    private final ClimbingSubsystem climbingSubsystem = new ClimbingSubsystem();
   /* Pathplanner stuff */
   private final SendableChooser<Command> autoChoosers;
 
@@ -72,6 +73,7 @@ public class RobotContainer {
   }
   
   public void periodic() {
+    visionSubsystem.getAlgaeTarget();
     var visionEst = vision.getEstimatedGlobalPose();
     visionEst.ifPresent(
         est -> {
@@ -96,9 +98,9 @@ public class RobotContainer {
 
     /* Operator Controls */
       /* Automation */
-        new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).
-          toggleOnTrue(new GoToReefSideAndPlace(elevatorSubsystem, 
-            s_swerve, vision, 0, 4, visionSubsystem));
+        // new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).
+        //   toggleOnTrue(new GoToReefSideAndPlace(elevatorSubsystem, 
+        //     s_swerve, vision, 0, 4, visionSubsystem));
     /* drive towards targeted april tag
     Supplier<Pose2d> bestTargetSupplier = () -> {
       var target = vision.getTargets();
@@ -117,6 +119,10 @@ public class RobotContainer {
         }).onTrue(new PathFindToPose(s_swerve, bestTargetSupplier, 1));
         */
       }
+
+    public void teleopPeriodic() {
+      climbingSubsystem.JoyClimb(operator.getRawAxis(JoystickConstants.LEFT_Y_AXIS)  );
+    }
 
    public Command getAutonomousCommand() {
      return autoChoosers.getSelected();

@@ -1,5 +1,7 @@
 package frc.robot.Subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -43,6 +45,12 @@ public class ClimbingSubsystem extends SubsystemBase{
             return true;
         }
         return false;
+    }
+
+    @Deprecated
+    public void JoyClimb(double Joy) {
+        ClimbingMotor1.set(Joy);
+        ClimbingMotor2.set(Joy);
     }
 
     public void Stop() {

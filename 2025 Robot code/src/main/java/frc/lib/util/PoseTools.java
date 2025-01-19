@@ -3,9 +3,9 @@ package frc.lib.util;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 
-public class Translation3dToTranslation2d {
+public class PoseTools {
 
-    public Translation3dToTranslation2d() {
+    public PoseTools() {
         // Initialization code here
     }
 
