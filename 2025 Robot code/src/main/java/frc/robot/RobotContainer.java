@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Subsystems.*;
 import frc.robot.Subsystems.drive.DriveTrain;
+import frc.robot.commands.DriveToAlgae;
 import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.automation.reef.GoToReefSideAndPlace;
 import frc.robot.commands.drive.DriveToPose;
@@ -95,6 +96,9 @@ public class RobotContainer {
 
     /* Driver Controls */
     zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
+
+    // TODO test this whether it drives to an Algae
+    new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveToAlgae(s_swerve, vision));
 
     /* Operator Controls */
       /* Automation */
