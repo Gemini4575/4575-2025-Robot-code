@@ -28,10 +28,8 @@ import frc.robot.Subsystems.*;
 import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.commands.DriveToAlgae;
 import frc.robot.commands.TelopSwerve;
-import frc.robot.commands.automation.reef.GoToReefSideAndPlace;
 import frc.robot.commands.drive.DriveToPose;
 import frc.robot.commands.drive.PathFindToPose;
-import frc.robot.utils.MapleShooterOptimization;
 
 // @Component
 public class RobotContainer {
@@ -98,31 +96,32 @@ public class RobotContainer {
     zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
 
     // TODO test this whether it drives to an Algae
-    new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveToAlgae(s_swerve, vision));
+    new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new DriveToAlgae(s_swerve, vision));
 
     /* Operator Controls */
       /* Automation */
         // new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).
         //   toggleOnTrue(new GoToReefSideAndPlace(elevatorSubsystem, 
         //     s_swerve, vision, 0, 4, visionSubsystem));
-    /* drive towards targeted april tag
+    // drive towards targeted april tag
     Supplier<Pose2d> bestTargetSupplier = () -> {
       var target = vision.getTargets();
       if (target != null && kTagLayout.getTagPose(target.fiducialId).isPresent()) {
+        SmartDashboard.putString("Targeting tag", String.valueOf(target.getFiducialId()));
         return kTagLayout.getTagPose(target.fiducialId).get().toPose2d();
       }
       return null;
     };
-    new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
-        .onTrue(new DriveToPose(s_swerve, bestTargetSupplier, null, 0));
+//    new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
+//        .onTrue(new DriveToPose(s_swerve, bestTargetSupplier, null, 0));
 
     // alternative option using PathPlanner - only if target is far enough
     new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)
-        .and(() -> {
-          return bestTargetSupplier.get().getTranslation().getDistance(s_swerve.getPose().getTranslation()) > 2.0;
-        }).onTrue(new PathFindToPose(s_swerve, bestTargetSupplier, 1));
-        */
-      }
+    //     //.and(() -> {
+    //     //  return bestTargetSupplier.get().getTranslation().getDistance(s_swerve.getPose().getTranslation()) > 2.0;
+    //     //})
+         .onTrue(new PathFindToPose(s_swerve, bestTargetSupplier));
+    }
 
     public void teleopPeriodic() {
       climbingSubsystem.JoyClimb(operator.getRawAxis(JoystickConstants.LEFT_Y_AXIS)  );

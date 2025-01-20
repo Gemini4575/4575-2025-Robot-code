@@ -64,13 +64,13 @@ private final Translation2d m_backLeftLocation = Constants.SwerveConstants.m_bac
 private final Translation2d m_backRightLocation = Constants.SwerveConstants.m_backRightLocation;
 
 
-private final SwerveModule m_backLeft = new SwerveModule(Constants.SwerveConstants.Mod3.constants);
-private final SwerveModule m_backRight = new SwerveModule(Constants.SwerveConstants.Mod2.constants);
-private final SwerveModule m_frontLeft = new SwerveModule(Constants.SwerveConstants.Mod0.constants);
-private final SwerveModule m_frontRight = new SwerveModule(Constants.SwerveConstants.Mod1.constants);
+private final SwerveModule m_backLeft = new SwerveModule(Constants.SwerveConstants.Mod0.constants);
+private final SwerveModule m_backRight = new SwerveModule(Constants.SwerveConstants.Mod1.constants);
+private final SwerveModule m_frontLeft = new SwerveModule(Constants.SwerveConstants.Mod3.constants);
+private final SwerveModule m_frontRight = new SwerveModule(Constants.SwerveConstants.Mod2.constants);
 
 //  private final Gyro_EPRA m_gyro = new Gyro_EPRA();
-private final AHRS m_gyro = new AHRS(NavXComType.kI2C);
+private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
 private double xSpeed_cur;
 private double ySpeed_cur;
@@ -281,6 +281,11 @@ private double rot_cur;
       field.setRobotPose(poseEstimator.getEstimatedPosition());
     
       SmartDashboard.putData("robotpose", field);
+
+      SmartDashboard.putNumber("Gyro yaw", m_gyro.getYaw());
+      SmartDashboard.putNumber("Gyro pitch", m_gyro.getPitch());
+      SmartDashboard.putNumber("Gyro roll", m_gyro.getRoll());
+      SmartDashboard.putNumber("Gyro angle", m_gyro.getAngle());
       
       /*super.simulationPeriodic();
 
