@@ -21,10 +21,12 @@ public class PathFindToPose extends Command {
 
     @Override
     public void initialize() {
+        System.out.println("Initializing PathFindToPose command");
         cmd = AutoBuilder.pathfindToPose(
                 targetPoseSuppler.get(),
                 driveSubsystem.getChassisConstrains());
-        cmd.schedule();    
+        cmd.schedule();
+        System.out.println("Initializing PathFindToPose command - DONE");
     }
 
     @Override
@@ -34,6 +36,7 @@ public class PathFindToPose extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        System.out.println("Ended PathFindToPose command");
         cmd = null;
     }
     

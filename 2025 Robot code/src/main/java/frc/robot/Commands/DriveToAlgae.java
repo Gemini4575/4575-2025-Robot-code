@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.GeometryHelper;
-import frc.robot.Constants;
 import frc.robot.Subsystems.Vision;
 import frc.robot.Subsystems.drive.DriveTrain;
 
@@ -29,11 +28,13 @@ public class DriveToAlgae extends Command {
     @Override
     public void initialize() {
         SmartDashboard.putBoolean("DriveToAlgae running", true);
+        System.out.println("Initializing DriveToAlgae command");
     }
 
     @Override
     public void end(boolean interrupted) {
         SmartDashboard.putBoolean("DriveToAlgae running", false);
+        System.out.println("Ended DriveToAlgae command");
     }
 
     @Override
@@ -51,6 +52,11 @@ public class DriveToAlgae extends Command {
             SmartDashboard.putNumber("Algae Target Distance", targetDistance);
             SmartDashboard.putNumber("Algae Target drive turn", turn);
             SmartDashboard.putNumber("Algae Target drive forward", forward);
+
+            System.out.println("DriveToAlgae command - distance to Algae = " + targetDistance);
+            System.out.println("DriveToAlgae command - yaw to Algae = " + targetYaw);
+            System.out.println("DriveToAlgae command - turn to Algae = " + turn);
+            System.out.println("DriveToAlgae command - drive to Algae = " + forward);
 
             driveTrain.drive(forward, 0, turn, false);
         } else {
