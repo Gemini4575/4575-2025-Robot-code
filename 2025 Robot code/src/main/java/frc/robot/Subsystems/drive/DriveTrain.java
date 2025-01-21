@@ -6,6 +6,8 @@ package frc.robot.Subsystems.drive;
 
 import java.io.IOException;
 
+import org.littletonrobotics.junction.Logger;
+
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.stereotype.Component;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -180,6 +182,7 @@ private double rot_cur;
       m_gyro.reset();
   
       SmartDashboard.putString("Gyro has been reset", java.time.LocalTime.now().toString());
+      System.out.println("Gyro has been reset");
     }
     /**
      * Method to drive the robot using joystick info.
@@ -206,6 +209,8 @@ private double rot_cur;
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
+
+    Logger.recordOutput("SwerveStates", swerveModuleStates);
 
     //if(RobotState.isTest()) {
       SmartDashboard.putString("gyro", m_gyro.getRotation2d().toString());

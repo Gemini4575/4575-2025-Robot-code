@@ -30,7 +30,7 @@ import frc.robot.Subsystems.ClimbingSubsystem;
 // @Component
 public class Robot extends LoggedRobot {
   private Field2d field = new Field2d();
-  private static final Constants.RobotMode JAVA_SIM_MODE = Constants.RobotMode.REPLAY;
+  private static final Constants.RobotMode JAVA_SIM_MODE = Constants.RobotMode.SIM;
     public static final Constants.RobotMode CURRENT_ROBOT_MODE = isReal() ? Constants.RobotMode.REAL : JAVA_SIM_MODE;
     public static final boolean IS_COMPETITION = true;
   private Command m_autonomousCommand;
@@ -46,8 +46,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit () {
    
-    // Record metadata
-
         // Set up data receivers & replay source
         switch (CURRENT_ROBOT_MODE) {
             case REAL -> { // Running on a real robot, log to a USB stick ("/U/logs")
@@ -65,12 +63,12 @@ public class Robot extends LoggedRobot {
             }
         }
 
+        // Start AdvantageKit logger
+        Logger.start();
+
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
-
-        // Start AdvantageKit logger
-        Logger.start();
 
         FollowPathCommand.warmupCommand().schedule();
 

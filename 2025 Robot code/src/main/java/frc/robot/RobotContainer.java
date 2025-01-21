@@ -11,11 +11,6 @@ import java.util.function.Supplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
-
-// import org.springframework.stereotype.Component;
-
-
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,7 +23,6 @@ import frc.robot.Subsystems.*;
 import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.commands.DriveToAlgae;
 import frc.robot.commands.TelopSwerve;
-import frc.robot.commands.drive.DriveToPose;
 import frc.robot.commands.drive.PathFindToPose;
 
 // @Component
@@ -53,11 +47,13 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChoosers;
 
   public RobotContainer() {
+    System.out.println("Starting RobotContainer()");
     configureBindings();
       
     autoChoosers = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChoosers);
     SmartDashboard.putData("Vision Pose Estimate", visionPoseEstimate);
+    System.out.println("Ended RobotContainer()");
   }
 
   public void teleopInit() {
@@ -72,7 +68,6 @@ public class RobotContainer {
   }
   
   public void periodic() {
-    visionSubsystem.getAlgaeTarget();
     var visionEst = vision.getEstimatedGlobalPose();
     visionEst.ifPresent(
         est -> {
@@ -91,6 +86,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    System.out.println("Starting configureBindings()");
 
     /* Driver Controls */
     zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
@@ -121,6 +117,8 @@ public class RobotContainer {
     //     //  return bestTargetSupplier.get().getTranslation().getDistance(s_swerve.getPose().getTranslation()) > 2.0;
     //     //})
          .onTrue(new PathFindToPose(s_swerve, bestTargetSupplier));
+
+         System.out.println("Ended configureBindings()");
     }
 
     public void teleopPeriodic() {
