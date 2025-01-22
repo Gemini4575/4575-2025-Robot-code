@@ -95,7 +95,7 @@ public class Vision extends SubsystemBase {
     }
 
     public PhotonTrackedTarget getAlgaeTarget() {
-        return algaeCamera.getLatestResult().getBestTarget();//algaeCamera.getLatestResult().hasTargets() ? algaeCamera.getLatestResult().getBestTarget() : null;
+        return algaeCamera.getLatestResult().hasTargets() ? algaeCamera.getLatestResult().getBestTarget() : null;
     }
 
     public PhotonTrackedTarget getTargets() {

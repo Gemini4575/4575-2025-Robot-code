@@ -213,17 +213,17 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
         m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
     SmartDashboard.putNumber("turnFeedforward",turnFeedforward);
     if(RobotState.isAutonomous()) {
-      m_driveMotor.setVoltage((driveFeedforward));
+      m_driveMotor.setVoltage((driveFeedforward)/2);
       System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
       m_turningMotor.setVoltage(turnOutput + turnFeedforward);
     } else if (RobotState.isTeleop()) {
-      m_driveMotor.set((driveOutput + driveFeedforward) / 2.1);
+      m_driveMotor.set(((driveOutput + driveFeedforward) /2.1) /2);
       m_turningMotor.setVoltage(turnOutput + turnFeedforward);
     }
     
     
     SmartDashboard.putNumber("turnOutput",turnOutput);
-     SmartDashboard.putNumber("Drive", (driveOutput + driveFeedforward) /2.1);
+     SmartDashboard.putNumber("Drive", ((driveOutput + driveFeedforward) /2.1) /2);
     SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));
     if(RobotState.isTest()) {
      
