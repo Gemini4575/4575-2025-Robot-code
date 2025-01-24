@@ -15,6 +15,7 @@ import frc.robot.Subsystems.Vision;
 import frc.robot.Subsystems.drive.DriveTrain;
 
 public class DriveTwoardsAprillTag extends Command{
+    private boolean firstTime = false;
     private ProfiledPIDController drivePidController = 
     new ProfiledPIDController(
           0,
@@ -42,9 +43,17 @@ public class DriveTwoardsAprillTag extends Command{
 
     @Override
     public void execute() {
-        double disitance = PhotonUtils.calculateDistanceToTargetMeters(Units.inchesToMeters(23.5), Constants.Vision.kTagLayout.getTagPose(vision.getTargets().fiducialId).get().getZ(), 0, 0);
-        chassisSpeeds.vyMetersPerSecond = drivePidController.calculate(vision.getEstimatedGlobalPose().get().estimatedPose.getX(), disitance);
-        chassisSpeeds.vxMetersPerSecond = strafePidController.calculate(vision.getTargets().getYaw(), 0);
+        if(vision.getTargets().area > 10.64) {
+            chassisSpeeds.vyMetersPerSecond = 0; 
+            this.end(false); 
+        }else {
+            chassisSpeeds.vyMetersPerSecond = 0.3;
+        }
+        if(Math.abs(vision.getTargets().getYaw()) > 10) {
+            chassisSpeeds.vxMetersPerSecond = (vision.getTargets().getYaw() - 1) / 100;
+        } else {
+            chassisSpeeds.vxMetersPerSecond = 0;
+        }
         chassisSpeeds.omegaRadiansPerSecond = 0;
         driveTrain.driveRobotRelative(chassisSpeeds);
     }

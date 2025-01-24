@@ -23,6 +23,7 @@ import frc.robot.Subsystems.*;
 import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.commands.DriveToAlgae;
 import frc.robot.commands.TelopSwerve;
+import frc.robot.commands.drive.DriveTwoardsAprillTag;
 import frc.robot.commands.drive.PathFindToPose;
 
 // @Component
@@ -92,8 +93,8 @@ public class RobotContainer {
     zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
 
     // TODO test this whether it drives to an Algae
-    new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new DriveToAlgae(s_swerve, vision));
-
+    // new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new DriveToAlgae(s_swerve, vision));
+    //new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
     /* Operator Controls */
       /* Automation */
         // new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).
@@ -112,11 +113,11 @@ public class RobotContainer {
 //        .onTrue(new DriveToPose(s_swerve, bestTargetSupplier, null, 0));
 
     // alternative option using PathPlanner - only if target is far enough
-    new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)
-    //     //.and(() -> {
-    //     //  return bestTargetSupplier.get().getTranslation().getDistance(s_swerve.getPose().getTranslation()) > 2.0;
-    //     //})
-         .onTrue(new PathFindToPose(s_swerve, bestTargetSupplier));
+    // new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)
+    // //     //.and(() -> {
+    // //     //  return bestTargetSupplier.get().getTranslation().getDistance(s_swerve.getPose().getTranslation()) > 2.0;
+    // //     //})
+    //      .onTrue(new PathFindToPose(s_swerve, bestTargetSupplier));
 
          System.out.println("Ended configureBindings()");
     }
