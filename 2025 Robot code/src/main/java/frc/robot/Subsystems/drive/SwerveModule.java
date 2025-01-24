@@ -4,18 +4,29 @@
 
 package frc.robot.Subsystems.drive;
 
+import java.util.function.Supplier;
+
+import com.revrobotics.REVLibError;
 // import com.revrobotics.spark.SparkSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
@@ -27,126 +38,187 @@ import frc.robot.Constants;
 
 public class SwerveModule extends Command {
 
-  
+  //TODO verify these values
+  public static final double driveKs = 0.0;
+  public static final double driveKv = 0.1;  
+  public static final double driveMotorReduction =
+      (45.0 * 22.0) / (14.0 * 15.0); // MAXSwerve with 14 pinion teeth and 22 spur teeth
+  // Drive encoder configuration
+  public static final double driveEncoderPositionFactor =
+      2 * Math.PI / driveMotorReduction; // Rotor Rotations -> Wheel Radians
+  public static final double driveEncoderVelocityFactor =
+      (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Sec
+  // Drive PID configuration
+  public static final double driveKp = 0.0;
+  public static final double driveKd = 0.0;
+  public static final double odometryFrequency = 100.0; // Hz
+  // Turn PID configuration
+  public static final double turnKp = 2.0;
+  public static final double turnKd = 0.0;
+  public static final double turnEncoderPositionFactor = 2 * Math.PI; // Rotations -> Radians
+  public static final double turnEncoderVelocityFactor = (2 * Math.PI) / 60.0; // RPM -> Rad/Sec
+  public static final double turnPIDMinInput = 0; // Radians
+  public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
+
+  private boolean sparkStickyFault = false;
 
   private final SparkMax m_driveMotor;
   private final SparkMax m_turningMotor;
+  private final Rotation2d zeroRotation;
+
   // private final SparkSim driveMotorSim;
 
+  // Closed loop controllers
+  private final SparkClosedLoopController driveController;
+  private final SparkClosedLoopController turnController;
 
   private final RelativeEncoder m_driveEncoder;
   private final AnalogInput m_turningEncoder;
 
-  private double ahhhhhhhhhhh = 0.0;
-  private int iii = 1;
-
   private double encoderOffset = 0;
   
   private int moduleNumber = 0;
-  private final RelativeEncoder m_turningEncoderREV;
-
-  // Gains are for example purposes only - must be determined for your own robot!
-  private final ProfiledPIDController m_drivePIDController = new ProfiledPIDController(
-    .0001, 
-    0.0,
-    0,
-    new TrapezoidProfile.Constraints(15.1,18.8)
-    );
-
-  // Gains are for example purposes only - must be determined for your own robot!
-  private final ProfiledPIDController m_turningPIDController =
-      new ProfiledPIDController(
-          16.7 ,//16.7
-          0,
-          0,
-          new TrapezoidProfile.Constraints(
-              Constants.SwerveConstants.kModuleMaxAngularVelocity, Constants.SwerveConstants.kModuleMaxAngularAcceleration));
-
-  // Gains are for example purposes only - must be determined for your own robot!
-  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 1.5); // this was 3, changed to 1.5 because it was driving too far
-  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
 
   /**
-   * Constructs a SwerveModule with a drive motor, turning motor and turning encoder.
+   * Constructs a SwerveModule with a drive motor, turning motor and turning
+   * encoder.
    *
-   * @param driveMotorChannel PWM output for the drive motor.
-   * @param turningMotorChannel PWM output for the turning motor.
+   * @param driveMotorChannel      PWM output for the drive motor.
+   * @param turningMotorChannel    PWM output for the turning motor.
    * @param turningEncoderChannelA DIO input for the turning encoder channel A
    */
   public SwerveModule(SwerveModuleConstants moduleConstants) {
-    SmartDashboard.putNumber("tueing", ahhhhhhhhhhh);
     m_driveMotor = new SparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
-    m_driveMotor.setInverted (true);
     // driveMotorSim = new SparkSim(m_driveMotor, DCMotor.getNEO(1));
     m_turningMotor = new SparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-    m_turningMotor.setInverted (true);
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = new AnalogInput(moduleConstants.cancoderID);
 
-    m_turningEncoderREV = m_turningMotor.getEncoder();
-
-    // Set the distance per pulse for the drive encoder. We can simply use the
-    // distance traveled for one rotation of the wheel divided by the encoder
-    // resolution.
-    /*m_driveEncoder.setPositionConversionFactor(driveAfterEncoderReduction);
-    m_driveEncoder.setVelocityConversionFactor(driveAfterEncoderReduction / 60.0);
-
-    m_turningEncoderREV.setPositionConversionFactor(turnAfterEncoderReduction);
-*/
-    // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
-    // This is the the angle through an entire rotation (2 * pi) divided by the
-    // encoder resolution.
-//    m_turningEncoder.setDistancePerRotation(-2 * Math.PI);
-
     moduleNumber = moduleConstants.cancoderID;
 
-    // Limit the PID Controller's input range between -pi and pi and set the input
-    // to be continuous.
-    m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+    // load the encoder offset
+    // encoderOffset = Preferences.getDouble("encoder" + moduleNumber,
+    // encoderOffset);
+    // hard coding the offset because its better?
+    switch (moduleNumber) {
+      case 0:
+        encoderOffset = -4.168;// 3.769512307;//3.201315307;
+        break;
+      case 1:
+        encoderOffset = -4.080; // 0.6210603266;// 6.9042456338;//5.333449307 + (Math.PI/2);
+        break;
+      case 2:
+        encoderOffset = -2.910; // 4.9206722876;//0.2082833072 - (Math.PI/2);
+        break;
+      case 3:
+        encoderOffset = -3.495; // 3.201315307;//3.769512307;
+        break;
+    }
+    zeroRotation = new Rotation2d(encoderOffset);
 
-        // load the encoder offset
-//    encoderOffset = Preferences.getDouble("encoder" + moduleNumber, encoderOffset);
-// hard coding the offset because its better?
-switch (moduleNumber) {
-  case 0: 
-  encoderOffset = -4.168;//3.769512307;//3.201315307;
-  break;
-  case 1: 
-  encoderOffset = -4.080; //0.6210603266;// 6.9042456338;//5.333449307 + (Math.PI/2);
-  break;
-  case 2: 
-  encoderOffset = -2.910; //4.9206722876;//0.2082833072 - (Math.PI/2);
-  break;
-  case 3: 
-  encoderOffset = -3.495; //3.201315307;//3.769512307;
-  break;
-}
+    configureDrive();
+    configureTurn();
+
+    driveController = m_driveMotor.getClosedLoopController();
+    turnController = m_turningMotor.getClosedLoopController();
+  }
+
+  private void configureDrive() {
+    // Configure drive motor
+    var driveConfig = new SparkMaxConfig();
+    driveConfig
+        .idleMode(IdleMode.kBrake)
+        .inverted(true)
+        .voltageCompensation(12.0);
+    driveConfig
+        .encoder
+        .positionConversionFactor(driveEncoderPositionFactor)
+        .velocityConversionFactor(driveEncoderVelocityFactor)
+        .uvwMeasurementPeriod(10)
+        .uvwAverageDepth(2);
+    driveConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pidf(
+            driveKp, 0.0,
+            driveKd, 0.0);
+    driveConfig
+        .signals
+        .primaryEncoderPositionAlwaysOn(true)
+        .primaryEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
+        .primaryEncoderVelocityAlwaysOn(true)
+        .primaryEncoderVelocityPeriodMs(20)
+        .appliedOutputPeriodMs(20)
+        .busVoltagePeriodMs(20)
+        .outputCurrentPeriodMs(20);
+    tryUntilOk(
+        m_driveMotor,
+        5,
+        () ->
+        m_driveMotor.configure(
+                driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+    tryUntilOk(m_driveMotor, 5, () -> m_driveEncoder.setPosition(0.0));
+  }
+
+  private void configureTurn() {
+    // Configure turn motor
+    var turnConfig = new SparkMaxConfig();
+    turnConfig
+        .inverted(true)
+        .idleMode(IdleMode.kBrake)
+        .voltageCompensation(12.0);
+    turnConfig
+        .absoluteEncoder
+        .positionConversionFactor(turnEncoderPositionFactor)
+        .velocityConversionFactor(turnEncoderVelocityFactor)
+        .averageDepth(2);
+    turnConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .positionWrappingEnabled(true)
+        .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
+        .pidf(turnKp, 0.0, turnKd, 0.0);
+    turnConfig
+        .signals
+        .absoluteEncoderPositionAlwaysOn(true)
+        .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
+        .absoluteEncoderVelocityAlwaysOn(true)
+        .absoluteEncoderVelocityPeriodMs(20)
+        .appliedOutputPeriodMs(20)
+        .busVoltagePeriodMs(20)
+        .outputCurrentPeriodMs(20);
+    tryUntilOk(
+        m_turningMotor,
+        5,
+        () ->
+        m_turningMotor.configure(
+                turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
   }
 
   // public SparkSim getDriveMotorSim() {
   //   return driveMotorSim;
   // }
 
-  private double encoderValue () {
-    var retVal =  m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
-    retVal = 2.0 * Math.PI * retVal;    // get % of circle encoder is reading
-    //SmartDashboard.putNumber("module " + moduleNumber, retVal);
-    if(RobotState.isTest()){
-SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
+  private double encoderValue() {
+    var retVal = m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
+    retVal = 2.0 * Math.PI * retVal; // get % of circle encoder is reading
+    // SmartDashboard.putNumber("module " + moduleNumber, retVal);
+    if (RobotState.isTest()) {
+      SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
 
-    
- SmartDashboard.putNumber("encoder " + moduleNumber, (retVal * 1000) / 1000.0);
- SmartDashboard.putNumber("encoder degrees " + moduleNumber, (retVal *(180/Math.PI) * 1000) / 1000.0);
+      SmartDashboard.putNumber("encoder " + moduleNumber, (retVal * 1000) / 1000.0);
+      SmartDashboard.putNumber("encoder degrees " + moduleNumber, (retVal * (180 / Math.PI) * 1000) / 1000.0);
     }
-    retVal = (retVal + encoderOffset) % (2.0 * Math.PI);    // apply offset for this encoder and map it back onto [0, 2pi]
-      // might need this so we're in the same range as the pid controller is expecting.
-//    retVal = retVal - Math.PI;
+    retVal = (retVal + encoderOffset) % (2.0 * Math.PI); // apply offset for this encoder and map it back onto [0, 2pi]
+    // might need this so we're in the same range as the pid controller is
+    // expecting.
+    // retVal = retVal - Math.PI;
     if (RobotState.isTest()) {
       SmartDashboard.putNumber("encoder adjusted " + moduleNumber, retVal);
     }
     return (retVal);
-}
+  }
 
   public void resetEncoder(){
     m_driveMotor.getEncoder().setPosition(0.0);
@@ -184,53 +256,44 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
    *
    * @param desiredState Desired state with speed and angle.
    */
-  public void setDesiredState(SwerveModuleState desiredState) {
+  public void setDesiredState(SwerveModuleState state) {
     // Optimize the reference state to avoid spinning further than 90 degrees
-    SwerveModuleState state =
-        SwerveModuleState.optimize(desiredState, new Rotation2d(encoderValue()));
+    var currentAngle = new Rotation2d(encoderValue());
+    state.optimize(currentAngle);
+    state.cosineScale(currentAngle);
 
-    // Calculate the drive output from the drive PID controller.
+    // Apply setpoints
+    setDriveVelocity(state.speedMetersPerSecond / Constants.ChassisDefaultConfigs.DEFAULT_WHEEL_RADIUS_METERS);
+    setTurnPosition(state.angle);
+  }
 
-      /* this bit from the example uses driveencoder.getrate() - Get the current rate of the 
-       * encoder. Units are distance per second as scaled by the value from setDistancePerPulse().
-       * rev encoder doesn't have this value only 
-       * .getVelocity - Get the velocity of the motor. This returns the native units of 'rotations per second'
-       *  by default, and can be changed by a scale factor using setVelocityConversionFactor().
-       */
+  private void setDriveVelocity(double velocityRadPerSec) {
+    double ffVolts = driveKs * Math.signum(velocityRadPerSec) + driveKv * velocityRadPerSec;
+    driveController.setReference(
+        velocityRadPerSec,
+        ControlType.kVelocity,
+        ClosedLoopSlot.kSlot0,
+        ffVolts,
+        ArbFFUnits.kVoltage);
+  }
 
-    final 
-    double driveOutput =
-        m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
-
-    final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
-    // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput =
-        m_turningPIDController.calculate(encoderValue(), state.angle.getRadians());
-// SmartDashboard.putNumber("pid " + moduleNumber, turnOutput);
- 
-    SmartDashboard.putNumber("Setpoint velocity", m_turningPIDController.getSetpoint().velocity);
-    final double turnFeedforward =
-        m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
-    SmartDashboard.putNumber("turnFeedforward",turnFeedforward);
-    if(RobotState.isAutonomous()) {
-      m_driveMotor.setVoltage((driveFeedforward)/2);
-      System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
-      m_turningMotor.setVoltage(turnOutput + turnFeedforward);
-    } else if (RobotState.isTeleop()) {
-      m_driveMotor.set(((driveOutput + driveFeedforward) /2.1) /2);
-      m_turningMotor.setVoltage(turnOutput + turnFeedforward);
-    }
-    
-    
-    SmartDashboard.putNumber("turnOutput",turnOutput);
-     SmartDashboard.putNumber("Drive", ((driveOutput + driveFeedforward) /2.1) /2);
-    SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));
-    if(RobotState.isTest()) {
-     
-      SmartDashboard.putNumber("Turning stuff", turnOutput + turnFeedforward);
-      SmartDashboard.putNumber("target " + moduleNumber, state.angle.getRadians());
-    }
-    
+  private void setTurnPosition(Rotation2d rotation) {
+    double setpoint =
+        MathUtil.inputModulus(
+            rotation.plus(zeroRotation).getRadians(), 0, 2.0 * Math.PI);
+    turnController.setReference(setpoint, ControlType.kPosition);
   }
   
+  /** Attempts to run the command until no error is produced. */
+  private void tryUntilOk(SparkBase spark, int maxAttempts, Supplier<REVLibError> command) {
+    for (int i = 0; i < maxAttempts; i++) {
+      var error = command.get();
+      if (error == REVLibError.kOk) {
+        break;
+      } else {
+        sparkStickyFault = true;
+      }
+    }
+  }
+
 }
