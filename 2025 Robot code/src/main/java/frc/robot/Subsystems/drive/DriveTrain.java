@@ -15,6 +15,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.PathPlannerLogging;
 // import com.pathplanner.lib.config.PIDConstants;
 // import com.pathplanner.lib.config.RobotConfig;
 import com.studica.frc.AHRS;
@@ -30,6 +32,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -40,6 +43,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.LocalADStarAK;
 
 
 
@@ -168,7 +172,16 @@ private double rot_cur;
             },
             this // Reference to this subsystem to set requirements
     );
-
+    Pathfinding.setPathfinder(new LocalADStarAK());
+    PathPlannerLogging.setLogActivePathCallback(
+        (activePath) -> {
+          Logger.recordOutput(
+              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (targetPose) -> {
+          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
   }
   
     public void ResetDrives () {
@@ -194,6 +207,8 @@ private double rot_cur;
      */
     
     public void driveRobotRelative(ChassisSpeeds chassisSpeedsIn) {
+      ChassisSpeeds.discretize(chassisSpeedsIn, 0.02);
+      Logger.recordOutput("SwerveChassisSpeeds/Setpoints", chassisSpeedsIn);
       drive(chassisSpeedsIn.vxMetersPerSecond, chassisSpeedsIn.vyMetersPerSecond, chassisSpeedsIn.omegaRadiansPerSecond, false);
     }
 
@@ -205,12 +220,17 @@ private double rot_cur;
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, xSpeed, rot, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
+
+    // Log unoptimized setpoints
+    Logger.recordOutput("SwerveStates/Setpoints", swerveModuleStates);
+
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
 
-    Logger.recordOutput("SwerveStates", swerveModuleStates);
+    // Log optimized setpoints (runSetpoint mutates each state)
+    Logger.recordOutput("SwerveStates/SetpointsOptimized", swerveModuleStates);
 
     //if(RobotState.isTest()) {
       SmartDashboard.putString("gyro", m_gyro.getRotation2d().toString());
@@ -292,6 +312,12 @@ private double rot_cur;
       SmartDashboard.putNumber("Gyro roll", m_gyro.getRoll());
       SmartDashboard.putNumber("Gyro angle", m_gyro.getAngle());
       
+      // Log empty setpoint states when disabled
+      if (DriverStation.isDisabled()) {
+        Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
+        Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
+      }
+
       /*super.simulationPeriodic();
 
       // this is probably not the right speed calculation.. need to figure out where to get the speed
