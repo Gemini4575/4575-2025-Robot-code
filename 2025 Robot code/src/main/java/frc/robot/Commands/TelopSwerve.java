@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -73,13 +74,15 @@ public class TelopSwerve extends Command {
 
 
         /* Drive */
-        s_Swerve.drive(
-           strafeVal,
-           translationVal,
-           rotationVal,
-           true
-        );
-        SmartDashboard.putString("swerve mode", mode);
+        if (!RobotState.isAutonomous()) {
+            s_Swerve.drive(
+            strafeVal,
+            translationVal,
+            rotationVal,
+            true
+            );
+            SmartDashboard.putString("swerve mode", mode);
+        }
     }
 
     @Override

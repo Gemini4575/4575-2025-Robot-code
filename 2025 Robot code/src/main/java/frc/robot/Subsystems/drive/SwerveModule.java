@@ -56,7 +56,7 @@ public class SwerveModule extends Command {
   // Gains are for example purposes only - must be determined for your own robot!
   private final ProfiledPIDController m_turningPIDController =
       new ProfiledPIDController(
-          16.7 ,//16.7
+          16.5 ,//16.7 -- updated to 16.5
           0,
           0,
           new TrapezoidProfile.Constraints(
@@ -231,6 +231,15 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
       SmartDashboard.putNumber("target " + moduleNumber, state.angle.getRadians());
     }
     
+  }
+
+  public void setStateDirectly(SwerveModuleState desiredState) {
+    // Optimize the reference state to avoid spinning further than 90 degrees
+    SwerveModuleState state =
+        SwerveModuleState.optimize(desiredState, new Rotation2d(encoderValue()));
+    m_driveMotor.setVoltage(state.speedMetersPerSecond);
+    m_turningMotor.setVoltage(state.angle.getRadians());
+    SmartDashboard.putBoolean("Driving auto", true);
   }
   
 }

@@ -50,7 +50,7 @@ public class DriveTwoardsAprillTag extends Command{
             chassisSpeeds.vyMetersPerSecond = 0.3;
         }
         if(Math.abs(vision.getTargets().getYaw()) > 10) {
-            chassisSpeeds.vxMetersPerSecond = (vision.getTargets().getYaw() - 1) / 100;
+            chassisSpeeds.vxMetersPerSecond = -((vision.getTargets().getYaw() - 1) / 100);
         } else {
             chassisSpeeds.vxMetersPerSecond = 0;
         }
