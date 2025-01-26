@@ -280,4 +280,8 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
     m_driveEncoder.setPosition(0.0);
   }
   
+  public double getEncoderValue() {
+    return m_driveMotor.getEncoder().getPosition();
+  }
+  
 }

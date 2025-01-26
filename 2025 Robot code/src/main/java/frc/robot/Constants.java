@@ -593,6 +593,8 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
         }
+
+        public static final double one_meter = rotationsToInch.calculateTicks(39.37, 6.75);
     }
 
     public final static class JoystickConstants{
