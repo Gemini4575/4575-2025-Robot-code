@@ -242,4 +242,8 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
     SmartDashboard.putBoolean("Driving auto", true);
   }
   
+  public double getEncoderValue() {
+    return m_driveMotor.getEncoder().getPosition();
+  }
+  
 }

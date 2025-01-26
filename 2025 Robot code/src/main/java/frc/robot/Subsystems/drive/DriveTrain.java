@@ -40,12 +40,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.SwerveConstants;
 
 
 
 /** Represents a swerve drive style drivetrain. */
 // @Component
 public class DriveTrain extends SubsystemBase {
+  private boolean first;
   Field2d field = new Field2d();
   int ii = 0;
   public static final double kMaxSpeed = 12; // was 4.47 meters per second
@@ -74,6 +76,13 @@ private final SwerveModule m_frontRight = new SwerveModule(Constants.SwerveConst
 //  private final Gyro_EPRA m_gyro = new Gyro_EPRA();
 private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
+private Double[] encoderDoubles = new Double[4];
+private Double[] curencoderDoubles = new Double[4];
+double encoder = 0.0;
+double target = 0.0;
+double curencoder = 0.0;
+
+
 private double xSpeed_cur;
 private double ySpeed_cur;
 private double rot_cur;
@@ -101,28 +110,6 @@ private double rot_cur;
   // private MetricsProvider metricsProvider;
 
   public DriveTrain() {
-    // SmartDashboard.putNumber("P rotate", Protate);
-    // SmartDashboard.putNumber("D rotate", Drotate);
-    // SmartDashboard.putNumber("I rotate", Irotate);
-
-    // SmartDashboard.putNumber("P translate", Ptranslate);
-    // SmartDashboard.putNumber("D translate", Dtranslate);
-    // SmartDashboard.putNumber("I translate", Itranslate);
-/*
-    simDrive = new DifferentialDrivetrainSim(
-                DCMotor.getNEO(2), // 2 NEO motors on each side of the drivetrain.
-                7.29, // 7.29:1 gearing reduction.
-                7.5, // MOI of 7.5 kg m^2 (from CAD model).
-                60.0, // The mass of the robot is 60 kg.
-                Units.inchesToMeters(3), // The robot uses 3" radius wheels.
-                0.7112, // The track width is 0.7112 meters.
-                // The standard deviations for measurement noise:
-                // x and y: 0.001 m
-                // heading: 0.001 rad
-                // l and r velocity: 0.1 m/s
-                // l and r position: 0.005 m
-                VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
-*/
     m_gyro.reset();
     
     RobotConfig config;
@@ -290,8 +277,29 @@ private double rot_cur;
         );
     }
 
+    private void DriveMeters(double meters) {
+      if(first) {
+        first = false;
+        encoderDoubles[0] = m_frontLeft.getEncoderValue();
+        encoderDoubles[1] = m_frontRight.getEncoderValue();
+        encoderDoubles[2] = m_backLeft.getEncoderValue();
+        encoderDoubles[3] = m_backRight.getEncoderValue();
+      }
+      encoder = java.util.Arrays.stream(encoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
+      target = (encoder + (SwerveConstants.one_meter * meters)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
+      curencoder = java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
+      double remainingDistance = target - curencoder;
+      if (remainingDistance <= 0) {
+        stop();
+      } else {
+        double speed = Math.max(0.1, Math.min(1, remainingDistance / (SwerveConstants.one_meter * meters)));
+        drive(speed, 0, 0, false);
+      }
+    }
+
   @Override
   public void periodic() {
+    // This method will be called once per scheduler run
       poseEstimator.update(m_gyro.getRotation2d(), getModulePositions());
       field.setRobotPose(poseEstimator.getEstimatedPosition());
     
@@ -301,6 +309,11 @@ private double rot_cur;
       SmartDashboard.putNumber("Gyro pitch", m_gyro.getPitch());
       SmartDashboard.putNumber("Gyro roll", m_gyro.getRoll());
       SmartDashboard.putNumber("Gyro angle", m_gyro.getAngle());
+
+      curencoderDoubles[0] = m_frontLeft.getEncoderValue();
+      curencoderDoubles[1] = m_frontRight.getEncoderValue();
+      curencoderDoubles[2] = m_backLeft.getEncoderValue();
+      curencoderDoubles[3] = m_backRight.getEncoderValue();
       
       /*super.simulationPeriodic();
 
