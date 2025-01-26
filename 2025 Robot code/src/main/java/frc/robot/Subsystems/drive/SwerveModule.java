@@ -7,6 +7,9 @@ package frc.robot.Subsystems.drive;
 // import com.revrobotics.spark.SparkSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -24,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
+import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModule extends Command {
 
@@ -122,6 +126,9 @@ switch (moduleNumber) {
   encoderOffset = -3.495; //3.201315307;//3.769512307;
   break;
 }
+
+    configAngleMotor();
+    configDriveMotor();
   }
 
   // public SparkSim getDriveMotorSim() {
@@ -129,8 +136,7 @@ switch (moduleNumber) {
   // }
 
   private double encoderValue () {
-    var retVal =  m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
-    retVal = 2.0 * Math.PI * retVal;    // get % of circle encoder is reading
+    var retVal = getRawAngle();
     //SmartDashboard.putNumber("module " + moduleNumber, retVal);
     if(RobotState.isTest()){
 SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
@@ -147,6 +153,12 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
     }
     return (retVal);
 }
+
+  private double getRawAngle() {
+    var retVal =  m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
+    retVal = 2.0 * Math.PI * retVal;    // get % of circle encoder is reading
+    return retVal;
+  }
 
   public void resetEncoder(){
     m_driveMotor.getEncoder().setPosition(0.0);
@@ -213,7 +225,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
         m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
     SmartDashboard.putNumber("turnFeedforward",turnFeedforward);
     if(RobotState.isAutonomous()) {
-      m_driveMotor.setVoltage((driveFeedforward)/2);
+      m_driveMotor.set(((driveOutput + driveFeedforward) /2.1) /2);
       System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
       m_turningMotor.setVoltage(turnOutput + turnFeedforward);
     } else if (RobotState.isTeleop()) {
@@ -235,11 +247,37 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
 
   public void setStateDirectly(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
+    desiredState.angle = desiredState.angle.minus(Rotation2d.fromRadians(encoderOffset));
     SwerveModuleState state =
-        SwerveModuleState.optimize(desiredState, new Rotation2d(encoderValue()));
-    m_driveMotor.setVoltage(state.speedMetersPerSecond);
-    m_turningMotor.setVoltage(state.angle.getRadians());
-    SmartDashboard.putBoolean("Driving auto", true);
+        SwerveModuleState.optimize(desiredState, new Rotation2d(getRawAngle()));
+    m_driveMotor.set(state.speedMetersPerSecond);
+    m_turningMotor.setVoltage(toPositiveAngle(state.angle.getRadians()) * RobotController.getVoltage5V() / (2.0 * Math.PI));
+        //m_driveMotor.getClosedLoopController().setReference(state.speedMetersPerSecond, SparkMax.ControlType.kVelocity);
+        //m_turningMotor.getClosedLoopController().setReference(state.angle.getRadians(), SparkMax.ControlType.kPosition);
+        SmartDashboard.putBoolean("Driving auto", true);
+      }
+    
+    private double toPositiveAngle(double radians) {
+        return radians < 0 ? (radians + 2.0 * Math.PI) : radians;
+      }
+    
+    private void configAngleMotor() {
+    var turnConfig = new SparkMaxConfig();
+    turnConfig.inverted(true);
+    turnConfig.closedLoop.p(16.5);
+    turnConfig.closedLoop.outputRange(-Math.PI, Math.PI);
+    m_turningMotor.configure(
+                turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
+
+  private void configDriveMotor() {
+    var driveConfig = new SparkMaxConfig();
+    driveConfig.inverted(true);
+    driveConfig.encoder.positionConversionFactor(Constants.SwerveConstants.driveConversionFactor);
+    driveConfig.closedLoop.p(1);
+    m_driveMotor.configure(
+      driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_driveEncoder.setPosition(0.0);
   }
   
 }

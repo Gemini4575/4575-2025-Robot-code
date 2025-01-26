@@ -11,6 +11,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -550,6 +552,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             //public static final double driveAfterEncoderReduction = (4.0 / 39.37) * Math.PI * (1/6.75);
 //            public static final double driveAfterEncoderReduction = 0.0788114854;   // FWF this is the above calc * 1.6667 to see if the auto distance changes
 
+            public static final double driveConversionFactor = (Math.PI  + 2.0 * kWheelRadius)/6.75;
             public static final double turnAfterEncoderReduction = -1 * (7/150);
         
         public static final class Mod0 { 

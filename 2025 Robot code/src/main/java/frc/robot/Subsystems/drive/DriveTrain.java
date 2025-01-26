@@ -6,6 +6,7 @@ package frc.robot.Subsystems.drive;
 
 import java.io.IOException;
 
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
 // import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -148,10 +150,10 @@ private double rot_cur;
     AutoBuilder.configure(
             this::getPose, // Robot pose supplier
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, feedforwards) -> driveDirect(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(0.0001, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(1, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(16.5, 0.0, 0.0) // Rotation PID constants
             ),
             config, // The robot configuration
@@ -197,9 +199,10 @@ private double rot_cur;
       drive(chassisSpeedsIn.vxMetersPerSecond, chassisSpeedsIn.vyMetersPerSecond, chassisSpeedsIn.omegaRadiansPerSecond, false);
     }
 
-    public void driveDirect(ChassisSpeeds chassisSpeedsIn) {
+    private void driveDirect(ChassisSpeeds chassisSpeedsIn) {
+      var speeds = ChassisSpeeds.discretize(chassisSpeedsIn, LoggedRobot.defaultPeriodSecs);
       var swerveModuleStates =
-        m_kinematics.toSwerveModuleStates(chassisSpeedsIn);
+        m_kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
         m_frontLeft.setStateDirectly(swerveModuleStates[0]);
         m_frontRight.setStateDirectly(swerveModuleStates[1]);
@@ -242,6 +245,19 @@ private double rot_cur;
 
   public ChassisSpeeds getSpeed() {
     return new ChassisSpeeds( xSpeed_cur, ySpeed_cur, rot_cur);
+  }
+
+  private ChassisSpeeds getRobotRelativeSpeeds(){
+    return m_kinematics.toChassisSpeeds(getModuleStates());
+  }
+
+  private SwerveModuleState[] getModuleStates(){
+      return new SwerveModuleState[]{
+          m_frontLeft.getState(),
+          m_frontRight.getState(),
+          m_backLeft.getState(),
+          m_backRight.getState()
+      };
   }
 
   /** Updates the field relative position of the robot. */

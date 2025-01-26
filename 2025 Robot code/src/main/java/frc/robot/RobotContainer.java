@@ -9,6 +9,7 @@ import static frc.robot.Constants.Vision.kTagLayout;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
@@ -47,17 +48,45 @@ public class RobotContainer {
   /* Pathplanner stuff */
   private final SendableChooser<Command> autoChoosers;
 
+  private Field2d autoField;
+
   public RobotContainer() {
     System.out.println("Starting RobotContainer()");
     configureBindings();
       
     autoChoosers = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChoosers);
-    SmartDashboard.putData("Vision Pose Estimate", visionPoseEstimate);
-    System.out.println("Ended RobotContainer()");
-  }
 
-  public void teleopInit() {
+    configureLogging();
+        
+        SmartDashboard.putData("Auto Chooser", autoChoosers);
+        SmartDashboard.putData("Vision Pose Estimate", visionPoseEstimate);
+        System.out.println("Ended RobotContainer()");
+      }
+    
+      private void configureLogging() {
+        autoField = new Field2d();
+        SmartDashboard.putData("AutoLog", autoField);
+
+        // Logging callback for current robot pose
+        PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+            // Do whatever you want with the pose here
+            autoField.setRobotPose(pose);
+        });
+
+        // Logging callback for target robot pose
+        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+            // Do whatever you want with the pose here
+            autoField.getObject("target pose").setPose(pose);
+        });
+
+        // Logging callback for the active path, this is sent as a list of poses
+        PathPlannerLogging.setLogActivePathCallback((poses) -> {
+            // Do whatever you want with the poses here
+            autoField.getObject("path").setPoses(poses);
+        });   
+      }
+    
+      public void teleopInit() {
     s_swerve.setDefaultCommand(
         new TelopSwerve(
           s_swerve,
