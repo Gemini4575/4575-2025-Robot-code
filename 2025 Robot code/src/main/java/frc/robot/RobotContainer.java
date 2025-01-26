@@ -91,8 +91,9 @@ public class RobotContainer {
         new TelopSwerve(
           s_swerve,
           () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_Y_AXIS),
-          () -> -driver.getRawAxis(Constants.JoystickConstants.LEFT_X_AXIS), 
-          () -> -driver.getTwist()
+          () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_X_AXIS), 
+          () -> -driver.getTwist(),
+          () -> operator.getRawButton(JoystickConstants.START_BUTTON)
           )
       );
   }
@@ -123,7 +124,7 @@ public class RobotContainer {
 
     // TODO test this whether it drives to an Algae
     // new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new DriveToAlgae(s_swerve, vision));
-    //new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
+    new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
     /* Operator Controls */
       /* Automation */
         // new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).

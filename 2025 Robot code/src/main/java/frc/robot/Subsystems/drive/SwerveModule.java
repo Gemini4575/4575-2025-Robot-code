@@ -229,7 +229,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
       System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
       m_turningMotor.setVoltage(turnOutput + turnFeedforward);
     } else if (RobotState.isTeleop()) {
-      m_driveMotor.set(((driveOutput + driveFeedforward) /2.1) *0.25);
+      m_driveMotor.set(((driveOutput + driveFeedforward) /2.1) );
       m_turningMotor.setVoltage(turnOutput + turnFeedforward);
     }
     

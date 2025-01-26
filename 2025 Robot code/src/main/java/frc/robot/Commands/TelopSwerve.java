@@ -1,11 +1,14 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.Subsystems.drive.DriveTrain;
 
@@ -15,7 +18,9 @@ public class TelopSwerve extends Command {
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
+    private BooleanSupplier slowMode;
     private boolean isFinished;
+    private double slowModeFactor = 1.0;
     double i = 0.0;
     /**
      * This is the command that dirves your swerve robot. When setting this up in robot container
@@ -29,49 +34,33 @@ public class TelopSwerve extends Command {
      * @param rotationSup the axies that controlls the angle of your robot
      */
     public TelopSwerve(DriveTrain s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, 
-    DoubleSupplier rotationSup) {
+    DoubleSupplier rotationSup, BooleanSupplier slowMode) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
         isFinished = false;
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
+        this.slowMode = slowMode;
     }
 
     @Override
     public void execute() {
         isFinished = false;
-        String mode = "normal";
-        // double teleOpMaxSpeed = Constants.Swerve.maxSpeed;
-        // double teleOpMaxAngularVelocity = Constants.Swerve.maxAngularVelocity;
-
-        /*speedMulti = teleOpMaxSpeed * .90;
-        rotMulti = teleOpMaxAngularVelocity * .90;
-
-        if (slowMode.getAsBoolean()) {
-            speedMulti = slowSpeed * teleOpMaxSpeed;
-            rotMulti = slowRotation * teleOpMaxAngularVelocity;
-            mode="slow";
+        if(slowMode.getAsBoolean()) {
+            if(DriverStation.getMatchTime() >= 120.0) {
+                slowModeFactor = 0.25;
+            } else {
+                slowModeFactor = 0.5;
+            }
+        } else {
+            slowModeFactor = 1.0;
         }
-
-        if (middleMode.getAsBoolean()) {
-            speedMulti = middleSpeed * teleOpMaxSpeed;
-            rotMulti = middleRotation * teleOpMaxAngularVelocity;
-            mode="middle";
-        }
-*/
 
         /* Get Values, Deadband*/
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
-
-        // if(autoTargeting.getAsBoolean()) {
-        //     rotationVal = targetingUtil.calculateRotation();
-        //     rotMulti = teleOpMaxAngularVelocity;
-        //     mode="auto";
-        // }
-
+        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) * slowModeFactor;
+        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) * slowModeFactor;
+        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband) * slowModeFactor;
 
         /* Drive */
         if (!RobotState.isAutonomous()) {
@@ -81,7 +70,6 @@ public class TelopSwerve extends Command {
             rotationVal,
             true
             );
-            SmartDashboard.putString("swerve mode", mode);
         }
     }
 

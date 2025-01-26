@@ -20,7 +20,7 @@ import com.pathplanner.lib.path.PathConstraints;
 // import com.pathplanner.lib.config.RobotConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-
+import frc.lib.util.RotationsToInch;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.RotationsToInch;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 
@@ -49,6 +50,7 @@ import frc.robot.Constants.SwerveConstants;
 /** Represents a swerve drive style drivetrain. */
 // @Component
 public class DriveTrain extends SubsystemBase {
+  private RotationsToInch rotationsToInch = new RotationsToInch();
   private boolean first;
   Field2d field = new Field2d();
   int ii = 0;
@@ -80,7 +82,7 @@ private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
 private Double[] encoderDoubles = new Double[4];
 private Double[] curencoderDoubles = new Double[4];
-double encoder = 0.0;
+double startencoder = 0.0;
 double target = 0.0;
 double curencoder = 0.0;
 
@@ -231,7 +233,7 @@ private double rot_cur;
   }
 
   public ChassisSpeeds getSpeed() {
-    return new ChassisSpeeds( xSpeed_cur, ySpeed_cur, rot_cur);
+    return new ChassisSpeeds(xSpeed_cur, ySpeed_cur, rot_cur);
   }
 
   private ChassisSpeeds getRobotRelativeSpeeds(){
@@ -292,17 +294,17 @@ private double rot_cur;
           Units.degreesToRadians(720.000)
         );
     }
-
-    private void DriveMeters(double meters) {
+    
+    public void DriveMeters(double meters) {
       if(first) {
         first = false;
         encoderDoubles[0] = m_frontLeft.getEncoderValue();
         encoderDoubles[1] = m_frontRight.getEncoderValue();
         encoderDoubles[2] = m_backLeft.getEncoderValue();
         encoderDoubles[3] = m_backRight.getEncoderValue();
+        startencoder = java.util.Arrays.stream(encoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       }
-      encoder = java.util.Arrays.stream(encoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
-      target = (encoder + (SwerveConstants.one_meter * meters)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
+      target = (startencoder + rotationsToInch.calculateTicks(SwerveConstants.one_meter * meters, 1)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       curencoder = java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       double remainingDistance = target - curencoder;
       if (remainingDistance <= 0) {

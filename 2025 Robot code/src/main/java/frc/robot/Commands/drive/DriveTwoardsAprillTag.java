@@ -14,24 +14,22 @@ import frc.robot.Constants;
 import frc.robot.Subsystems.Vision;
 import frc.robot.Subsystems.drive.DriveTrain;
 
-public class DriveTwoardsAprillTag extends Command{
+public class DriveTwoardsAprillTag extends Command {
     private boolean firstTime = false;
-    private ProfiledPIDController drivePidController = 
-    new ProfiledPIDController(
-          0,
-          0,
-          0,
-          new TrapezoidProfile.Constraints(
-              4, 3.5));
-    private ProfiledPIDController strafePidController = 
-    new ProfiledPIDController(
-        0,
-        0, 
-        0,
-        new TrapezoidProfile.Constraints(
-            4, 3.5));
+    private ProfiledPIDController drivePidController = new ProfiledPIDController(
+            0,
+            0,
+            0,
+            new TrapezoidProfile.Constraints(
+                    4, 3.5));
+    private ProfiledPIDController strafePidController = new ProfiledPIDController(
+            0,
+            0,
+            0,
+            new TrapezoidProfile.Constraints(
+                    4, 3.5));
 
-    private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,0);
+    private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, 0, 0);
     Vision vision;
     DriveTrain driveTrain;
 
@@ -43,16 +41,17 @@ public class DriveTwoardsAprillTag extends Command{
 
     @Override
     public void execute() {
-        if(vision.getTargets().area > 10.64) {
-            chassisSpeeds.vyMetersPerSecond = 0; 
-            this.end(false); 
-        }else {
-            chassisSpeeds.vyMetersPerSecond = 0.3;
-        }
-        if(Math.abs(vision.getTargets().getYaw()) > 10) {
-            chassisSpeeds.vxMetersPerSecond = -((vision.getTargets().getYaw() - 1) / 100);
-        } else {
+        if (vision.getTargets().area > 5 || vision.getTargets() == null) {
             chassisSpeeds.vxMetersPerSecond = 0;
+            chassisSpeeds.vyMetersPerSecond = 0;
+            this.end(false);
+        } else {
+            chassisSpeeds.vxMetersPerSecond = -0.05;
+        }
+        if (Math.abs(vision.getTargets().getYaw()) > 10) {
+            chassisSpeeds.vyMetersPerSecond = ((vision.getTargets().getYaw() - 1) / 1000);
+        } else {
+            chassisSpeeds.vyMetersPerSecond = 0;
         }
         chassisSpeeds.omegaRadiansPerSecond = 0;
         driveTrain.driveRobotRelative(chassisSpeeds);
