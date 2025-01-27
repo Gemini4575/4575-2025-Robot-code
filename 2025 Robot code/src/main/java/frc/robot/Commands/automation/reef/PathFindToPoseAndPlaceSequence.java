@@ -3,7 +3,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.Subsystems.ElevatorSubsystem;
+import frc.robot.Subsystems.NoraArmSubsystem;
 import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.commands.reef.IntakeCoral;
 import frc.robot.commands.reef.L1;
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public class PathFindToPoseAndPlaceSequence extends AutoAlignment {
     public PathFindToPoseAndPlaceSequence(
             DriveTrain driveSubsystem,
-            ElevatorSubsystem elevatorSubsystem,
+            NoraArmSubsystem elevatorSubsystem,
             frc.robot.Subsystems.VisionSubsystem vision,
             Supplier<Translation2d> robotPrepareToPlacePositionSupplier,
             Supplier<Translation2d> robotMidPrepareToPlacePositionSupplier,

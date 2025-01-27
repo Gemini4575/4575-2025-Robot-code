@@ -1,16 +1,16 @@
 package frc.robot.commands.reef;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.ElevatorSubsystem;
+import frc.robot.Subsystems.NoraArmSubsystem;
 import frc.robot.Subsystems.VisionSubsystem;
 
 public class IntakeCoral extends Command{
     
-    private ElevatorSubsystem elevator;
+    private NoraArmSubsystem elevator;
     private VisionSubsystem vision;
     
 
-    public IntakeCoral(ElevatorSubsystem subsystem, VisionSubsystem vision) {
+    public IntakeCoral(NoraArmSubsystem subsystem, VisionSubsystem vision) {
         elevator = subsystem;
         this.vision = vision;
         addRequirements(elevator, vision);

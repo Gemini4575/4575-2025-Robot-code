@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class NoraArmSubsystem extends SubsystemBase {
 
     SparkMax armMotor;
     Spark TopWheel;
@@ -25,7 +25,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             new TrapezoidProfile.Constraints(
                     Constants.ArmConstants.maxSpeed, Constants.ArmConstants.maxAcceleration));
 
-    public ElevatorSubsystem() {
+    public NoraArmSubsystem() {
         armMotor = new SparkMax(Constants.ArmConstants.ARM_MOTOR, MotorType.kBrushless);
         TopWheel = new Spark(Constants.ArmConstants.TOP_Wheel);
         BottomWheel = new Spark(Constants.ArmConstants.BOTTOM_Wheel);

@@ -234,203 +234,6 @@ public class Constants {
   }
 }
 
-    public static final class DriveConfigs {
-        public static final double DRIVE_TRANSLATIONAL_SENSITIVITY = 1;
-        public static final double DRIVE_ROTATIONAL_SENSITIVITY = 1;
-
-        public static final double nonUsageTimeResetWheels = 5;
-
-        public static final double deadBandWhenOtherAxisEmpty = 0.02;
-        public static final double deadBandWhenOtherAxisFull = 0.1;
-        public static final double linearSpeedInputExponent = 1.6;
-        public static final double rotationSpeedInputExponent = 2;
-
-        /** the amount of time that the chassis needs to accelerate to the maximum linear velocity */
-        public static final double linearAccelerationSmoothOutSeconds = 0.1;
-        /** the amount of time that the chassis needs to accelerate to the maximum angular velocity */
-        public static final double angularAccelerationSmoothOutSeconds = 0.1;
-
-        public static final double timeActivateRotationMaintenanceAfterNoRotationalInputSeconds = 0.3;
-    }
-
-    public static final class SwerveDriveChassisConfigs {
-        public enum SwerveDriveType {
-            REV,
-            CTRE_ON_RIO,
-            CTRE_ON_CANIVORE
-        }
-        public static final SwerveDriveType SWERVE_DRIVE_TYPE = SwerveDriveType.CTRE_ON_CANIVORE;
-
-        public static final String CHASSIS_CANBUS = "ChassisCanivore";
-
-        public static final int ODOMETRY_CACHE_CAPACITY = 10;
-        public static final double ODOMETRY_FREQUENCY = 250;
-        public static final double ODOMETRY_WAIT_TIMEOUT_SECONDS = 0.05;
-
-        public static final MaplePIDController.MaplePIDConfig chassisRotationalPIDConfig = new MaplePIDController.MaplePIDConfig(
-                Math.toRadians(360),
-                Math.toRadians(65),
-                0.02,
-                Math.toRadians(3),
-                0,
-                true,
-                0
-        );
-        public static final TrapezoidProfile.Constraints chassisRotationalConstraints = new TrapezoidProfile.Constraints(
-                Math.toRadians(360),
-                Math.toRadians(ChassisDefaultConfigs.DEFAULT_MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARE)
-        );
-
-        public static final MaplePIDController.MaplePIDConfig chassisTranslationPIDConfig = new MaplePIDController.MaplePIDConfig(
-                3,
-                1,
-                0.05,
-                0.05,
-                0.05,
-                false,
-                0
-        );
-
-        public static final MaplePIDController.MaplePIDConfig chassisTranslationPIDConfigPathFollowing = new MaplePIDController.MaplePIDConfig(
-                2,
-                1.2,
-                0,
-                0.03,
-                0,
-                false,
-                0
-        );
-    }
-
-    public static final class ChassisDefaultConfigs {
-        public static final int DEFAULT_GYRO_PORT = 0;
-        public static final double DEFAULT_GEAR_RATIO = 6.12;
-        public static final double DEFAULT_WHEEL_RADIUS_METERS = 0.051; // 2 inch
-        public static final double DEFAULT_HORIZONTAL_WHEELS_MARGIN_METERS = 0.53;
-        public static final double DEFAULT_VERTICAL_WHEELS_MARGIN_METERS = 0.53;
-        public static final double DEFAULT_MAX_VELOCITY_METERS_PER_SECOND = 4.172; // calculated from Choreo (Kraken x60 motor, 6.12 gear ratio, 55kg robot mass)
-        public static final double DEFAULT_MAX_ACCELERATION_METERS_PER_SQUARED_SECOND = 10.184; // calculated from Choreo (Kraken x60 motor, 6.12 gear ratio, 55kg robot mass)
-        public static final double DEFAULT_MAX_ANGULAR_VELOCITY_DEGREES_PER_SECOND = 540;
-        public static final double DEFAULT_MAX_ANGULAR_ACCELERATION_DEGREES_PER_SECOND_SQUARE = 540;
-    }
-
-    public static final class SwerveModuleConfigs {
-        public static final MaplePIDController.MaplePIDConfig steerHeadingCloseLoopConfig = new MaplePIDController.MaplePIDConfig(
-                0.8,
-                Math.toRadians(60),
-                0.02,
-                Math.toRadians(1.5),
-                0,
-                true,
-                0
-        );
-        public static final double STEERING_CURRENT_LIMIT = 20;
-        public static final double DRIVING_CURRENT_LIMIT = 40;
-        public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
-
-        public static final SimpleMotorFeedforward DRIVE_OPEN_LOOP = new SimpleMotorFeedforward(0.05, 2.5);
-    }
-
-    public static final class RobotPhysicsSimulationConfigs {
-        public static final int SIM_ITERATIONS_PER_ROBOT_PERIOD = 5;
-
-        /* Swerve Module Simulation */
-        public static final double DRIVE_MOTOR_FREE_FINAL_SPEED_RPM = 4800;
-        public static final DCMotor
-                DRIVE_MOTOR = DCMotor.getKrakenX60(1),
-                STEER_MOTOR = DCMotor.getFalcon500(1);
-        public static final double DRIVE_WHEEL_ROTTER_INERTIA = 0.012;
-        public static final double STEER_INERTIA = 0.015;
-        public static final double STEER_GEAR_RATIO = 150.0 / 7.0;
-
-        public static final double FLOOR_FRICTION_ACCELERATION_METERS_PER_SEC_SQ = 15;
-        public static final double MAX_ANGULAR_ACCELERATION_RAD_PER_SEC_SQ = Math.toRadians(1200);
-        public static final double TIME_CHASSIS_STOPS_ROTATING_NO_POWER_SEC = 0.3;
-        public static final double DEFAULT_ROBOT_MASS = 40;
-        public static final double DEFAULT_BUMPER_WIDTH_METERS = Units.inchesToMeters(34.5);
-        public static final double DEFAULT_BUMPER_LENGTH_METERS = Units.inchesToMeters(36);
-
-        /* https://en.wikipedia.org/wiki/Friction#Coefficient_of_friction */
-        public static final double ROBOT_BUMPER_COEFFICIENT_OF_FRICTION = 0.85;
-        /* https://en.wikipedia.org/wiki/Coefficient_of_restitution */
-        public static final double ROBOT_BUMPER_COEFFICIENT_OF_RESTITUTION = 0.05;
-
-        /* Gyro Sim */
-        public static final double GYRO_ANGULAR_ACCELERATION_THRESHOLD_SKIDDING_RAD_PER_SEC_SQ = 100;
-        public static final double SKIDDING_AMOUNT_AT_THRESHOLD_RAD = Math.toRadians(1.2);
-        /*
-        * https://store.ctr-electronics.com/pigeon-2/
-        * for a well-installed one with vibration reduction, only 0.4 degree
-        * but most teams just install it directly on the rigid chassis frame (including my team :D)
-        * so at least 1.2 degrees of drifting in 1 minutes for an average angular velocity of 60 degrees/second
-        * which is the average velocity during normal swerve-circular-offense
-        * */
-        public static final double NORMAL_GYRO_DRIFT_IN_1_MIN_Std_Dev_RAD = Math.toRadians(1.2);
-        public static final double AVERAGE_VELOCITY_RAD_PER_SEC_DURING_TEST = Math.toRadians(60);
-    }
-
-    public static final class VisionConfigs {
-        public static final AprilTagFieldLayout fieldLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
-        /* default standard error for vision observation, if only one apriltag observed */
-        public static final double
-                TRANSLATIONAL_STANDARD_ERROR_METERS_FOR_SINGLE_OBSERVATION = 0.6,
-                ROTATIONAL_STANDARD_ERROR_RADIANS_FOR_SINGLE_OBSERVATION = 0.5,
-
-                // only do odometry calibration if translational standard error if it is not greater than
-                TRANSLATIONAL_STANDARD_ERROR_THRESHOLD = 0.5,
-                // only do gyro calibration if rotational standard error is very, very small
-                ROTATIONAL_STANDARD_ERROR_THRESHOLD = Math.toRadians(5),
-
-                ODOMETRY_TRANSLATIONAL_STANDARD_ERROR_METERS = 0.02,
-                // we trust the IMU very much (recommend 0.1 for Pigeon2, 0.5 for NavX)
-                GYRO_ROTATIONAL_STANDARD_ERROR_RADIANS = Math.toRadians(0.1);
-    }
-
-    public static final class PitchConfigs {
-        public static final double GEAR_RATIO = 166.66;
-        public static final double PITCH_LOWEST_ROTATION_RAD = Math.toRadians(24);
-        public static final double PITCH_HIGHER_LIMIT_RAD = Math.toRadians(100);
-
-        public static final double PITCH_KS = 0.03;
-        public static final double PITCH_KG = 0.1;
-        public static final double PITCH_KV = 3.2;
-        public static final double PITCH_KA = 0.01;
-
-        public static final MaplePIDController.MaplePIDConfig PITCH_PID = new MaplePIDController.MaplePIDConfig(
-                7.5,
-                Math.toRadians(26),
-                0,
-                Math.toRadians(2),
-                0.05,
-                false,
-                0
-        );
-
-        public static final TrapezoidProfile.Constraints PITCH_PROFILE_CONSTRAIN = new TrapezoidProfile.Constraints(
-                Math.toRadians(360), Math.toRadians(720)
-        );
-    }
-
-    public static final class ShooterConfigs {
-        public static final double[] ks = new double[] {0.05, 0.05};
-        public static final double[] kv = new double[] {0.11613, 0.1145};
-        public static final double kv_sim = 0.17;
-        public static final double[] ka = new double[] {0.026625, 0.028551};
-
-        public static final TrapezoidProfile.Constraints SPEED_RPM_CONSTRAINS = new TrapezoidProfile.Constraints(
-                6000/0.5, 6000/0.3
-        );
-
-        public static final double TOLERANCE_RPM = 65;
-        public static final MaplePIDController.MaplePIDConfig FLYWHEEL_PID_CONFIG_REV_PER_SEC = new MaplePIDController.MaplePIDConfig(
-                7,
-                30,
-                0,
-                2,
-                0, false, 0
-        );
-    }
-
     public static Rotation2d toCurrentAllianceRotation(Rotation2d rotationAtBlueSide) {
         final Rotation2d
                 yAxis = Rotation2d.fromDegrees(90),
@@ -656,4 +459,29 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
         /* Doubles */
             public final static double ClimbingSpeed = 0.5;
     }
+
+    public final static class OzzyGrabberConstants {
+        /* Ints */
+            public final static int GrabberMotor = 16;
+            public final static int PosetionMotor = 17;
+            public final static int BeamBreak = 4;
+        /* Doubles */
+            public final static double IntakeSpeed = 0.5;
+            public final static double OutakeSpeed = -0.5;
+            public final static double UpSpeed = 0.0;
+            public final static double DownSpeed = 0.0;
+            public final static double MovmentLength = 0.0;
+            public final static double MiddleLength = 0.0;
+    }
+
+    public final static class LiliCoralConstants {
+        /* Ints */
+            public final static int CoarlMotor = 18;
+            public final static int Coral = 1;
+            public final static int Top = 2;
+            public final static int Bottom = 3;
+        /* Doubles */
+            public final static double GateSpeed = 0.5;
+    }
+
 }

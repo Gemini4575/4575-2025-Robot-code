@@ -1,19 +1,17 @@
 package frc.robot.Subsystems;
 
-import java.util.function.DoubleSupplier;
-
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbingConstants;
 
-public class ClimbingSubsystem extends SubsystemBase{
+public class NickClimbingSubsystem extends SubsystemBase{
     
     SparkMax ClimbingMotor1;
     SparkMax ClimbingMotor2;
 
-    public ClimbingSubsystem() {
+    public NickClimbingSubsystem() {
         // Initialization code here
         ClimbingMotor1 = new SparkMax(ClimbingConstants.ClimbingMotor1, MotorType.kBrushless);
         ClimbingMotor2 = new SparkMax(ClimbingConstants.ClimbingMotor2, MotorType.kBrushless);

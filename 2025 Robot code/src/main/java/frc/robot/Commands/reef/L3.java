@@ -1,13 +1,13 @@
 package frc.robot.commands.reef;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.ElevatorSubsystem;
+import frc.robot.Subsystems.NoraArmSubsystem;
 
 public class L3 extends Command {
 
-    private final ElevatorSubsystem elevator;
+    private final NoraArmSubsystem elevator;
 
-    public L3(ElevatorSubsystem subsystem) {
+    public L3(NoraArmSubsystem subsystem) {
         elevator = subsystem;
         addRequirements(elevator);
     }

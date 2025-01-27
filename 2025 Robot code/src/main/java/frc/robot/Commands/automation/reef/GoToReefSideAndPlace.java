@@ -6,14 +6,14 @@ import frc.lib.util.AprilTagToSide;
 import frc.lib.util.SideOffSetCalculation;
 import frc.lib.util.PoseTools;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Subsystems.ElevatorSubsystem;
+import frc.robot.Subsystems.NoraArmSubsystem;
 import frc.robot.Subsystems.VisionSubsystem;
 import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.utils.MapleShooterOptimization;
 
 public class GoToReefSideAndPlace extends Command {
 
-        private ElevatorSubsystem elevator;
+        private NoraArmSubsystem elevator;
         private DriveTrain driveTrain;
         private frc.robot.Subsystems.Vision vision;
         private VisionSubsystem visionSubsystem;
@@ -25,7 +25,7 @@ public class GoToReefSideAndPlace extends Command {
 
         private PathFindToPoseAndPlaceSequence pathFindToPoseAndPlaceSequence;
 
-        public GoToReefSideAndPlace(ElevatorSubsystem elevator, DriveTrain driveTrain,
+        public GoToReefSideAndPlace(NoraArmSubsystem elevator, DriveTrain driveTrain,
                         frc.robot.Subsystems.Vision vision,
                         int level, int side, VisionSubsystem visionSubsystem) {
                 this.elevator = elevator;

@@ -1,13 +1,13 @@
 package frc.robot.commands.climbing;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.ClimbingSubsystem;
+import frc.robot.Subsystems.NickClimbingSubsystem;
 
 public class Climb extends Command{
     
-    private ClimbingSubsystem climbing;
+    private NickClimbingSubsystem climbing;
 
-    public Climb(ClimbingSubsystem subsystem) {
+    public Climb(NickClimbingSubsystem subsystem) {
         // Initialization code here
         climbing = subsystem;
     }
