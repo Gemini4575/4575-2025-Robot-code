@@ -1,4 +1,4 @@
-package frc.robot.commands.reef;
+package frc.robot.commands.coral.nora;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.NoraArmSubsystem;

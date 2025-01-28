@@ -4,14 +4,10 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.Vision.kTagLayout;
-
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -22,11 +18,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Subsystems.*;
 import frc.robot.Subsystems.drive.DriveTrain;
-import frc.robot.commands.DriveToAlgae;
 import frc.robot.commands.TelopSwerve;
+import frc.robot.commands.algea.IntakeAlgae;
+import frc.robot.commands.algea.Proceser;
+import frc.robot.commands.algea.EXO.OzOutake;
+import frc.robot.commands.coral.lili.LIPlaceCoral;
 import frc.robot.commands.drive.DriveTwoardsAprillTag;
-import frc.robot.commands.drive.PathFindToPose;
-
 // @Component
 public class RobotContainer {
 
@@ -39,12 +36,13 @@ public class RobotContainer {
   private final JoystickButton zeroGyro = new JoystickButton(driver, JoystickConstants.BACK_BUTTON);
 
   /* Subsystems */
-  private final NoraArmSubsystem elevatorSubsystem = new NoraArmSubsystem();
+  //private final NoraArmSubsystem elevatorSubsystem = new NoraArmSubsystem();
   private final DriveTrain s_swerve = new DriveTrain();
-  private final TestMode test = new TestMode();
   private final Vision vision = new Vision();
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(vision);
+  //private final VisionSubsystem visionSubsystem = new VisionSubsystem(vision);
   private final NickClimbingSubsystem climbingSubsystem = new NickClimbingSubsystem();
+  private final OzzyGrabberSubsystem grabber = new OzzyGrabberSubsystem();
+  private final LiliCoralSubystem c = new LiliCoralSubystem();
   /* Pathplanner stuff */
   private final SendableChooser<Command> autoChoosers;
 
@@ -118,30 +116,34 @@ public class RobotContainer {
     System.out.println("Starting configureBindings()");
 
     /* Driver Controls */
-    zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
-
-    // TODO test this whether it drives to an Algae
-    // new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new
-    // DriveToAlgae(s_swerve, vision));
+      zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
     /* Operator Controls */
       new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
         .onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
-      
-    // new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).
-    // toggleOnTrue(new GoToReefSideAndPlace(elevatorSubsystem,
-    // s_swerve, vision, 0, 4, visionSubsystem));
-    // drive towards targeted april tag
-    Supplier<Pose2d> bestTargetSupplier = () -> {
-      var target = vision.getTargets();
-      if (target != null && kTagLayout.getTagPose(target.fiducialId).isPresent()) {
-        SmartDashboard.putString("Targeting tag", String.valueOf(target.getFiducialId()));
-        return kTagLayout.getTagPose(target.fiducialId).get().toPose2d();
-      }
-      return null;
-    };
-    // new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
-    // .onTrue(new DriveToPose(s_swerve, bestTargetSupplier, null, 0));
 
+      new JoystickButton(operator, JoystickConstants.BLUE_BUTTON).
+        and(grabber.BeamBreak()).
+        onTrue(new Proceser(grabber, new JoystickButton(operator, JoystickConstants.BLUE_BUTTON))).
+        or(new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)).
+        and(grabber.FalseBeamnBreak()).
+        onTrue(new IntakeAlgae(grabber));
+
+      new JoystickButton(operator, 200).//JoystickConstants.GREEN_BUTTON).
+        and(c.Coral()).
+        onTrue(new LIPlaceCoral(c));
+
+      new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new OzOutake(grabber));
+      
+     
+    // Supplier<Pose2d> bestTargetSupplier = () -> {
+    //   var target = vision.getTargets();
+    //   if (target != null && kTagLayout.getTagPose(target.fiducialId).isPresent()) {
+    //     SmartDashboard.putString("Targeting tag", String.valueOf(target.getFiducialId()));
+    //     return kTagLayout.getTagPose(target.fiducialId).get().toPose2d();
+    //   }
+    //   return null;
+    // };
+    
     // alternative option using PathPlanner - only if target is far enough
     // new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)
     // // //.and(() -> {

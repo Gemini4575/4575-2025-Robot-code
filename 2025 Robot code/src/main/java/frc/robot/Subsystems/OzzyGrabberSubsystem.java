@@ -1,5 +1,7 @@
 package frc.robot.Subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -63,5 +65,13 @@ public class OzzyGrabberSubsystem extends SubsystemBase{
             PoseMotor.set(0);
         }
         return PoseMotor.getEncoder().getPosition() == 0;
+    }
+
+    public BooleanSupplier BeamBreak() {
+        return () -> AlgeaSensor.get();
+    }
+
+    public BooleanSupplier FalseBeamnBreak() {
+        return () -> !AlgeaSensor.get();
     }
 }

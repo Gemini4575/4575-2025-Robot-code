@@ -51,7 +51,7 @@ import frc.robot.Constants.SwerveConstants;
 // @Component
 public class DriveTrain extends SubsystemBase {
   private RotationsToInch rotationsToInch = new RotationsToInch();
-  private boolean first;
+  public boolean first;
   Field2d field = new Field2d();
   int ii = 0;
   public static final double kMaxSpeed = 12; // was 4.47 meters per second
@@ -295,7 +295,7 @@ private double rot_cur;
         );
     }
     
-    public void DriveMeters(double meters) {
+    public boolean DriveMeters(double meters) {
       if(first) {
         first = false;
         encoderDoubles[0] = m_frontLeft.getEncoderValue();
@@ -304,14 +304,16 @@ private double rot_cur;
         encoderDoubles[3] = m_backRight.getEncoderValue();
         startencoder = java.util.Arrays.stream(encoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       }
-      target = (startencoder + rotationsToInch.calculateTicks(SwerveConstants.one_meter * meters, 1)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
+      target = (startencoder + rotationsToInch.calculateTicks(SwerveConstants.one_meter * meters, 6.75)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       curencoder = java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       double remainingDistance = target - curencoder;
       if (remainingDistance <= 0) {
         stop();
+        return true;
       } else {
         double speed = Math.max(0.1, Math.min(1, remainingDistance / (SwerveConstants.one_meter * meters)));
         drive(speed, 0, 0, false);
+        return false;
       }
     }
 

@@ -44,7 +44,10 @@ public class NickClimbingSubsystem extends SubsystemBase{
         }
         return false;
     }
-
+    /**
+     * Curently this is what we are using but after I get mesurments this should not be used 1/28
+     * @param Joy The joysitck that you are using
+     */
     @Deprecated
     public void JoyClimb(double Joy) {
         ClimbingMotor1.set(Joy);

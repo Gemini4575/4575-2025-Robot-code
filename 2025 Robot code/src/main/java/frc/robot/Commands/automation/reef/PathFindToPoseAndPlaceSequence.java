@@ -5,10 +5,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Subsystems.NoraArmSubsystem;
 import frc.robot.Subsystems.drive.DriveTrain;
-import frc.robot.commands.reef.IntakeCoral;
-import frc.robot.commands.reef.L1;
 import frc.robot.Constants.*;
 import frc.robot.commands.automation.AutoAlignment;
+import frc.robot.commands.coral.nora.IntakeCoral;
+import frc.robot.commands.coral.nora.L1;
 import frc.robot.utils.MapleShooterOptimization;
 
 import java.util.function.Supplier;
