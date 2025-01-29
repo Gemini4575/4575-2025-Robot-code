@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Subsystems.OzzyGrabberSubsystem;
 import frc.robot.commands.algea.EXO.IntakeFloorAlgae;
 import frc.robot.commands.algea.EXO.IntakeLolipopAlgae;
-import frc.robot.commands.algea.EXO.OzGrab;
-import frc.robot.commands.algea.EXO.OzIntake;
 
 public class IntakeAlgae extends Command{
     OzzyGrabberSubsystem grabber;

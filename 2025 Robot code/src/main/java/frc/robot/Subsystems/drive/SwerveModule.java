@@ -12,22 +12,22 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModule extends Command {
 
@@ -42,7 +42,6 @@ public class SwerveModule extends Command {
   private final AnalogInput m_turningEncoder;
 
   private double ahhhhhhhhhhh = 0.0;
-  private int iii = 1;
 
   private double encoderOffset = 0;
   
@@ -80,10 +79,14 @@ public class SwerveModule extends Command {
   public SwerveModule(SwerveModuleConstants moduleConstants) {
     SmartDashboard.putNumber("tueing", ahhhhhhhhhhh);
     m_driveMotor = new SparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
-    m_driveMotor.setInverted (true);
+    var driveConfig = new SparkMaxConfig();
+    driveConfig.inverted(true);
+    m_driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     // driveMotorSim = new SparkSim(m_driveMotor, DCMotor.getNEO(1));
     m_turningMotor = new SparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-    m_turningMotor.setInverted (true);
+    var turningConfig = new SparkMaxConfig();
+    turningConfig.inverted(true);
+    m_turningMotor.configure(turningConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = new AnalogInput(moduleConstants.cancoderID);
