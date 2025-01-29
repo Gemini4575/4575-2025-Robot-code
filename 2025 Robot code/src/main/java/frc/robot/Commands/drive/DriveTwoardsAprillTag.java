@@ -1,5 +1,6 @@
 package frc.robot.commands.drive;
 
+import org.opencv.core.Mat.Tuple2;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
 
@@ -38,13 +39,23 @@ public class DriveTwoardsAprillTag extends Command {
         this.driveTrain = driveTrain;
         addRequirements(vision, driveTrain);
     }
+    boolean isFinished;
+    @Override
+    public void initialize() {
+        isFinished = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
 
     @Override
     public void execute() {
         if (vision.getTargets().area > 5 || vision.getTargets() == null) {
             chassisSpeeds.vxMetersPerSecond = 0;
             chassisSpeeds.vyMetersPerSecond = 0;
-            this.end(false);
+            isFinished = true;
         } else {
             chassisSpeeds.vxMetersPerSecond = -0.05;
         }

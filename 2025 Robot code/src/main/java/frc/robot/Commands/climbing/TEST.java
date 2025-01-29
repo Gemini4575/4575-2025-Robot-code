@@ -1,13 +1,14 @@
-package frc.robot.commands.algea.EXO;
+package frc.robot.commands.climbing;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.OzzyGrabberSubsystem;
+import frc.robot.Subsystems.NickClimbingSubsystem;
 
-public class OzOutake extends Command{
-    OzzyGrabberSubsystem grabber;
-    public OzOutake(OzzyGrabberSubsystem subsystem) {
-        this.grabber = subsystem;
-        addRequirements(grabber);
+public class TEST extends Command{
+    NickClimbingSubsystem c;
+    
+    public TEST(NickClimbingSubsystem c) {
+        this.c = c;
+        addRequirements(c);
     }
     boolean isFinished;
     @Override
@@ -22,8 +23,11 @@ public class OzOutake extends Command{
 
     @Override
     public void execute() {
-        if(grabber.outake()) {
+        if(c.test()) {
+            c.Stop();
             isFinished = true;
         }
     }
+
+    
 }

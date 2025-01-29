@@ -16,16 +16,23 @@ public class IntakeCoral extends Command{
         addRequirements(elevator, vision);
     }
 
+    boolean isFinished;
     @Override
     public void initialize() {
-        // Initialization code here
+        isFinished = false;
     }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
+
 
     @Override
     public void execute() {
         // Code to move the elevator
         if (elevator.intakeCoral(vision.InRange())) {
-            end(false);
+           isFinished = true;
         }
     }
 

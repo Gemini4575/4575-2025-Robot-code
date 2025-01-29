@@ -8,8 +8,8 @@ import frc.robot.Constants.ClimbingConstants;
 
 public class NickClimbingSubsystem extends SubsystemBase{
     
-    SparkMax ClimbingMotor1;
-    SparkMax ClimbingMotor2;
+    public SparkMax ClimbingMotor1;
+    public SparkMax ClimbingMotor2;
 
     public NickClimbingSubsystem() {
         // Initialization code here
@@ -53,7 +53,15 @@ public class NickClimbingSubsystem extends SubsystemBase{
         ClimbingMotor1.set(Joy);
         ClimbingMotor2.set(Joy);
     }
-
+    /**
+     * TEST ONLY
+     */
+    public boolean test() {
+        if(ClimbingMotor1.getEncoder().getPosition() > 0) {
+            ClimbingMotor1.set(-0.3);
+        } 
+        return Math.round(ClimbingMotor1.getEncoder().getPosition()) == 0;
+    }
     public void Stop() {
         // Code to stop the elevator
         ClimbingMotor1.set(0);

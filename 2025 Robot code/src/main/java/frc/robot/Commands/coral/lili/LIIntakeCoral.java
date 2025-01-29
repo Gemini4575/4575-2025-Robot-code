@@ -9,11 +9,21 @@ public class LIIntakeCoral extends Command{
         this.c = cc;
         addRequirements(c);
     }
+    boolean isFinished;
+    @Override
+    public void initialize() {
+        isFinished = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
 
     @Override
     public void execute() {
         if(c.intakeCoral()) {
-            this.end(false);
+            isFinished = true;
         }
     }
 }

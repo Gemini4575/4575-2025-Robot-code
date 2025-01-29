@@ -9,10 +9,20 @@ public class OzDown extends Command{
         grabber = subsystem;
         addRequirements(grabber);
     }
+    boolean isFinished;
+    @Override
+    public void initialize() {
+        isFinished = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
     @Override
     public void execute() {
         if(grabber.down()) {
-            this.end(false);
+            isFinished = true;
         }
     }
 }

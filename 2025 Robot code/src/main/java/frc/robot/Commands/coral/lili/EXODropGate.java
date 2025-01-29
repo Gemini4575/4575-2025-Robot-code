@@ -9,11 +9,21 @@ public class EXODropGate extends Command{
         this.c = cc;
         addRequirements(c);
     }
+    boolean isFinished;
+    @Override
+    public void initialize() {
+        isFinished = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
 
     @Override
     public void execute() {
         if(c.DropGate()) {
-            this.end(false);
+            isFinished = true;
         }
     }
 }

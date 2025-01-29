@@ -18,8 +18,8 @@ public class RotationsToInch {
      */
     public double calculateTicks(double inches, double gearboxRatio) {
         double rotations = calculateRotations(inches, gearboxRatio);
-        double ticksPerRotation = 24.0; // Ticks per one rotation
-        return rotations * ticksPerRotation;
+       // double ticksPerRotation = 42.0; // Ticks per one rotation per rev website not Mr.Fran
+        return rotations;
     }
 
 }

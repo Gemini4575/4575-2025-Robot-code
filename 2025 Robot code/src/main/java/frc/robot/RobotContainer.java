@@ -22,6 +22,7 @@ import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.algea.IntakeAlgae;
 import frc.robot.commands.algea.Proceser;
 import frc.robot.commands.algea.EXO.OzOutake;
+import frc.robot.commands.climbing.TEST;
 import frc.robot.commands.coral.lili.LIPlaceCoral;
 import frc.robot.commands.drive.DriveTwoardsAprillTag;
 // @Component
@@ -95,6 +96,7 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    SmartDashboard.putNumber("Encoder", (climbingSubsystem.ClimbingMotor1.getEncoder().getPosition() + climbingSubsystem.ClimbingMotor2.getEncoder().getPosition()));
     var visionEst = vision.getEstimatedGlobalPose();
     visionEst.ifPresent(
         est -> {
@@ -119,7 +121,7 @@ public class RobotContainer {
       zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
     /* Operator Controls */
       new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
-        .onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
+        .onTrue(new TEST(climbingSubsystem)/*new DriveTwoardsAprillTag(vision, s_swerve)*/);
 
       new JoystickButton(operator, JoystickConstants.BLUE_BUTTON).
         and(grabber.BeamBreak()).
@@ -130,7 +132,7 @@ public class RobotContainer {
 
       new JoystickButton(operator, 200).//JoystickConstants.GREEN_BUTTON).
         and(c.Coral()).
-        onTrue(new LIPlaceCoral(c));
+        onTrue(new LIPlaceCoral(c, s_swerve));
 
       new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new OzOutake(grabber));
       

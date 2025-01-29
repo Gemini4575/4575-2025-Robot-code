@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.opencv.core.Mat;
 
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.stereotype.Component;
@@ -307,7 +308,7 @@ private double rot_cur;
       target = (startencoder + rotationsToInch.calculateTicks(SwerveConstants.one_meter * meters, 6.75)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       curencoder = java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
       double remainingDistance = target - curencoder;
-      if (remainingDistance <= 0) {
+      if (Math.round(remainingDistance) <= 0) {
         stop();
         return true;
       } else {

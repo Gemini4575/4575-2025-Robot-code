@@ -9,25 +9,27 @@ public class OzUp extends Command{
         grabber = subsystem;
         addRequirements(grabber);
     }
+    boolean isFinished;
     @Override
     public void initialize() {
-        // Initialization code here
+        isFinished = false;
     }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
+
     @Override
     public void execute() {
         // Code to move the elevator
         if (grabber.up()) {
-            end(false);
+            isFinished = true;
         }
     }
     @Override
     public void end(boolean interrupted) {
         // Code to stop the elevator
         
-    }
-    @Override
-    public boolean isFinished() {
-        // Condition to end the command
-        return false;
     }
 }

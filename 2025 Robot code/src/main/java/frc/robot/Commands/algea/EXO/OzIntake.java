@@ -9,11 +9,21 @@ public class OzIntake extends Command{
         this.grabber = subsystem;
         addRequirements(grabber);
     }
+    boolean isFinished;
+    @Override
+    public void initialize() {
+        isFinished = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
 
     @Override
     public void execute() {
         if(grabber.intake()){
-            this.end(false);
+            isFinished = true;
         }
     }
 }

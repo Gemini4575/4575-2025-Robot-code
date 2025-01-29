@@ -12,16 +12,22 @@ public class CoralStation extends Command {
         addRequirements(elevator);
     }
 
+    boolean isFinished;
     @Override
     public void initialize() {
-        // Initialization code here
+        isFinished = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
     }
 
     @Override
     public void execute() {
         // Code to move the elevator
         if (elevator.CoralStation()) {
-            end(false);
+            isFinished = true;
         }
     }
 
@@ -29,12 +35,6 @@ public class CoralStation extends Command {
     public void end(boolean interrupted) {
         // Code to stop the elevator
         elevator.stop();
-    }
-
-    @Override
-    public boolean isFinished() {
-        // Condition to end the command
-        return false;
     }
 
 }

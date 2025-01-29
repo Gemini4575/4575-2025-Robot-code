@@ -19,12 +19,20 @@ public class DriveXMeters extends Command {
     @Override
     public void initialize() {
         s.first = true;
+        isFinished = false;
     }
+    boolean isFinished;
+    
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
+
 
     @Override
     public void execute() {
         if (s.DriveMeters(meters)) {
-            this.end(false);
+           isFinished = true;
         }
     }
 }

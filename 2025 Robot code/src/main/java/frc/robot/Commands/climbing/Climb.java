@@ -12,16 +12,22 @@ public class Climb extends Command{
         climbing = subsystem;
     }
 
+    boolean isFinished;
     @Override
     public void initialize() {
-        // Initialization code here
+        isFinished = false;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return isFinished;
     }
 
     @Override
     public void execute() {
         // Code to move the elevator
         if(climbing.Climb()) {
-            end(false);
+            isFinished = true;
         }
     }
 
