@@ -25,12 +25,12 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.lib.util.RotationsToInch;
+import frc.lib.math.MesurementToRoation;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Subsystems.drive.DriveTrain;
 
 public class Constants {
-    public static RotationsToInch rotationsToInch = new RotationsToInch();
+    public static MesurementToRoation rotationsToInch = new MesurementToRoation();
 
     public enum RobotMode {
         /**
@@ -391,7 +391,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
         }
 
-        public static final double one_meter = rotationsToInch.calculateTicks(39.37, 6.75);
+        public static final double one_meter = rotationsToInch.calculateRotationsM(1, 1);
     }
 
     public final static class JoystickConstants{
@@ -433,7 +433,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public final static double P = 0.0;
             public final static double I = 0.0;
             public final static double D = 0.0;
-            public final static double L1Position = rotationsToInch.calculateTicks(I, I);
+            public final static double L1Position = rotationsToInch.calculateRotationsIN(I, I);
             public final static double L2Position = 0.0;
             public final static double L3Position = 0.0;
             public final static double L4Position = 0.0;

@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Subsystems.LiliCoralSubystem;
 import frc.robot.Subsystems.drive.DriveTrain;
-import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.drive.DriveXMeters;
 
 public class LIPlaceCoral extends SequentialCommandGroup{
@@ -13,7 +12,7 @@ public class LIPlaceCoral extends SequentialCommandGroup{
             new EXODropGate(c),
             new WaitCommand(1),
             //TODO maybe dont automate this
-           new DriveXMeters(s, 0.051),
+            new DriveXMeters(s, 0.051),
             new LIIntakeCoral(c)
         );
     }

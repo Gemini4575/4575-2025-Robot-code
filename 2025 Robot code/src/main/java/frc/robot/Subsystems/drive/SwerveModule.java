@@ -6,7 +6,6 @@ package frc.robot.Subsystems.drive;
 
 // import com.revrobotics.spark.SparkSim;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.util.MySparkMax;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 
@@ -33,8 +33,8 @@ public class SwerveModule extends Command {
 
   
 
-  private final SparkMax m_driveMotor;
-  private final SparkMax m_turningMotor;
+  private final MySparkMax m_driveMotor;
+  private final MySparkMax m_turningMotor;
   // private final SparkSim driveMotorSim;
 
 
@@ -46,6 +46,7 @@ public class SwerveModule extends Command {
   private double encoderOffset = 0;
   
   private int moduleNumber = 0;
+  @SuppressWarnings("unused")
   private final RelativeEncoder m_turningEncoderREV;
 
   // Gains are for example purposes only - must be determined for your own robot!
@@ -78,15 +79,11 @@ public class SwerveModule extends Command {
    */
   public SwerveModule(SwerveModuleConstants moduleConstants) {
     SmartDashboard.putNumber("tueing", ahhhhhhhhhhh);
-    m_driveMotor = new SparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
-    var driveConfig = new SparkMaxConfig();
-    driveConfig.inverted(true);
-    m_driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_driveMotor = new MySparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
+    m_driveMotor.setInverted();
     // driveMotorSim = new SparkSim(m_driveMotor, DCMotor.getNEO(1));
-    m_turningMotor = new SparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-    var turningConfig = new SparkMaxConfig();
-    turningConfig.inverted(true);
-    m_turningMotor.configure(turningConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_turningMotor = new MySparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
+    m_turningMotor.setInverted();
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = new AnalogInput(moduleConstants.cancoderID);
@@ -201,6 +198,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
    */
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
+    @SuppressWarnings ("deprecation")
     SwerveModuleState state =
         SwerveModuleState.optimize(desiredState, new Rotation2d(encoderValue()));
 
@@ -251,6 +249,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
   public void setStateDirectly(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     desiredState.angle = desiredState.angle.minus(Rotation2d.fromRadians(encoderOffset));
+    @SuppressWarnings("deprecation")
     SwerveModuleState state =
         SwerveModuleState.optimize(desiredState, new Rotation2d(getRawAngle()));
     m_driveMotor.set(state.speedMetersPerSecond);
