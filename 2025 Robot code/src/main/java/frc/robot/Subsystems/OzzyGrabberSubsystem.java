@@ -2,33 +2,33 @@ package frc.robot.Subsystems;
 
 import java.util.function.BooleanSupplier;
 
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.MySparkMax;
 import frc.robot.Constants.OzzyGrabberConstants;
 
 public class OzzyGrabberSubsystem extends SubsystemBase{
-    SparkMax GrabberMotor;
-    SparkMax PoseMotor;
+    MySparkMax GrabberMotor;
+    MySparkMax PoseMotor;
     DigitalInput AlgeaSensor;
 
     public OzzyGrabberSubsystem() {
         // Initialization code here
-        GrabberMotor = new SparkMax(OzzyGrabberConstants.GrabberMotor, MotorType.kBrushless);
-        PoseMotor = new SparkMax(OzzyGrabberConstants.PosetionMotor, MotorType.kBrushless);
+        GrabberMotor = new MySparkMax(OzzyGrabberConstants.GrabberMotor, MotorType.kBrushless);
+        PoseMotor = new MySparkMax(OzzyGrabberConstants.PosetionMotor, MotorType.kBrushless);
         AlgeaSensor = new DigitalInput(OzzyGrabberConstants.BeamBreak);
     }
 
     public boolean Grab() {
         // Code to move the elevator
-        if(PoseMotor.getEncoder().getPosition() < OzzyGrabberConstants.MiddleLength) {
+        if(PoseMotor.getPosition() < OzzyGrabberConstants.MiddleLength) {
             PoseMotor.set(OzzyGrabberConstants.DownSpeed);
         } else {
             PoseMotor.set(0);
         }
-        return PoseMotor.getEncoder().getPosition() == OzzyGrabberConstants.MiddleLength;
+        return PoseMotor.getPosition() == OzzyGrabberConstants.MiddleLength;
     }
 
     public boolean intake() {
@@ -50,21 +50,21 @@ public class OzzyGrabberSubsystem extends SubsystemBase{
     }
 
     public boolean down() {
-        if(PoseMotor.getEncoder().getPosition() < OzzyGrabberConstants.MovmentLength) {
+        if(PoseMotor.getPosition() < OzzyGrabberConstants.MovmentLength) {
             PoseMotor.set(OzzyGrabberConstants.DownSpeed);
         } else {
             PoseMotor.set(0);
         }
-        return PoseMotor.getEncoder().getPosition() == OzzyGrabberConstants.MovmentLength;
+        return PoseMotor.getPosition() == OzzyGrabberConstants.MovmentLength;
     }
 
     public boolean up() {
-        if(PoseMotor.getEncoder().getPosition() > 0) {
+        if(PoseMotor.getPosition() > 0) {
             PoseMotor.set(OzzyGrabberConstants.UpSpeed);
         } else {
             PoseMotor.set(0);
         }
-        return PoseMotor.getEncoder().getPosition() == 0;
+        return PoseMotor.getPosition() == 0;
     }
 
     public BooleanSupplier BeamBreak() {

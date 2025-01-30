@@ -269,7 +269,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
     turnConfig.closedLoop.p(16.5);
     turnConfig.closedLoop.outputRange(-Math.PI, Math.PI);
     m_turningMotor.configure(
-                turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   private void configDriveMotor() {

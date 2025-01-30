@@ -134,6 +134,8 @@ public class RobotContainer {
         onTrue(new LIPlaceCoral(c, s_swerve));
 
       new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new OzOutake(grabber));
+
+      new JoystickButton(operator, JoystickConstants.RED_BUTTON).onTrue(getAutonomousCommand());
       
      
     // Supplier<Pose2d> bestTargetSupplier = () -> {

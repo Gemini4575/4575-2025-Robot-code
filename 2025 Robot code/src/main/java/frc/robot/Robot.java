@@ -36,7 +36,6 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit () {
-   
         // Set up data receivers & replay source
         switch (CURRENT_ROBOT_MODE) {
             case REAL -> { // Running on a real robot, log to a USB stick ("/U/logs")

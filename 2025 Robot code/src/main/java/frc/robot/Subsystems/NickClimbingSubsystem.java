@@ -1,25 +1,25 @@
 package frc.robot.Subsystems;
 
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.MySparkMax;
 import frc.robot.Constants.ClimbingConstants;
 
 public class NickClimbingSubsystem extends SubsystemBase{
     
-    public SparkMax ClimbingMotor1;
-    public SparkMax ClimbingMotor2;
+    public MySparkMax ClimbingMotor1;
+    public MySparkMax ClimbingMotor2;
 
     public NickClimbingSubsystem() {
         // Initialization code here
-        ClimbingMotor1 = new SparkMax(ClimbingConstants.ClimbingMotor1, MotorType.kBrushless);
-        ClimbingMotor2 = new SparkMax(ClimbingConstants.ClimbingMotor2, MotorType.kBrushless);
+        ClimbingMotor1 = new MySparkMax(ClimbingConstants.ClimbingMotor1, MotorType.kBrushless);
+        ClimbingMotor2 = new MySparkMax(ClimbingConstants.ClimbingMotor2, MotorType.kBrushless);
     }
 
     private boolean Climb1() {
         // Code to move the elevator
-        if(ClimbingMotor1.getEncoder().getPosition() < ClimbingConstants.ClimbingMotorPoseition) {
+        if(ClimbingMotor1.getPosition() < Math.round(ClimbingConstants.ClimbingMotorPoseition)) {
         ClimbingMotor1.set(ClimbingConstants.ClimbingSpeed);
         } else {
         return true;
@@ -29,7 +29,7 @@ public class NickClimbingSubsystem extends SubsystemBase{
 
     private boolean Climb2() {
         // Code to move the elevator
-        if(ClimbingMotor2.getEncoder().getPosition() < ClimbingConstants.ClimbingMotorPoseition) {
+        if(ClimbingMotor2.getPosition() < Math.round(ClimbingConstants.ClimbingMotorPoseition)) {
         ClimbingMotor2.set(ClimbingConstants.ClimbingSpeed);
         } else {
         return true;
@@ -53,19 +53,11 @@ public class NickClimbingSubsystem extends SubsystemBase{
         ClimbingMotor1.set(Joy);
         ClimbingMotor2.set(Joy);
     }
-    /**
-     * TEST ONLY
-     */
-    public boolean test() {
-        if(ClimbingMotor1.getEncoder().getPosition() > 0) {
-            ClimbingMotor1.set(-0.3);
-        } 
-        return Math.round(ClimbingMotor1.getEncoder().getPosition()) == 0;
-    }
+    
     public void Stop() {
         // Code to stop the elevator
-        ClimbingMotor1.set(0);
-        ClimbingMotor2.set(0);
+        ClimbingMotor1.stop();
+        ClimbingMotor2.stop();
     }
 
 }

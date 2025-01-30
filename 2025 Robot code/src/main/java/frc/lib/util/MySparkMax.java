@@ -1,5 +1,6 @@
 package frc.lib.util;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -15,13 +16,20 @@ public class MySparkMax{
         s = new SparkMax(CANID, a);
         sc = new SparkMaxConfig();
     }
-
+    /**
+     * This is rounded use {@code getEncoder().getPosition()} to get the actual poseition
+     * @return The ROUNDED postion of the motor
+     */
     public double getPosition() {
-        return s.getEncoder().getPosition();
+        return Math.round(s.getEncoder().getPosition());
     }
 
     public void set(double value) {
         s.set(value);
+    }
+
+    public AbsoluteEncoder getAbsoluteEncoder() {
+        return s.getAbsoluteEncoder();
     }
 
     public void stop() {
