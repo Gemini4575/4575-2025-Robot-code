@@ -3,8 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.GeometryHelper;
-import frc.robot.Subsystems.Vision;
-import frc.robot.Subsystems.drive.DriveTrain;
+import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.drive.DriveTrain;
 
 public class DriveToAlgae extends Command {
 

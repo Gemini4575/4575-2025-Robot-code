@@ -2,9 +2,9 @@ package frc.robot.commands.algea;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Subsystems.OzzyGrabberSubsystem;
 import frc.robot.commands.algea.EXO.IntakeFloorAlgae;
 import frc.robot.commands.algea.EXO.IntakeLolipopAlgae;
+import frc.robot.subsystems.OzzyGrabberSubsystem;
 
 public class IntakeAlgae extends Command{
     OzzyGrabberSubsystem grabber;

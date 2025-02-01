@@ -1,7 +1,7 @@
 package frc.robot.commands.coral.lili;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.LiliCoralSubystem;
+import frc.robot.subsystems.LiliCoralSubystem;
 
 public class EXODropGate extends Command{
     LiliCoralSubystem c;

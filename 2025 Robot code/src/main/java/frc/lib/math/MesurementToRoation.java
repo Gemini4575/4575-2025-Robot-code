@@ -4,9 +4,9 @@ import edu.wpi.first.math.util.Units;
 
 public class MesurementToRoation {
 
-    private double calculateRotations(double inches, double gearboxRatio) {
-        double shaftCircumference = Math.PI * 0.5; // Circumference of the 1/2 inch shaft
-        double rotationsForInches = inches / shaftCircumference; // Rotations needed for given inches
+    private double calculateRotations(double inches, double gearboxRatio, double shaftCircumference) {
+        double shaftCircumference2 = Math.PI * shaftCircumference; // Circumference of the 1/2 inch shaft
+        double rotationsForInches = inches / shaftCircumference2; // Rotations needed for given inches
         double rotationsWithGearbox = rotationsForInches * gearboxRatio; // Adjust for gearbox
         return rotationsWithGearbox;
     }
@@ -18,26 +18,26 @@ public class MesurementToRoation {
      * @param gearboxRatio the ratio of the gearbox on the motor
      * @return encoder ticks needed to move the distance
      */
-    private double calculateTicks(double inches, double gearboxRatio) {
-        double rotations = calculateRotations(inches, gearboxRatio);
+    private double calculateTicks(double inches, double gearboxRatio, double shaftCircumference) {
+        double rotations = calculateRotations(inches, gearboxRatio, shaftCircumference);
     //  double ticksPerRotation = 42.0; // Ticks per one rotation per rev website not Mr.Fran
         return rotations;
     }
 
-    public double calculateRotationsIN(double inches, double gearboxRatio) {
-        return calculateTicks(inches, gearboxRatio);
+    public double calculateRotationsIN(double inches, double gearboxRatio, double shaftCircumference) {
+        return calculateTicks(inches, gearboxRatio, shaftCircumference);
     }
 
-    public double calculateRotationsM(double meters, double gearboxRatio) {
-        return calculateTicks(Units.metersToInches(meters), gearboxRatio);
+    public double calculateRotationsM(double meters, double gearboxRatio, double shaftCircumference) {
+        return calculateTicks(Units.metersToInches(meters), gearboxRatio, shaftCircumference);
     }
 
-    public double calculateRotationsCM(double centemeters, double gearboxRatio) {
-        return calculateTicks(Units.metersToInches(centemeters/100), gearboxRatio);
+    public double calculateRotationsCM(double centemeters, double gearboxRatio, double shaftCircumference) {
+        return calculateTicks(Units.metersToInches(centemeters/100), gearboxRatio, shaftCircumference);
     }
 
-    public double calculateRotationsFT(double feet, double gearboxRatio) {
-        return calculateTicks(feet * 12, gearboxRatio);
+    public double calculateRotationsFT(double feet, double gearboxRatio, double shaftCircumference) {
+        return calculateTicks(feet * 12, gearboxRatio, shaftCircumference);
     }
 
 }

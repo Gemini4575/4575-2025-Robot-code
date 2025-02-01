@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Subsystems.drive;
+package frc.robot.subsystems.drive;
 
 import java.io.IOException;
 
@@ -41,7 +41,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.MesurementToRoation;
 import frc.robot.Constants;
-import frc.robot.Constants.SwerveConstants;
 
 
 
@@ -300,17 +299,19 @@ private double rot_cur;
         encoderDoubles[1] = m_frontRight.getEncoderValue();
         encoderDoubles[2] = m_backLeft.getEncoderValue();
         encoderDoubles[3] = m_backRight.getEncoderValue();
-        startencoder = java.util.Arrays.stream(encoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
+        startencoder = Math.abs(java.util.Arrays.stream(encoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0));
       }
-      target = (startencoder + rotationsToInch.calculateRotationsM(SwerveConstants.one_meter * meters, 6.75)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
-      curencoder = java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0);
+      curencoder = Math.abs(java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0));
+      target = Math.abs((startencoder + rotationsToInch.calculateRotationsM(meters, 6.75, 6)) - java.util.Arrays.stream(curencoderDoubles).mapToDouble(Double::doubleValue).average().orElse(0.0));
       double remainingDistance = target - curencoder;
-      if (Math.round(remainingDistance) <= 0) {
+      if (Math.abs(Math.round(remainingDistance)) <= 0) {
         stop();
         return true;
       } else {
-        double speed = Math.max(0.1, Math.min(1, remainingDistance / (SwerveConstants.one_meter * meters)));
-        drive(speed, 0, 0, false);
+        drive(0, 0.1, 0, false);
+        SmartDashboard.putNumber("Curencoder", curencoder);
+        SmartDashboard.putNumber("encoder", startencoder);
+        SmartDashboard.putNumber("target", target);
         return false;
       }
     }

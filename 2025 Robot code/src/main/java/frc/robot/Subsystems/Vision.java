@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import static frc.robot.Constants.Vision.*;
 import edu.wpi.first.math.Matrix;

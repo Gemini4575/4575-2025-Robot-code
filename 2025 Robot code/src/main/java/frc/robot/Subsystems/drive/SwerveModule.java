@@ -2,11 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Subsystems.drive;
+package frc.robot.subsystems.drive;
 
 // import com.revrobotics.spark.SparkSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -25,18 +26,20 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.util.MySparkMax;
+import frc.lib.math.MesurementToRoation;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
+import frc.robot.Constants.SwerveConstants;
 
 public class SwerveModule extends Command {
 
   
 
-  private final MySparkMax m_driveMotor;
-  private final MySparkMax m_turningMotor;
+  private final SparkMax m_driveMotor;
+  private final SparkMax m_turningMotor;
   // private final SparkSim driveMotorSim;
 
+  private MesurementToRoation c = new MesurementToRoation();
 
   private final RelativeEncoder m_driveEncoder;
   private final AnalogInput m_turningEncoder;
@@ -79,11 +82,15 @@ public class SwerveModule extends Command {
    */
   public SwerveModule(SwerveModuleConstants moduleConstants) {
     SmartDashboard.putNumber("tueing", ahhhhhhhhhhh);
-    m_driveMotor = new MySparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
-    m_driveMotor.setInverted();
+    m_driveMotor = new SparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
+    var driveConfig = new SparkMaxConfig();
+    driveConfig.inverted(true);
+    m_driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     // driveMotorSim = new SparkSim(m_driveMotor, DCMotor.getNEO(1));
-    m_turningMotor = new MySparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
-    m_turningMotor.setInverted();
+    m_turningMotor = new SparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
+    var turningConfig = new SparkMaxConfig();
+    turningConfig.inverted(true);
+    m_turningMotor.configure(turningConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = new AnalogInput(moduleConstants.cancoderID);
@@ -187,8 +194,9 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
    * @return The current position of the module.
    */
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(
-        m_driveEncoder.getPosition(), new Rotation2d(encoderValue()));
+    // encode is % rotations
+    var retVal = (m_driveEncoder.getPosition() / SwerveConstants.gearboxRatio) * SwerveConstants.wheeldiameter * Math.PI; // distance in whatever units the wheel diameter is
+    return new SwerveModulePosition(retVal, new Rotation2d(encoderValue()));
   }
 
   /**

@@ -27,7 +27,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.math.MesurementToRoation;
 import frc.lib.util.SwerveModuleConstants;
-import frc.robot.Subsystems.drive.DriveTrain;
+import frc.robot.subsystems.drive.DriveTrain;
 
 public class Constants {
     public static MesurementToRoation rotationsToInch = new MesurementToRoation();
@@ -351,7 +351,11 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
 
             public static final double driveConversionFactor = (Math.PI  + 2.0 * kWheelRadius)/6.75;
             public static final double turnAfterEncoderReduction = -1 * (7/150);
-        
+            public static final double gearboxRatio = 6.75;
+            /**
+             * In inches
+             */
+            public static final double wheeldiameter = 4;
         public static final class Mod0 { 
             public static final int driveMotorID = 1;
             public static final int angleMotorID = 2;
@@ -391,7 +395,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
         }
 
-        public static final double one_meter = rotationsToInch.calculateRotationsM(1, 1);
+        public static final double one_meter = rotationsToInch.calculateRotationsM(1, 1,1);
     }
 
     public final static class JoystickConstants{
@@ -433,7 +437,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public final static double P = 0.0;
             public final static double I = 0.0;
             public final static double D = 0.0;
-            public final static double L1Position = rotationsToInch.calculateRotationsIN(I, I);
+            public final static double L1Position = rotationsToInch.calculateRotationsIN(I, I,1);
             public final static double L2Position = 0.0;
             public final static double L3Position = 0.0;
             public final static double L4Position = 0.0;
@@ -449,7 +453,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public final static int ClimbingMotor1 = 14;
             public final static int ClimbingMotor2 = 15;
             //TODO get the real values
-            public final static int ClimbingMotorPoseition = 0;
+            public final static double ClimbingMotorPoseition = rotationsToInch.calculateRotationsIN(2.0, 225.0, 0.5);
         /* Doubles */
             public final static double ClimbingSpeed = 0.5;
     }

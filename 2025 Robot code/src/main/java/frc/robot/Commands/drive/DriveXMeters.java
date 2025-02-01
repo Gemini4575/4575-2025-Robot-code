@@ -1,7 +1,7 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Subsystems.drive.DriveTrain;
+import frc.robot.subsystems.drive.DriveTrain;
 
 public class DriveXMeters extends Command {
     DriveTrain s;

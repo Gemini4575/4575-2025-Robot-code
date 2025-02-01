@@ -16,21 +16,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
-import frc.robot.Subsystems.*;
-import frc.robot.Subsystems.drive.DriveTrain;
 import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.algea.IntakeAlgae;
 import frc.robot.commands.algea.Proceser;
 import frc.robot.commands.algea.EXO.OzOutake;
-import frc.robot.commands.climbing.TEST;
 import frc.robot.commands.coral.lili.LIPlaceCoral;
+import frc.robot.commands.drive.DriveXMeters;
+import frc.robot.subsystems.*;
+import frc.robot.subsystems.drive.DriveTrain;
 // @Component
 public class RobotContainer {
 
   Field2d visionPoseEstimate = new Field2d();
   /* Controllers */
-  private final Joystick driver = new Joystick(JoystickConstants.DRIVER_USB);
-  private final Joystick operator = new Joystick(JoystickConstants.OPERATOR_USB);
+  private final Joystick driver = new Joystick(1);
+  private final Joystick operator = new Joystick(2);
 
   /* Driver Buttons */
   private final JoystickButton zeroGyro = new JoystickButton(driver, JoystickConstants.BACK_BUTTON);
@@ -120,7 +120,7 @@ public class RobotContainer {
       zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
     /* Operator Controls */
       new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
-        .onTrue(new TEST(climbingSubsystem)/*new DriveTwoardsAprillTag(vision, s_swerve)*/);
+        .onTrue(new DriveXMeters(s_swerve, 0.5)/*new DriveTwoardsAprillTag(vision, s_swerve)*/);
 
       new JoystickButton(operator, JoystickConstants.BLUE_BUTTON).
         and(grabber.BeamBreak()).
@@ -129,18 +129,18 @@ public class RobotContainer {
         and(grabber.FalseBeamnBreak()).
         onTrue(new IntakeAlgae(grabber));
 
-      new JoystickButton(operator, 200).//JoystickConstants.GREEN_BUTTON).
+      new JoystickButton(operator, 1).//JoystickConstants.GREEN_BUTTON).
         and(c.Coral()).
         onTrue(new LIPlaceCoral(c, s_swerve));
 
       new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new OzOutake(grabber));
 
-      new JoystickButton(operator, JoystickConstants.RED_BUTTON).onTrue(getAutonomousCommand());
+     // new JoystickButton(operator, JoystickConstants.RED_BUTTON).onTrue();
       
      
     // Supplier<Pose2d> bestTargetSupplier = () -> {
     //   var target = vision.getTargets();
-    //   if (target != null && kTagLayout.getTagPose(target.fiducialId).isPresent()) {
+    //   if (target != null && kTagLayout.getTagPose(target.fiduc                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ialId).isPresent()) {
     //     SmartDashboard.putString("Targeting tag", String.valueOf(target.getFiducialId()));
     //     return kTagLayout.getTagPose(target.fiducialId).get().toPose2d();
     //   }
