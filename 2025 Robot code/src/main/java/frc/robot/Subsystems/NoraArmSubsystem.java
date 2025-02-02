@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,12 +16,7 @@ public class NoraArmSubsystem extends SubsystemBase {
     Spark BottomWheel;
     DigitalInput CoralSensor;
 
-    private final ProfiledPIDController ArmPidController = new ProfiledPIDController(
-            Constants.ArmConstants.P,
-            Constants.ArmConstants.I,
-            Constants.ArmConstants.D,
-            new TrapezoidProfile.Constraints(
-                    Constants.ArmConstants.maxSpeed, Constants.ArmConstants.maxAcceleration));
+    
 
     public NoraArmSubsystem() {
         armMotor = new MySparkMax(Constants.ArmConstants.ARM_MOTOR, MotorType.kBrushless);
@@ -87,8 +80,9 @@ public class NoraArmSubsystem extends SubsystemBase {
     }
 
     public void moveArm(AbsoluteEncoder encoder, double position) {
-        final double ArmOutput = ArmPidController.calculate(encoder.getPosition(), position);
-        armMotor.set(ArmOutput);
+        if(Math.abs(Math.round(armMotor.getPosition())) <= position) {
+            armMotor.set(.5);
+        }
     }
 
 }

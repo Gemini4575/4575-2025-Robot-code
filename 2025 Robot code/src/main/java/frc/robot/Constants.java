@@ -365,7 +365,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
         }
 
-        /* Front Right Module - Module 1 */
+        /** Front Right Module - Module 1 */
         public static final class Mod1 { 
             public static final int driveMotorID = 3;
             public static final int angleMotorID = 4;
@@ -375,7 +375,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
         }
         
-        /* Back Left Module - Module 2 */
+        /** Back Left Module - Module 2 */
         public static final class Mod2 { 
             public static final int driveMotorID = 5;
             public static final int angleMotorID = 6;
@@ -385,7 +385,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
         }
 
-        /* Back Right Module - Module 3 */
+        /** Back Right Module - Module 3 */
         public static final class Mod3 { 
             public static final int driveMotorID = 7;
             public static final int angleMotorID = 8;
@@ -429,19 +429,16 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
 
     public final static class ArmConstants {
         /* Ints */
-            public final static int ARM_MOTOR = 13;
+            public final static int ARM_MOTOR = 15;
             public final static int TOP_Wheel = 0;
             public final static int BOTTOM_Wheel = 1;
             public final static int CoralSensor = 0;
         /* Doubles */
-            public final static double P = 0.0;
-            public final static double I = 0.0;
-            public final static double D = 0.0;
-            public final static double L1Position = rotationsToInch.calculateRotationsIN(I, I,1);
-            public final static double L2Position = 0.0;
-            public final static double L3Position = 0.0;
+            public final static double L1Position = 1;
+            public final static double L2Position = 1.0;
+            public final static double L3Position = 122;
             public final static double L4Position = 0.0;
-            public final static double CoralStationPosition = 0.0;
+            public final static double CoralStationPosition = 54.0;
             public final static double maxSpeed = 0.0;
             public final static double maxAcceleration = 0.0;
             public final static double IntakeSpeed = 0.5;
@@ -451,11 +448,11 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
     public final static class ClimbingConstants {
         /* Ints */
             public final static int ClimbingMotor1 = 14;
-            public final static int ClimbingMotor2 = 15;
+            public final static int ClimbingMotor2 = 13;
             //TODO get the real values
-            public final static double ClimbingMotorPoseition = rotationsToInch.calculateRotationsIN(2.0, 225.0, 0.5);
+            public final static double ClimbingMotorPoseition = 62;
         /* Doubles */
-            public final static double ClimbingSpeed = 0.5;
+            public final static double ClimbingSpeed = 1;
     }
 
     public final static class OzzyGrabberConstants {

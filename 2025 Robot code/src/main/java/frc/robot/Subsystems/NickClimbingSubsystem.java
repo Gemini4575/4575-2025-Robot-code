@@ -19,17 +19,18 @@ public class NickClimbingSubsystem extends SubsystemBase{
 
     private boolean Climb1() {
         // Code to move the elevator
-        if(ClimbingMotor1.getPosition() < Math.round(ClimbingConstants.ClimbingMotorPoseition)) {
+        if(ClimbingMotor1.getPosition() < (ClimbingConstants.ClimbingMotorPoseition)) {
         ClimbingMotor1.set(ClimbingConstants.ClimbingSpeed);
         } else {
         return true;
         }
         return false;
     }
-
+    
+    @SuppressWarnings("unused")
     private boolean Climb2() {
         // Code to move the elevator
-        if(ClimbingMotor2.getPosition() < Math.round(ClimbingConstants.ClimbingMotorPoseition)) {
+        if((ClimbingMotor2.getPosition()) < (ClimbingConstants.ClimbingMotorPoseition)) {
         ClimbingMotor2.set(ClimbingConstants.ClimbingSpeed);
         } else {
         return true;
@@ -37,9 +38,31 @@ public class NickClimbingSubsystem extends SubsystemBase{
         return false;
     }
 
+    public boolean init1() {
+        // Code to move the elevator
+        if(ClimbingMotor1.getPosition() < Math.round(0)) {
+            ClimbingMotor1.set(ClimbingConstants.ClimbingSpeed);
+            } else {
+                Stop();
+            return true;
+            }
+            return false;
+    }
+
+    public boolean init2() {
+        // Code to move the elevator
+        if(ClimbingMotor2.getPosition() < Math.round(ClimbingConstants.ClimbingMotorPoseition)) {
+            ClimbingMotor2.set(ClimbingConstants.ClimbingSpeed);
+            } else {
+                Stop();
+            return true;
+            }
+            return false;
+    }
     public boolean Climb() {
         // Code to move the elevator
-        if(Climb1() && Climb2()) {
+        if(Climb1()) {
+            Stop();
             return true;
         }
         return false;

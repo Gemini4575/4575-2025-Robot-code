@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.math.MesurementToRoation;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
@@ -39,7 +38,6 @@ public class SwerveModule extends Command {
   private final SparkMax m_turningMotor;
   // private final SparkSim driveMotorSim;
 
-  private MesurementToRoation c = new MesurementToRoation();
 
   private final RelativeEncoder m_driveEncoder;
   private final AnalogInput m_turningEncoder;

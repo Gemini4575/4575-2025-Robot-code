@@ -20,7 +20,14 @@ import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.algea.IntakeAlgae;
 import frc.robot.commands.algea.Proceser;
 import frc.robot.commands.algea.EXO.OzOutake;
+import frc.robot.commands.climbing.Climb;
+import frc.robot.commands.climbing.init;
 import frc.robot.commands.coral.lili.LIPlaceCoral;
+import frc.robot.commands.coral.nora.CoralStation;
+//import frc.robot.commands.coral.nora.INtakeFromHuman;
+import frc.robot.commands.coral.nora.L1;
+import frc.robot.commands.coral.nora.L2;
+import frc.robot.commands.coral.nora.L3;
 import frc.robot.commands.drive.DriveXMeters;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.DriveTrain;
@@ -28,6 +35,7 @@ import frc.robot.subsystems.drive.DriveTrain;
 public class RobotContainer {
 
   Field2d visionPoseEstimate = new Field2d();
+  private double up = 0.0;
   /* Controllers */
   private final Joystick driver = new Joystick(1);
   private final Joystick operator = new Joystick(2);
@@ -43,6 +51,7 @@ public class RobotContainer {
   private final NickClimbingSubsystem climbingSubsystem = new NickClimbingSubsystem();
   private final OzzyGrabberSubsystem grabber = new OzzyGrabberSubsystem();
   private final LiliCoralSubystem c = new LiliCoralSubystem();
+  private final NoraArmSubsystem n = new NoraArmSubsystem();
   /* Pathplanner stuff */
   private final SendableChooser<Command> autoChoosers;
 
@@ -85,6 +94,7 @@ public class RobotContainer {
   }
 
   public void teleopInit() {
+    new init(climbingSubsystem);
     s_swerve.setDefaultCommand(
         new TelopSwerve(
             s_swerve,
@@ -96,6 +106,7 @@ public class RobotContainer {
 
   public void periodic() {
     SmartDashboard.putNumber("Encoder", (climbingSubsystem.ClimbingMotor1.getEncoder().getPosition() + climbingSubsystem.ClimbingMotor2.getEncoder().getPosition()));
+
     var visionEst = vision.getEstimatedGlobalPose();
     visionEst.ifPresent(
         est -> {
@@ -109,9 +120,7 @@ public class RobotContainer {
         });
   }
 
-  public void testPeriodic() {
-
-  }
+  
 
   private void configureBindings() {
     System.out.println("Starting configureBindings()");
@@ -135,8 +144,10 @@ public class RobotContainer {
 
       new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new OzOutake(grabber));
 
-     // new JoystickButton(operator, JoystickConstants.RED_BUTTON).onTrue();
+      new JoystickButton(operator, JoystickConstants.RED_BUTTON).onTrue(new Climb(climbingSubsystem));
       
+      new JoystickButton(operator, JoystickConstants.POV_LEFT).onTrue(new CoralStation(n)/*new INtakeFromHuman(n, visionSubsystem)*/);
+
      
     // Supplier<Pose2d> bestTargetSupplier = () -> {
     //   var target = vision.getTargets();
@@ -161,6 +172,18 @@ public class RobotContainer {
 
   public void teleopPeriodic() {
     climbingSubsystem.JoyClimb(operator.getRawAxis(JoystickConstants.LEFT_Y_AXIS));
+    if(operator.getRawButton(JoystickConstants.POV_UP)){
+      up++;
+    }
+    if(up == 1) {
+      new L1(n);
+    } else if (up == 2) {
+      new L2(n);
+    } else if (up == 3) {
+      new L3(n);
+    } else if (up > 3 || up < 1) {
+      up = 0;
+    }
   }
 
   public Command getAutonomousCommand() {
