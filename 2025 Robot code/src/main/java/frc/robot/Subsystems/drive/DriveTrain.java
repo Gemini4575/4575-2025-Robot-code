@@ -185,7 +185,7 @@ private double rot_cur;
       drive(chassisSpeedsIn.vxMetersPerSecond, chassisSpeedsIn.vyMetersPerSecond, chassisSpeedsIn.omegaRadiansPerSecond, false);
     }
 
-    private void driveDirect(ChassisSpeeds chassisSpeedsIn) {
+    public void driveDirect(ChassisSpeeds chassisSpeedsIn) {
       var speeds = ChassisSpeeds.discretize(chassisSpeedsIn, LoggedRobot.defaultPeriodSecs);
       var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(speeds);
@@ -253,7 +253,7 @@ private double rot_cur;
   //       getModulePositions());
   // }
 
-  private SwerveModulePosition[] getModulePositions() {
+  public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
       m_frontLeft.getPosition(),
       m_frontRight.getPosition(),
