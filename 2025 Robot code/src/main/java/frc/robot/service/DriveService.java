@@ -45,7 +45,7 @@ public class DriveService {
         if (!completed) {
             var currentDistance = calculateDistance();
             SmartDashboard.putNumber("Distance driven", currentDistance);
-            if (currentDistance >= distance) {
+            if (excessDistance(currentDistance) >= 0) {
                 System.out.println("INFO: drive for " + distance + " meters is completed at " + currentDistance + " meters");
                 driveTrain.stop();
                 completed = true;
@@ -66,7 +66,7 @@ public class DriveService {
     private double calculateDistance() {
         var currentPose = driveTrain.getPose();
         var poseDistance = currentPose.getTranslation().getDistance(startingPose.getTranslation());
-        if (poseDistance >= distance) {
+        if (excessDistance(poseDistance) >= 0) {
             System.out.println("WARN: According to estimated pose we drove " + poseDistance + " meters");
         }
 
@@ -84,5 +84,9 @@ public class DriveService {
             System.out.println("WARN: motor distances vs pose distance drifed. PD " + poseDistance + " MD " + avgEncDistance);
         }
         return avgEncDistance;
+    }
+
+    private double excessDistance(double val) {
+        return distance > 0 ? val - distance : distance - val;
     }
 }

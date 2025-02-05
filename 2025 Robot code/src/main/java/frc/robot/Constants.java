@@ -449,7 +449,6 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
         /* Ints */
             public final static int ClimbingMotor1 = 14;
             public final static int ClimbingMotor2 = 13;
-            //TODO get the real values
             public final static double ClimbingMotorPoseition = 62;
         /* Doubles */
             public final static double ClimbingSpeed = 1;
