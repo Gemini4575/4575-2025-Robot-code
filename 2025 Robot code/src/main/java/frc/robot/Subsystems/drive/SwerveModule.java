@@ -281,7 +281,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
   private void configDriveMotor() {
     var driveConfig = new SparkMaxConfig();
     driveConfig.inverted(true);
-    driveConfig.encoder.positionConversionFactor(Constants.SwerveConstants.driveConversionFactor);
+    driveConfig.encoder.positionConversionFactor(1); //Constants.SwerveConstants.driveConversionFactor);
     driveConfig.closedLoop.p(1);
     m_driveMotor.configure(
       driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

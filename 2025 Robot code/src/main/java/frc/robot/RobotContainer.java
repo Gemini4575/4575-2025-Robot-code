@@ -28,7 +28,9 @@ import frc.robot.commands.coral.nora.CoralStation;
 import frc.robot.commands.coral.nora.L1;
 import frc.robot.commands.coral.nora.L2;
 import frc.robot.commands.coral.nora.L3;
+import frc.robot.commands.drive.DriveStraight;
 import frc.robot.commands.drive.DriveXMeters;
+import frc.robot.commands.drive.Turn;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.DriveTrain;
 // @Component
@@ -147,6 +149,9 @@ public class RobotContainer {
       new JoystickButton(operator, JoystickConstants.RED_BUTTON).onTrue(new Climb(climbingSubsystem));
       
       new JoystickButton(operator, JoystickConstants.POV_LEFT).onTrue(new CoralStation(n)/*new INtakeFromHuman(n, visionSubsystem)*/);
+
+      new JoystickButton(operator, JoystickConstants.POV_UP).onTrue(new DriveStraight(s_swerve));
+      new JoystickButton(operator, JoystickConstants.POV_RIGHT).onTrue(new Turn(s_swerve));
 
      
     // Supplier<Pose2d> bestTargetSupplier = () -> {
