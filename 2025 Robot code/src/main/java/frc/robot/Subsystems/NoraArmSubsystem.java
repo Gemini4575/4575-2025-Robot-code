@@ -35,31 +35,31 @@ public class NoraArmSubsystem extends SubsystemBase {
     public boolean L1() {
         // Move the arm
         moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L1Position);
-        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L1Position;
+        return Math.abs(armMotor.getAbsoluteEncoder().getPosition()) == Constants.ArmConstants.L1Position;
     }
 
     public boolean L2() {
         // Stop the arm
         moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L2Position);
-        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L2Position;
+        return Math.abs(armMotor.getAbsoluteEncoder().getPosition()) == Constants.ArmConstants.L2Position;
     }
 
     public boolean L3() {
         // Reset the arm
         moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L3Position);
-        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L3Position;
+        return Math.abs(armMotor.getAbsoluteEncoder().getPosition()) == Constants.ArmConstants.L3Position;
     }
 
     public boolean L4() {
         // Move the arm to a specific position
         moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.L4Position);
-        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.L4Position;
+        return Math.abs(armMotor.getAbsoluteEncoder().getPosition()) == Constants.ArmConstants.L4Position;
     }
 
     public boolean CoralStation() {
         // Move the arm to the coral station
         moveArm(armMotor.getAbsoluteEncoder(), Constants.ArmConstants.CoralStationPosition);
-        return armMotor.getAbsoluteEncoder().getPosition() == Constants.ArmConstants.CoralStationPosition;
+        return Math.abs(armMotor.getAbsoluteEncoder().getPosition()) == Constants.ArmConstants.CoralStationPosition;
     }
     
     public boolean intakeCoral(boolean InRange) {
