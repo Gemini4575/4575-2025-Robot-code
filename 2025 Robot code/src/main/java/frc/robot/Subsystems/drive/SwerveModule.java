@@ -119,16 +119,16 @@ public class SwerveModule extends Command {
 // hard coding the offset because its better?
 switch (moduleNumber) {
   case 0: 
-  encoderOffset = -4.168;//3.769512307;//3.201315307;
+  encoderOffset = -4.217277605920897;//3.769512307;//3.201315307;
   break;
   case 1: 
-  encoderOffset = -4.080; //0.6210603266;// 6.9042456338;//5.333449307 + (Math.PI/2);
+  encoderOffset = -4.103170391231414; //0.6210603266;// 6.9042456338;//5.333449307 + (Math.PI/2);
   break;
   case 2: 
-  encoderOffset = -2.910; //4.9206722876;//0.2082833072 - (Math.PI/2);
+  encoderOffset = -2.865185267477021-13.00*Math.PI/180.00; //4.9206722876;//0.2082833072 - (Math.PI/2);
   break;
   case 3: 
-  encoderOffset = -3.495; //3.201315307;//3.769512307;
+  encoderOffset = -1.29387335787679; //3.201315307;//3.769512307;
   break;
 }
 
