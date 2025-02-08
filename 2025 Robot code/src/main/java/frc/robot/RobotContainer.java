@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.TelopSwerve;
@@ -151,10 +153,10 @@ public class RobotContainer {
       
       new JoystickButton(operator, JoystickConstants.POV_LEFT).onTrue(new CoralStation(n)/*new INtakeFromHuman(n, visionSubsystem)*/);
 
-      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveStraight(s_swerve));
+      //new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveStraight(s_swerve));
       new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new Turn(s_swerve));
 
-     
+      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new SequentialCommandGroup(new DriveStraight(s_swerve), new WaitCommand(2), new Turn(s_swerve), new DriveStraight(s_swerve)));
     // Supplier<Pose2d> bestTargetSupplier = () -> {
     //   var target = vision.getTargets();
     //   if (target != null && kTagLayout.getTagPose(target.fiduc                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ialId).isPresent()) {

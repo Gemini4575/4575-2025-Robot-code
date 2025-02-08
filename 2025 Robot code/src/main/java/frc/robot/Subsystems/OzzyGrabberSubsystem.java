@@ -17,7 +17,7 @@ public class OzzyGrabberSubsystem extends SubsystemBase{
     public OzzyGrabberSubsystem() {
         // Initialization code here
         GrabberMotor = new MySparkMax(OzzyGrabberConstants.GrabberMotor, MotorType.kBrushless);
-        PoseMotor = new MySparkMax(OzzyGrabberConstants.PosetionMotor, MotorType.kBrushless);
+        PoseMotor = new MySparkMax(OzzyGrabberConstants.PosetionMotor, MotorType.kBrushed);
         AlgeaSensor = new DigitalInput(OzzyGrabberConstants.BeamBreak);
     }
 
