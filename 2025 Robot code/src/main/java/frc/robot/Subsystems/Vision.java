@@ -57,6 +57,9 @@ public class Vision extends SubsystemBase {
     private PhotonCameraSim cameraSim;
     private VisionSystemSim visionSim;
 
+    private PhotonTrackedTarget currentTagTarget;
+    private long lastTagUpdate;
+
     public Vision() {
         super();
         tagCamera = new PhotonCamera(kTagCameraName);
@@ -98,11 +101,12 @@ public class Vision extends SubsystemBase {
         return algaeCamera.getLatestResult().hasTargets() ? algaeCamera.getLatestResult().getBestTarget() : null;
     }
 
-    public PhotonTrackedTarget getTargets() {
-        if (tagCamera.getLatestResult().hasTargets()) {
-            return tagCamera.getLatestResult().getBestTarget();
-        }
-        return null;
+    public PhotonTrackedTarget getTagTarget() {
+        return currentTagTarget;
+        // if (tagCamera.getLatestResult().hasTargets()) {
+        //     return tagCamera.getLatestResult().getBestTarget();
+        // }
+        // return null;
     }
 
     public PhotonCamera getTagCamera() {
@@ -225,6 +229,19 @@ public class Vision extends SubsystemBase {
         if (!Robot.isSimulation())
             return null;
         return visionSim.getDebugField();
+    }
+
+    @Override
+    public void periodic() {
+        var newResults = tagCamera.getAllUnreadResults();
+        if (newResults != null && !newResults.isEmpty()) {
+            currentTagTarget = newResults.get(newResults.size()-1).getBestTarget();
+            lastTagUpdate = System.currentTimeMillis();
+        } else {
+            if (System.currentTimeMillis() > lastTagUpdate + 1000) {
+                currentTagTarget = null;
+            }
+        }
     }
 
 }

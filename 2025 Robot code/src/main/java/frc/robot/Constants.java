@@ -278,7 +278,7 @@ public class Constants {
             case Blue -> new Rotation2d(0);
         };
     }
-    public static final double stickDeadband = 0.3;
+    public static final double stickDeadband = 0.2;
     
     public static final class Vision {
         public static final String kTagCameraName = "Arducam1";
@@ -355,7 +355,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             /**
              * In inches
              */
-            public static final double wheeldiameter = 4;
+            public static final double wheeldiameter = Units.inchesToMeters(4.0);
         public static final class Mod0 { 
             public static final int driveMotorID = 1;
             public static final int angleMotorID = 2;
@@ -449,7 +449,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
         /* Ints */
             public final static int ClimbingMotor1 = 14;
             public final static int ClimbingMotor2 = 13;
-            public final static double ClimbingMotorPoseition = 62;
+            public final static double ClimbingMotorPoseition = 76;
         /* Doubles */
             public final static double ClimbingSpeed = 1;
     }

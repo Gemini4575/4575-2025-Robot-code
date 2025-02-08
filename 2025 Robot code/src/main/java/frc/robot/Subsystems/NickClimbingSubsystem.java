@@ -27,7 +27,6 @@ public class NickClimbingSubsystem extends SubsystemBase{
         return false;
     }
     
-    @SuppressWarnings("unused")
     private boolean Climb2() {
         // Code to move the elevator
         if((ClimbingMotor2.getPosition()) < (ClimbingConstants.ClimbingMotorPoseition)) {
@@ -61,7 +60,7 @@ public class NickClimbingSubsystem extends SubsystemBase{
     }
     public boolean Climb() {
         // Code to move the elevator
-        if(Climb1()) {
+        if(Climb1() || Climb2()) {
             Stop();
             return true;
         }

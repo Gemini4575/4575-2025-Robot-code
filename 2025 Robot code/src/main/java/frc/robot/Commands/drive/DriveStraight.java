@@ -6,7 +6,7 @@ import frc.robot.subsystems.drive.DriveTrain;
 
 public class DriveStraight extends Command {
 
-    private DriveService driveService;
+    private final DriveService driveService;
 
     public DriveStraight(DriveTrain driveTrain) {
         driveService = new DriveService(driveTrain);
@@ -15,7 +15,7 @@ public class DriveStraight extends Command {
 
     @Override
     public void initialize() {
-        driveService.startDriving(0, 1, 0.1);
+        driveService.startDriving(1, 0.5, 0.005);
     }
 
     @Override

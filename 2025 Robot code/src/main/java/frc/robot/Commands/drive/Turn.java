@@ -15,7 +15,7 @@ public class Turn extends Command {
 
     @Override
     public void initialize() {
-        turnService.startTurning(90, Math.PI/30.0);
+        turnService.startTurning(90, Math.PI/90.0);
     }
 
     @Override

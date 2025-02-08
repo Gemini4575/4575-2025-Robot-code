@@ -128,7 +128,7 @@ switch (moduleNumber) {
   encoderOffset = -2.865185267477021-13.00*Math.PI/180.00; //4.9206722876;//0.2082833072 - (Math.PI/2);
   break;
   case 3: 
-  encoderOffset = -1.29387335787679; //3.201315307;//3.769512307;
+  encoderOffset = -2.187059995042817; //3.201315307;//3.769512307;
   break;
 }
 
@@ -241,11 +241,11 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
     }
     
     
-    SmartDashboard.putNumber("turnOutput",turnOutput);
-     SmartDashboard.putNumber("Drive", ((driveOutput + driveFeedforward) /2.1) /2);
-    SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));
+  
     if(RobotState.isTest()) {
-     
+      SmartDashboard.putNumber("turnOutput",turnOutput);
+      SmartDashboard.putNumber("Drive", ((driveOutput + driveFeedforward) /2.1) /2);
+      SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));
       SmartDashboard.putNumber("Turning stuff", turnOutput + turnFeedforward);
       SmartDashboard.putNumber("target " + moduleNumber, state.angle.getRadians());
     }

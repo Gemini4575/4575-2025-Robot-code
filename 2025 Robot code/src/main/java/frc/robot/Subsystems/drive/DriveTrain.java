@@ -20,6 +20,7 @@ import com.pathplanner.lib.path.PathConstraints;
 // import com.pathplanner.lib.config.RobotConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+import com.studica.frc.AHRS.NavXUpdateRate;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -75,7 +76,7 @@ private final SwerveModule m_frontLeft = new SwerveModule(Constants.SwerveConsta
 private final SwerveModule m_frontRight = new SwerveModule(Constants.SwerveConstants.Mod2.constants);
 
 //  private final Gyro_EPRA m_gyro = new Gyro_EPRA();
-private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
+private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI, NavXUpdateRate.k100Hz);
 
 private Double[] encoderDoubles = new Double[4];
 private Double[] curencoderDoubles = new Double[4];
@@ -201,7 +202,7 @@ private double rot_cur;
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
             fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(-1*ySpeed, xSpeed, rot, m_gyro.getRotation2d())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(-1*xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -226,7 +227,7 @@ private double rot_cur;
   }
 
   public void stop() {
-    drive(0, 0, 0, true);
+    drive(0, 0, 0, false);
   }
 
   public ChassisSpeeds getSpeed() {

@@ -56,9 +56,9 @@ public class TelopSwerve extends Command {
         }
 
         /* Get Values, Deadband*/
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband) * slowModeFactor;
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) * slowModeFactor;
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband) * slowModeFactor;
+        double strafeVal = MathUtil.applyDeadband(translationSup.getAsDouble(), 0.2) * slowModeFactor;
+        double translationVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), 0.3) * slowModeFactor;
+        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), 0.4) * slowModeFactor;
 
         /* Drive */
         if (!RobotState.isAutonomous()) {

@@ -29,7 +29,7 @@ public class TurnService {
     public boolean keepTurning() {
         if (!completed) {
             var degreesTurnedSoFar = calculateTurn();
-            SmartDashboard.putNumber("Distance driven", degreesTurnedSoFar);
+            SmartDashboard.putNumber("Angle turned", degreesTurnedSoFar);
             if (excessAngle(degreesTurnedSoFar) >= 0) {
                 System.out.println("INFO: turn for " + degreesToTurn + " degrees is completed at " + degreesTurnedSoFar
                         + " degrees");

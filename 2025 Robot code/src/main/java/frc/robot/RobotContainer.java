@@ -29,6 +29,7 @@ import frc.robot.commands.coral.nora.L1;
 import frc.robot.commands.coral.nora.L2;
 import frc.robot.commands.coral.nora.L3;
 import frc.robot.commands.drive.DriveStraight;
+import frc.robot.commands.drive.DriveTwoardsAprillTag;
 import frc.robot.commands.drive.DriveXMeters;
 import frc.robot.commands.drive.Turn;
 import frc.robot.subsystems.*;
@@ -49,7 +50,7 @@ public class RobotContainer {
   //private final NoraArmSubsystem elevatorSubsystem = new NoraArmSubsystem();
   private final DriveTrain s_swerve = new DriveTrain();
   private final Vision vision = new Vision();
-  //private final VisionSubsystem visionSubsystem = new VisionSubsystem(vision);
+  // private final VisionSubsystem visionSubsystem = new VisionSubsystem(vision);
   private final NickClimbingSubsystem climbingSubsystem = new NickClimbingSubsystem();
   private final OzzyGrabberSubsystem grabber = new OzzyGrabberSubsystem();
   private final LiliCoralSubystem c = new LiliCoralSubystem();
@@ -130,8 +131,8 @@ public class RobotContainer {
     /* Driver Controls */
       zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
     /* Operator Controls */
-      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
-        .onTrue(new DriveXMeters(s_swerve, 0.5)/*new DriveTwoardsAprillTag(vision, s_swerve)*/);
+    //  new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
+    //    .onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
 
       new JoystickButton(operator, JoystickConstants.BLUE_BUTTON).
         and(grabber.BeamBreak()).
@@ -140,9 +141,9 @@ public class RobotContainer {
         and(grabber.FalseBeamnBreak()).
         onTrue(new IntakeAlgae(grabber));
 
-      new JoystickButton(operator, 1).//JoystickConstants.GREEN_BUTTON).
-        and(c.Coral()).
-        onTrue(new LIPlaceCoral(c, s_swerve));
+      // new JoystickButton(operator, 1).//JoystickConstants.GREEN_BUTTON).
+      //   and(c.Coral()).
+      //   onTrue(new LIPlaceCoral(c, s_swerve));
 
       new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new OzOutake(grabber));
 
@@ -150,8 +151,8 @@ public class RobotContainer {
       
       new JoystickButton(operator, JoystickConstants.POV_LEFT).onTrue(new CoralStation(n)/*new INtakeFromHuman(n, visionSubsystem)*/);
 
-      new JoystickButton(operator, JoystickConstants.POV_UP).onTrue(new DriveStraight(s_swerve));
-      new JoystickButton(operator, JoystickConstants.POV_RIGHT).onTrue(new Turn(s_swerve));
+      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveStraight(s_swerve));
+      new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new Turn(s_swerve));
 
      
     // Supplier<Pose2d> bestTargetSupplier = () -> {

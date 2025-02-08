@@ -73,7 +73,9 @@ public class DriveService {
         var currentDriveValues = getEncoderPositions();
         var encDistances = new ArrayList<Double>();
         for (int i = 0; i < currentDriveValues.length; i ++) {
-            encDistances.add(currentDriveValues[i] - startingDriveValues[i]);
+            double oneDistance = Math.abs(currentDriveValues[i] - startingDriveValues[i]);
+            SmartDashboard.putNumber("Module " + i + " distance", oneDistance);
+            encDistances.add(oneDistance);
         }
         Collections.sort(encDistances);
         if (encDistances.get(encDistances.size()-1) -  encDistances.get(0) > DRIFT_THRESHOLD) {
