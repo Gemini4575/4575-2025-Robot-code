@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -22,6 +23,7 @@ import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.algea.IntakeAlgae;
 import frc.robot.commands.algea.Proceser;
 import frc.robot.commands.algea.EXO.OzOutake;
+import frc.robot.commands.auto.DriveAndDropToOne;
 import frc.robot.commands.climbing.Climb;
 import frc.robot.commands.climbing.init;
 import frc.robot.commands.coral.lili.LIPlaceCoral;
@@ -125,7 +127,9 @@ public class RobotContainer {
         });
   }
 
-  
+  public void autonomousPeriodic() {
+    new DriveAndDropToOne(s_swerve, c).schedule();
+  }
 
   private void configureBindings() {
     System.out.println("Starting configureBindings()");

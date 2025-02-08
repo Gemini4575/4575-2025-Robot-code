@@ -1,38 +1,33 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.service.DriveService;
 import frc.robot.subsystems.drive.DriveTrain;
 
 public class DriveXMeters extends Command {
-    DriveTrain s;
-    double meters;
+    
+    double meters = 0.0;
 
-    public DriveXMeters(DriveTrain suDriveTrain, double meters) {
-        this.s = suDriveTrain;
+    private final DriveService driveService;
+
+    public DriveXMeters(DriveTrain driveTrain, double meters) {
+        driveService = new DriveService(driveTrain);
         this.meters = meters;
-        if (meters == 0) {
-            throw new RuntimeException("Meters must be over 0");
-        }
-        addRequirements(s);
+        addRequirements(driveTrain);
     }
 
     @Override
     public void initialize() {
-        s.first = true;
-        isFinished = false;
+        driveService.startDriving(1, meters, 0.005);
     }
-    boolean isFinished;
-    
-    @Override
-    public boolean isFinished() {
-        return isFinished;
-    }
-
 
     @Override
     public void execute() {
-        if (s.DriveMeters(meters)) {
-           isFinished = true;
-        }
+        driveService.keepDriving();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return !driveService.keepDriving();
     }
 }

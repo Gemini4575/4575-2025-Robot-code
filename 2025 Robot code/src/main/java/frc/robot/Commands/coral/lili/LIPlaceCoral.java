@@ -2,17 +2,13 @@ package frc.robot.commands.coral.lili;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.drive.DriveXMeters;
 import frc.robot.subsystems.LiliCoralSubystem;
-import frc.robot.subsystems.drive.DriveTrain;
 
 public class LIPlaceCoral extends SequentialCommandGroup{
-    public LIPlaceCoral(LiliCoralSubystem c, DriveTrain s) {
+    public LIPlaceCoral(LiliCoralSubystem c) {
         addCommands(
             new EXODropGate(c),
             new WaitCommand(1),
-            //TODO maybe dont automate this
-            new DriveXMeters(s, 0.051),
             new LIIntakeCoral(c)
         );
     }
