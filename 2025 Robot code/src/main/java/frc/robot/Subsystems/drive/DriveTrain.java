@@ -138,7 +138,7 @@ private double rot_cur;
             this::getPose, // Robot pose supplier
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> driveDirect(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                     new PIDConstants(1, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(16.5, 0.0, 0.0) // Rotation PID constants
@@ -198,6 +198,12 @@ private double rot_cur;
         m_backLeft.setStateDirectly(swerveModuleStates[2]);
         m_backRight.setStateDirectly(swerveModuleStates[3]);
     }
+    public void driveViaController(double meters) {
+      m_frontLeft.driveDistance(meters);
+      m_frontRight.driveDistance(meters);
+      m_backLeft.driveDistance(meters);
+      m_backRight.driveDistance(meters);
+    }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     SmartDashboard.putNumber("Gyro", m_gyro.getAngle());
@@ -229,7 +235,11 @@ private double rot_cur;
   }
 
   public void stop() {
-    drive(-0, -0, -0, false);
+    //drive(-0, -0, -0, false);
+    m_frontLeft.stop();
+    m_frontRight.stop();
+    m_backLeft.stop();
+    m_backRight.stop();
   }
 
   public ChassisSpeeds getSpeed() {

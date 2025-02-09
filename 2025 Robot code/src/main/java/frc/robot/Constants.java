@@ -361,8 +361,9 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 2;
             public static final int canCoderID = 0;
             public static final double angleOffset = 3.201315307;
+            public static final double speedAdjustmentFactor = 0.85;//1.798006206333298/4.0;//2.092980946810132;
             public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
 
         /** Front Right Module - Module 1 */
@@ -371,8 +372,9 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 4;
             public static final int canCoderID = 1;
             public static final double angleOffset = 5.333449307;
+            public static final double speedAdjustmentFactor = 1;//1.798006206333298/1.891452461749773;
             public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
         
         /** Back Left Module - Module 2 */
@@ -381,8 +383,9 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 6;
             public static final int canCoderID = 2;
             public static final double angleOffset = 0.2082833072;
+            public static final double speedAdjustmentFactor = 1;//1.798006206333298/1.8846972405721;
             public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
 
         /** Back Right Module - Module 3 */
@@ -391,8 +394,9 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 8;
             public static final int canCoderID = 3;
             public static final double angleOffset = 3.769512307;
+            public static final double speedAdjustmentFactor = 1.05;
             public static final SwerveModuleConstants constants = 
-                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID);
+                new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
 
         public static final double one_meter = rotationsToInch.calculateRotationsM(1, 1,1);

@@ -29,7 +29,7 @@ public class MotionService {
 
     public synchronized void stop(boolean force) {
         SmartDashboard.putString("Motion Status", "Stopping");
-        if (force) {
+        if (force && currentCommand != null) {
             currentCommand.end(true);
         }
         motions = null;

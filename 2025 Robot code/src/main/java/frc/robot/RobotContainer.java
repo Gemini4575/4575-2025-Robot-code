@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
+import frc.robot.commands.StartMotionSequence;
 import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.algea.IntakeAlgae;
 import frc.robot.commands.algea.Proceser;
@@ -38,8 +39,13 @@ import frc.robot.commands.drive.DriveStraight;
 import frc.robot.commands.drive.DriveTwoardsAprillTag;
 import frc.robot.commands.drive.DriveXMeters;
 import frc.robot.commands.drive.Turn;
+import frc.robot.service.MotionService;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.DriveTrain;
+
+import static frc.robot.datamodel.MotionDirective.drive;
+import static frc.robot.datamodel.MotionDirective.turn;
+
 // @Component
 public class RobotContainer {
 
@@ -65,6 +71,8 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChoosers;
 
   private Field2d autoField;
+
+  private final MotionService motionService = new MotionService(s_swerve);
 
   public RobotContainer() {
     System.out.println("Starting RobotContainer()");
@@ -114,6 +122,8 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    motionService.periodic();
+
     SmartDashboard.putNumber("Encoder", (climbingSubsystem.ClimbingMotor1.getEncoder().getPosition() + climbingSubsystem.ClimbingMotor2.getEncoder().getPosition()));
 
     var visionEst = vision.getEstimatedGlobalPose();
@@ -165,10 +175,10 @@ public class RobotContainer {
       
       new JoystickButton(operator, JoystickConstants.POV_LEFT).onTrue(new CoralStation(n)/*new INtakeFromHuman(n, visionSubsystem)*/);
 
-      //new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new DriveStraight(s_swerve));
-      new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new Turn(s_swerve));
+      new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new DriveStraight(s_swerve));
+      //new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new Turn(s_swerve));
 
-      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new SequentialCommandGroup(new DriveStraight(s_swerve), new WaitCommand(2), new Turn(s_swerve), new DriveStraight(s_swerve)));
+      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new StartMotionSequence(motionService, turn(90), drive(0.5), turn(90), drive(0.5)));
     // Supplier<Pose2d> bestTargetSupplier = () -> {
     //   var target = vision.getTargets();
     //   if (target != null && kTagLayout.getTagPose(target.fiduc                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ialId).isPresent()) {
@@ -208,5 +218,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChoosers.getSelected();
+  }
+
+  public void onDisable() {
+    motionService.stop(true);
   }
 }

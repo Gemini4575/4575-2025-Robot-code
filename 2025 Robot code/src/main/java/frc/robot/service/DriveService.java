@@ -16,6 +16,8 @@ public class DriveService {
     private final DriveTrain driveTrain;
 
     private double distance;
+    private double speed;
+    private int driveMethod;
     private Pose2d startingPose;
     private double[] startingDriveValues;
     private boolean completed = false;
@@ -26,11 +28,17 @@ public class DriveService {
 
     public void startDriving(int driveMethod, double meters, double speed) {
         this.distance = meters;
+        this.speed = speed;
+        this.driveMethod = driveMethod;
         this.startingPose = driveTrain.getPose();
         this.startingDriveValues = getEncoderPositions();
         this.completed = false;
 
         //actually start driving now
+        doDrive();
+    }
+
+    private void doDrive() {
         switch(driveMethod) {
             case 1:
                 driveTrain.driveRobotRelative(new ChassisSpeeds(speed, 0, 0));
@@ -39,7 +47,11 @@ public class DriveService {
                 driveTrain.driveDirect(new ChassisSpeeds(speed, 0, 0));
                 break;
             case 3:
-                driveTrain.driveRobotRelative(new ChassisSpeeds(speed, 0, 0));
+                driveTrain.driveFieldRelative(new ChassisSpeeds(speed, 0, 0));
+                break;
+            case 4:
+                driveTrain.driveViaController(distance);
+                break;
         }
     }
 
@@ -51,6 +63,8 @@ public class DriveService {
                 System.out.println("INFO: drive for " + distance + " meters is completed at " + currentDistance + " meters");
                 driveTrain.stop();
                 completed = true;
+            } else {
+                doDrive();
             }
         }
         return !completed;

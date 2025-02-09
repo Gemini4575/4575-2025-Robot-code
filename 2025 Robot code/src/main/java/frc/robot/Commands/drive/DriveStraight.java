@@ -15,7 +15,7 @@ public class DriveStraight extends Command {
 
     @Override
     public void initialize() {
-        driveService.startDriving(1, 0.5, 0.005);
+        driveService.startDriving(1, 1, 0.005);
     }
 
     @Override
