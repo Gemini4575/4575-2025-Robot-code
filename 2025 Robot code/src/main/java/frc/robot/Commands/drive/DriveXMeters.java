@@ -8,26 +8,32 @@ public class DriveXMeters extends Command {
     
     double meters = 0.0;
 
+    int drivemethod;
+    private boolean isFinished = false;
     private final DriveService driveService;
 
-    public DriveXMeters(DriveTrain driveTrain, double meters) {
+    public DriveXMeters(DriveTrain driveTrain, double meters, int DRIVEMETHOD) {
         driveService = new DriveService(driveTrain);
         this.meters = meters;
+        this.drivemethod = DRIVEMETHOD;
         addRequirements(driveTrain);
     }
 
     @Override
     public void initialize() {
-        driveService.startDriving(1, meters, 0.005);
+        isFinished = false;
+        driveService.startDriving(drivemethod, meters, 0.005);
     }
 
     @Override
     public void execute() {
-        driveService.keepDriving();
+        if(!driveService.keepDriving()) {
+            isFinished = true;
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return !driveService.keepDriving();
+        return isFinished;
     }
 }

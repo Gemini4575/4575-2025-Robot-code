@@ -10,7 +10,7 @@ import frc.robot.subsystems.drive.DriveTrain;
 public class DriveAndDropToOne extends SequentialCommandGroup{
     public DriveAndDropToOne(DriveTrain s, LiliCoralSubystem c) {
         addCommands(
-            new DriveXMeters(s, Units.inchesToMeters(88)),
+            new DriveXMeters(s, Units.inchesToMeters(75), 3),
             new LIPlaceCoral(c)
         );
     }

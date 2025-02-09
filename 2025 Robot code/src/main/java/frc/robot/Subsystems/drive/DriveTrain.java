@@ -185,7 +185,9 @@ private double rot_cur;
     public void driveRobotRelative(ChassisSpeeds chassisSpeedsIn) {
       drive(chassisSpeedsIn.vxMetersPerSecond, chassisSpeedsIn.vyMetersPerSecond, chassisSpeedsIn.omegaRadiansPerSecond, false);
     }
-
+    public void driveFieldRelative(ChassisSpeeds c) {
+      drive(c.vxMetersPerSecond, c.vyMetersPerSecond, 0, true);
+    }
     public void driveDirect(ChassisSpeeds chassisSpeedsIn) {
       var speeds = ChassisSpeeds.discretize(chassisSpeedsIn, LoggedRobot.defaultPeriodSecs);
       var swerveModuleStates =
@@ -227,7 +229,7 @@ private double rot_cur;
   }
 
   public void stop() {
-    drive(0, 0, 0, false);
+    drive(-0, -0, -0, false);
   }
 
   public ChassisSpeeds getSpeed() {

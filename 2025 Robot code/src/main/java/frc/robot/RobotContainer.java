@@ -5,6 +5,8 @@
 package frc.robot;
 
 
+import java.util.function.DoubleToIntFunction;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
@@ -126,9 +128,15 @@ public class RobotContainer {
           visionPoseEstimate.setRobotPose(est.estimatedPose.toPose2d());
         });
   }
-
+  double first = 0.0;
+  public void autonomousInit() {
+    first = 0.0;
+  }
   public void autonomousPeriodic() {
-    new DriveAndDropToOne(s_swerve, c).schedule();
+    if(first == 0) {
+      new DriveAndDropToOne(s_swerve, c).schedule();
+      first++;
+    }
   }
 
   private void configureBindings() {

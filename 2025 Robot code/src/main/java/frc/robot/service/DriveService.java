@@ -38,6 +38,8 @@ public class DriveService {
             case 2:
                 driveTrain.driveDirect(new ChassisSpeeds(speed, 0, 0));
                 break;
+            case 3:
+                driveTrain.driveRobotRelative(new ChassisSpeeds(speed, 0, 0));
         }
     }
 
