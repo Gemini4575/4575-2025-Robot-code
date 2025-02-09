@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LiliCoralConstants;
@@ -12,7 +13,8 @@ public class LiliCoralSubystem extends SubsystemBase{
     DigitalInput top;
     DigitalInput bottom;
     DigitalInput coral;
-
+    Timer timer = new Timer();
+    // 0.540528
     public LiliCoralSubystem(){
         gate = new Spark(LiliCoralConstants.CoarlMotor);
         top = new DigitalInput(LiliCoralConstants.Top);
