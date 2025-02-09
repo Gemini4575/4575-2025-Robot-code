@@ -63,7 +63,7 @@ public class TelopSwerve extends Command {
         /* Drive */
         if (!RobotState.isAutonomous()) {
             s_Swerve.drive(
-            strafeVal,
+            -strafeVal,
             translationVal,
             rotationVal,
             true
