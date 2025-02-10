@@ -201,6 +201,7 @@ public class RobotContainer {
   }
 
   public void teleopPeriodic() {
+    c.JoyControll(operator.getRawAxis(JoystickConstants.RIGHT_Y_AXIS));
     climbingSubsystem.JoyClimb(operator.getRawAxis(JoystickConstants.LEFT_Y_AXIS));
     if(operator.getRawButtonPressed(JoystickConstants.POV_UP)){
       up++;
