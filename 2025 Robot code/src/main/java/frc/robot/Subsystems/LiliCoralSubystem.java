@@ -65,7 +65,7 @@ public class LiliCoralSubystem extends SubsystemBase{
     }
 
     public void JoyControll(double joy) {
-        gate.set(0);
+        gate.set(joy);
     }
 
     public BooleanSupplier Coral() {
