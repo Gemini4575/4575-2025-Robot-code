@@ -200,18 +200,37 @@ public class RobotContainer {
     System.out.println("Ended configureBindings()");
   }
 
+  boolean teleFirst = false;
+
+  public void telopInit() {
+    teleFirst = false;
+      }
+
   public void teleopPeriodic() {
     c.JoyControll(operator.getRawAxis(JoystickConstants.RIGHT_Y_AXIS));
     climbingSubsystem.JoyClimb(operator.getRawAxis(JoystickConstants.LEFT_Y_AXIS));
     if(operator.getRawButtonPressed(JoystickConstants.POV_UP)){
       up++;
+      teleFirst = true;
     }
     if(up == 1) {
-      new L1(n);
+      if(teleFirst) {
+        up = 100;
+        teleFirst = false;
+        new L1(n).schedule();
+      }
     } else if (up == 2) {
-      new L2(n);
+      if(teleFirst) {
+        up = 100;
+        teleFirst = false;
+        new L2(n).schedule();
+      }
     } else if (up == 3) {
-      new L3(n);
+      if(teleFirst) {
+        up = 100;
+        teleFirst = false;
+        new L3(n).schedule();
+      }
     } else if (up > 3) {
       up = 0;
     }
