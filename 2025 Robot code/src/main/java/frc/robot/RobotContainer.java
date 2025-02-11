@@ -5,7 +5,6 @@
 package frc.robot;
 
 
-import java.util.function.DoubleToIntFunction;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -16,9 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.StartMotionSequence;
@@ -29,16 +25,12 @@ import frc.robot.commands.algea.EXO.OzOutake;
 import frc.robot.commands.auto.DriveAndDropToOne;
 import frc.robot.commands.climbing.Climb;
 import frc.robot.commands.climbing.init;
-import frc.robot.commands.coral.lili.LIPlaceCoral;
 import frc.robot.commands.coral.nora.CoralStation;
 //import frc.robot.commands.coral.nora.INtakeFromHuman;
 import frc.robot.commands.coral.nora.L1;
 import frc.robot.commands.coral.nora.L2;
 import frc.robot.commands.coral.nora.L3;
 import frc.robot.commands.drive.DriveStraight;
-import frc.robot.commands.drive.DriveTwoardsAprillTag;
-import frc.robot.commands.drive.DriveXMeters;
-import frc.robot.commands.drive.Turn;
 import frc.robot.service.MotionService;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.DriveTrain;
@@ -109,8 +101,11 @@ public class RobotContainer {
       autoField.getObject("path").setPoses(poses);
     });
   }
+  
+  boolean teleFirst = false;
 
   public void teleopInit() {
+    teleFirst = false;
     new init(climbingSubsystem);
     s_swerve.setDefaultCommand(
         new TelopSwerve(
@@ -199,12 +194,6 @@ public class RobotContainer {
 
     System.out.println("Ended configureBindings()");
   }
-
-  boolean teleFirst = false;
-
-  public void telopInit() {
-    teleFirst = false;
-      }
 
   public void teleopPeriodic() {
     c.JoyControll(operator.getRawAxis(JoystickConstants.RIGHT_Y_AXIS));

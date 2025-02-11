@@ -2,21 +2,23 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LiliCoralConstants;
 
 public class LiliCoralSubystem extends SubsystemBase{
-    Spark gate;
+    SparkMax gate;
     DigitalInput top;
     DigitalInput bottom;
     DigitalInput coral;
     Timer timer = new Timer();
     // 0.540528
     public LiliCoralSubystem(){
-        gate = new Spark(LiliCoralConstants.CoarlMotor);
+        gate = new SparkMax(LiliCoralConstants.CoarlMotor, MotorType.kBrushed);
         top = new DigitalInput(LiliCoralConstants.Top);
         bottom = new DigitalInput(LiliCoralConstants.Bottom);
         coral = new DigitalInput(LiliCoralConstants.Coral);
@@ -63,7 +65,11 @@ public class LiliCoralSubystem extends SubsystemBase{
         }
         return bottom();
     }
-
+    /**
+     * SHOULD NOT BE USED IN COMP
+     * @param joy the joystick axis your using
+     */
+    @Deprecated
     public void JoyControll(double joy) {
         gate.set(joy);
     }
