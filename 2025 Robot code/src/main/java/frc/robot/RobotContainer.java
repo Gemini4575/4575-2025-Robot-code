@@ -43,28 +43,29 @@ public class RobotContainer {
 
   Field2d visionPoseEstimate = new Field2d();
   private double up = 0.0;
+
   /* Controllers */
-  private final Joystick driver = new Joystick(1);
-  private final Joystick operator = new Joystick(2);
+    private final Joystick driver = new Joystick(1);
+    private final Joystick operator = new Joystick(2);
 
   /* Driver Buttons */
-  private final JoystickButton zeroGyro = new JoystickButton(driver, JoystickConstants.BACK_BUTTON);
+    private final JoystickButton zeroGyro = new JoystickButton(driver, JoystickConstants.BACK_BUTTON);
 
   /* Subsystems */
-  //private final NoraArmSubsystem elevatorSubsystem = new NoraArmSubsystem();
-  private final DriveTrain s_swerve = new DriveTrain();
-  private final Vision vision = new Vision();
-  // private final VisionSubsystem visionSubsystem = new VisionSubsystem(vision);
-  private final NickClimbingSubsystem climbingSubsystem = new NickClimbingSubsystem();
-  private final OzzyGrabberSubsystem grabber = new OzzyGrabberSubsystem();
-  private final LiliCoralSubystem c = new LiliCoralSubystem();
-  private final NoraArmSubsystem n = new NoraArmSubsystem();
+    // private final VisionSubsystem VS = new VisionSubsystem(vision);
+    private final NickClimbingSubsystem nc = new NickClimbingSubsystem();
+    private final OzzyGrabberSubsystem g = new OzzyGrabberSubsystem();
+    private final LiliCoralSubystem c = new LiliCoralSubystem();
+    private final NoraArmSubsystem n = new NoraArmSubsystem();
+    private final DriveTrain D = new DriveTrain();
+    private final Vision V = new Vision();
+
   /* Pathplanner stuff */
-  private final SendableChooser<Command> autoChoosers;
+    private final SendableChooser<Command> autoChoosers;
 
   private Field2d autoField;
 
-  private final MotionService motionService = new MotionService(s_swerve);
+  private final MotionService motionService = new MotionService(D);
 
   public RobotContainer() {
     System.out.println("Starting RobotContainer()");
@@ -106,10 +107,10 @@ public class RobotContainer {
 
   public void teleopInit() {
     teleFirst = false;
-    new init(climbingSubsystem);
-    s_swerve.setDefaultCommand(
+    new init(nc);
+    D.setDefaultCommand(
         new TelopSwerve(
-            s_swerve,
+            D,
             () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_Y_AXIS),
             () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_X_AXIS),
             () -> -driver.getTwist(),
@@ -119,28 +120,29 @@ public class RobotContainer {
   public void periodic() {
     motionService.periodic();
 
-    SmartDashboard.putNumber("Encoder", (climbingSubsystem.ClimbingMotor1.getEncoder().getPosition() + climbingSubsystem.ClimbingMotor2.getEncoder().getPosition()));
+    SmartDashboard.putNumber("Encoder", (nc.ClimbingMotor1.getEncoder().getPosition() + nc.ClimbingMotor2.getEncoder().getPosition()));
 
-    var visionEst = vision.getEstimatedGlobalPose();
+    var visionEst = V.getEstimatedGlobalPose();
     visionEst.ifPresent(
         est -> {
           // Change our trust in the measurement based on the tags we can see
-          var estStdDevs = vision.getEstimationStdDevs();
+          var estStdDevs = V.getEstimationStdDevs();
 
-          s_swerve.addVisionMeasurement(
+          D.addVisionMeasurement(
               est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 
           visionPoseEstimate.setRobotPose(est.estimatedPose.toPose2d());
         });
   }
-  double first = 0.0;
+  double autoFirst = 0.0;
   public void autonomousInit() {
-    first = 0.0;
+    autoFirst = 0.0;
   }
+
   public void autonomousPeriodic() {
-    if(first == 0) {
-      new DriveAndDropToOne(s_swerve, c).schedule();
-      first++;
+    if(autoFirst == 0) {
+      new DriveAndDropToOne(D, c).schedule();
+      autoFirst++;
     }
   }
 
@@ -148,32 +150,39 @@ public class RobotContainer {
     System.out.println("Starting configureBindings()");
 
     /* Driver Controls */
-      zeroGyro.onTrue(new InstantCommand(() -> s_swerve.ResetDrives()));
+      zeroGyro.onTrue(new InstantCommand(() -> D.ResetDrives()));
     /* Operator Controls */
     //  new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
     //    .onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
 
-      new JoystickButton(operator, JoystickConstants.BLUE_BUTTON).
-        and(grabber.BeamBreak()).
-        onTrue(new Proceser(grabber, new JoystickButton(operator, JoystickConstants.BLUE_BUTTON))).
-        or(new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)).
-        and(grabber.FalseBeamnBreak()).
-        onTrue(new IntakeAlgae(grabber));
+      new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)
+        .and(g.BeamBreak())
+        .onTrue(new Proceser(g, new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)))
+        .or(new JoystickButton(operator, JoystickConstants.BLUE_BUTTON))
+        .and(g.FalseBeamnBreak())
+        .onTrue(new IntakeAlgae(g));
 
       // new JoystickButton(operator, 1).//JoystickConstants.GREEN_BUTTON).
       //   and(c.Coral()).
       //   onTrue(new LIPlaceCoral(c, s_swerve));
 
-      new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON).onTrue(new OzOutake(grabber));
+      new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON)
+        .onTrue(new OzOutake(g));
 
-      new JoystickButton(operator, JoystickConstants.RED_BUTTON).onTrue(new Climb(climbingSubsystem));
+      new JoystickButton(operator, JoystickConstants.RED_BUTTON)
+        .onTrue(new Climb(nc));
       
-      new JoystickButton(operator, JoystickConstants.POV_LEFT).onTrue(new CoralStation(n)/*new INtakeFromHuman(n, visionSubsystem)*/);
+      new JoystickButton(operator, JoystickConstants.POV_LEFT)
+        .onTrue(new CoralStation(n)/*new INtakeFromHuman(n, visionSubsystem)*/);
 
-      new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new DriveStraight(s_swerve));
+      new JoystickButton(operator, JoystickConstants.BACK_BUTTON)
+        .onTrue(new DriveStraight(D));
       //new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new Turn(s_swerve));
 
-      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON).onTrue(new StartMotionSequence(motionService, turn(90), drive(0.5), turn(90), drive(0.5)));
+      new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
+        .onTrue(new 
+          StartMotionSequence(motionService, turn(90), drive(0.5), 
+          turn(90), drive(0.5)));
     // Supplier<Pose2d> bestTargetSupplier = () -> {
     //   var target = vision.getTargets();
     //   if (target != null && kTagLayout.getTagPose(target.fiduc                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ialId).isPresent()) {
@@ -197,7 +206,7 @@ public class RobotContainer {
 
   public void teleopPeriodic() {
     c.JoyControll(operator.getRawAxis(JoystickConstants.RIGHT_Y_AXIS));
-    climbingSubsystem.JoyClimb(operator.getRawAxis(JoystickConstants.LEFT_Y_AXIS));
+    nc.JoyClimb(operator.getRawAxis(JoystickConstants.LEFT_Y_AXIS));
     if(operator.getRawButtonPressed(JoystickConstants.POV_UP)){
       up++;
       teleFirst = true;
