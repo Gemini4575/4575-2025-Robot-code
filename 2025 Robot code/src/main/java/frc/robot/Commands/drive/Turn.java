@@ -7,15 +7,17 @@ import frc.robot.subsystems.drive.DriveTrain;
 public class Turn extends Command {
 
     private final TurnService turnService;
+    private final double degreesToTurn;
 
-    public Turn(DriveTrain driveTrain) {
+    public Turn(DriveTrain driveTrain, double degreesToTurn) {
         turnService = new TurnService(driveTrain);
+        this.degreesToTurn = degreesToTurn;
         addRequirements(driveTrain);
     }
 
     @Override
     public void initialize() {
-        turnService.startTurning(90, Math.PI/90.0);
+        turnService.startTurning(degreesToTurn, Math.PI/90.0);
     }
 
     @Override

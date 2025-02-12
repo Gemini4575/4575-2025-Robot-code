@@ -3,7 +3,8 @@ package frc.robot.datamodel;
 public class MotionDirective {
     public static enum MotionType {
         DRIVE,
-        TURN
+        TURN,
+        DROP_CORAL
     }
     
     private final MotionType type;
@@ -20,6 +21,9 @@ public class MotionDirective {
     }
     public static MotionDirective drive(double amount) {
         return new MotionDirective(MotionType.DRIVE, amount);
+    }
+    public static MotionDirective dropCoral() {
+        return new MotionDirective(MotionType.DROP_CORAL, 0);
     }
     
     public MotionType getType() {

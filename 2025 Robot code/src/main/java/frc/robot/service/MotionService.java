@@ -48,14 +48,15 @@ public class MotionService {
     }
 
     private void startMotion() {
-        //TODO pass the actual distance to these commands
         switch (motions[currentStep].getType()) {
             case DRIVE:
-                currentCommand = new DriveStraight(driveTrain);
+                currentCommand = new DriveStraight(driveTrain, motions[currentStep].getAmount());
                 break;
             case TURN:
-                currentCommand = new Turn(driveTrain);
+                currentCommand = new Turn(driveTrain, motions[currentStep].getAmount());
                 break;
+            case DROP_CORAL:
+                //TODO
         }
         publshStartStatus();
         CommandScheduler.getInstance().schedule(currentCommand);

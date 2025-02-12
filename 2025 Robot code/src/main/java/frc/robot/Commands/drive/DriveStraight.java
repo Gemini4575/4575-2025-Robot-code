@@ -7,15 +7,17 @@ import frc.robot.subsystems.drive.DriveTrain;
 public class DriveStraight extends Command {
 
     private final DriveService driveService;
+    private final double meters;
 
-    public DriveStraight(DriveTrain driveTrain) {
+    public DriveStraight(DriveTrain driveTrain, double meters) {
         driveService = new DriveService(driveTrain);
+        this.meters = meters;
         addRequirements(driveTrain);
     }
 
     @Override
     public void initialize() {
-        driveService.startDriving(1, 1, 0.005);
+        driveService.startDriving(1, meters, 0.005);
     }
 
     @Override
