@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
@@ -62,7 +61,10 @@ public class RobotContainer {
     private final Vision V = new Vision();
 
   /* Pathplanner stuff */
-    private final SendableChooser<Command> autoChoosers;
+    private final SendableChooser<Command> PathplannerautoChoosers;
+    private final SendableChooser<String> MyAutoChooser = new SendableChooser<>();
+    private String MyAutoChooser_String;
+    private final String DriveAndDrop1 = "Drive And Drop1";
 
   private Field2d autoField;
 
@@ -72,11 +74,13 @@ public class RobotContainer {
     System.out.println("Starting RobotContainer()");
     configureBindings();
 
-    autoChoosers = AutoBuilder.buildAutoChooser();
+    PathplannerautoChoosers = AutoBuilder.buildAutoChooser();
+
+    MyAutoChooser.setDefaultOption("Drive And Drop1", DriveAndDrop1);
 
     configureLogging();
 
-    SmartDashboard.putData("Auto Chooser", autoChoosers);
+    SmartDashboard.putData("Auto Chooser", PathplannerautoChoosers);
     SmartDashboard.putData("Vision Pose Estimate", visionPoseEstimate);
     System.out.println("Ended RobotContainer()");
   }
@@ -142,7 +146,15 @@ public class RobotContainer {
 
   public void autonomousPeriodic() {
     if(autoFirst == 0) {
-      new DriveAndDropToOne(D, c).schedule();
+      switch (MyAutoChooser_String) {
+        case DriveAndDrop1:
+          new DriveAndDropToOne(D, c).schedule();
+        break;
+      
+        default:
+          new DriveAndDropToOne(D, c).schedule();
+        break;
+      }
       autoFirst++;
     }
   }
@@ -236,7 +248,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChoosers.getSelected();
+    return PathplannerautoChoosers.getSelected();
   }
 
   public void onDisable() {

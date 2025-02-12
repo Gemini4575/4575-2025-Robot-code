@@ -28,8 +28,8 @@ public class MotorBase {
             if(!super.isFollower()) {
                 super.pauseFollowerMode();
                 super.set(value);
-                
             }
+            super.set(value);
         }
 
         public void stop() {
