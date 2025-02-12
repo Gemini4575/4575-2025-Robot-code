@@ -6,7 +6,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.Motor;
+import frc.lib.epramotor.Motor;
 import frc.robot.Constants.OzzyGrabberConstants;
 
 public class OzzyGrabberSubsystem extends SubsystemBase{

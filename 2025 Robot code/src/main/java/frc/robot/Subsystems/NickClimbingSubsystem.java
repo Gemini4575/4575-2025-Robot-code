@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.Motor;
+import frc.lib.epramotor.Motor;
 import frc.robot.Constants.ClimbingConstants;
 
 public class NickClimbingSubsystem extends SubsystemBase{
@@ -19,22 +19,12 @@ public class NickClimbingSubsystem extends SubsystemBase{
 
     private boolean Climb1() {
         // Code to move the elevator
-        if(ClimbingMotor1.getPosition() < (ClimbingConstants.ClimbingMotorPoseition)) {
-        ClimbingMotor1.set(ClimbingConstants.ClimbingSpeed);
-        } else {
-        return true;
-        }
-        return false;
+        return ClimbingMotor1.SetIfBoolean(ClimbingMotor1.getPosition() < (ClimbingConstants.ClimbingMotorPoseition), ClimbingConstants.ClimbingSpeed);
     }
     
     private boolean Climb2() {
         // Code to move the elevator
-        if((ClimbingMotor2.getPosition()) < (ClimbingConstants.ClimbingMotorPoseition)) {
-        ClimbingMotor2.set(ClimbingConstants.ClimbingSpeed);
-        } else {
-        return true;
-        }
-        return false;
+        return ClimbingMotor2.SetIfBoolean((ClimbingMotor2.getPosition()) < (ClimbingConstants.ClimbingMotorPoseition), ClimbingConstants.ClimbingSpeed);
     }
 
     public boolean init1() {

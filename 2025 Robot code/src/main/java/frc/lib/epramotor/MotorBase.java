@@ -1,4 +1,4 @@
-package frc.lib.util;
+package frc.lib.epramotor;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;

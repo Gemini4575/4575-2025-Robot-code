@@ -108,7 +108,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     teleFirst = false;
-    //CommandScheduler.getInstance().schedule(new init(nc));
+    new init(nc).schedule();
     D.setDefaultCommand(
         new TelopSwerve(
             D,

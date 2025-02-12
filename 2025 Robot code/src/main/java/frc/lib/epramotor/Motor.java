@@ -1,9 +1,6 @@
-package frc.lib.util;
-
-import java.lang.reflect.Method;
+package frc.lib.epramotor;
 
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class Motor extends MotorBase {
@@ -58,7 +55,12 @@ public class Motor extends MotorBase {
         return null;
     }
 
-    public void TraceDump() {
-
+    public boolean SetIfBoolean(boolean input, double speed) {
+        if(input) {
+            set(speed);
+        } else {
+            return true;
+        }
+        return false;
     }
 }
