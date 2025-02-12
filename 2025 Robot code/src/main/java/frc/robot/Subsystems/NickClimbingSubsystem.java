@@ -3,18 +3,18 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.MySparkMax;
+import frc.lib.util.Motor;
 import frc.robot.Constants.ClimbingConstants;
 
 public class NickClimbingSubsystem extends SubsystemBase{
     
-    public MySparkMax ClimbingMotor1;
-    public MySparkMax ClimbingMotor2;
+    public Motor ClimbingMotor1;
+    public Motor ClimbingMotor2;
 
     public NickClimbingSubsystem() {
         // Initialization code here
-        ClimbingMotor1 = new MySparkMax(ClimbingConstants.ClimbingMotor1, MotorType.kBrushless);
-        ClimbingMotor2 = new MySparkMax(ClimbingConstants.ClimbingMotor2, MotorType.kBrushless);
+        ClimbingMotor1 = new Motor(ClimbingConstants.ClimbingMotor1, MotorType.kBrushless);
+        ClimbingMotor2 = new Motor(ClimbingConstants.ClimbingMotor2, MotorType.kBrushless);
     }
 
     private boolean Climb1() {

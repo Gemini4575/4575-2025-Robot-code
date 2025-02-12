@@ -6,19 +6,20 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.MySparkMax;
+import frc.lib.util.Motor;
 import frc.robot.Constants.OzzyGrabberConstants;
 
 public class OzzyGrabberSubsystem extends SubsystemBase{
-    MySparkMax GrabberMotor;
-    MySparkMax PoseMotor;
+    Motor GrabberMotor;
+    Motor PoseMotor;
     DigitalInput AlgeaSensor;
 
     public OzzyGrabberSubsystem() {
         // Initialization code here
-        GrabberMotor = new MySparkMax(OzzyGrabberConstants.GrabberMotor, MotorType.kBrushless);
-        PoseMotor = new MySparkMax(OzzyGrabberConstants.PosetionMotor, MotorType.kBrushed);
+        GrabberMotor = new Motor(OzzyGrabberConstants.GrabberMotor, MotorType.kBrushless);
+        PoseMotor = new Motor(OzzyGrabberConstants.PosetionMotor, MotorType.kBrushed);
         AlgeaSensor = new DigitalInput(OzzyGrabberConstants.BeamBreak);
+
     }
 
     public boolean Grab() {
