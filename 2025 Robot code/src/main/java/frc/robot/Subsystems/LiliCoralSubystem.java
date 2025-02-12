@@ -11,22 +11,28 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LiliCoralConstants;
 
 public class LiliCoralSubystem extends SubsystemBase{
+
+    private static enum State {OPEN, CLOSED, CLOSING, OPENING}
+
     SparkMax gate;
-    DigitalInput top;
+    //DigitalInput top;
     DigitalInput bottom;
     DigitalInput coral;
     Timer timer = new Timer();
+
+    private State lastKnownState = State.CLOSED;
+
     // 0.540528
     public LiliCoralSubystem(){
         gate = new SparkMax(LiliCoralConstants.CoarlMotor, MotorType.kBrushed);
-        top = new DigitalInput(LiliCoralConstants.Top);
+    //    top = new DigitalInput(LiliCoralConstants.Top);
         bottom = new DigitalInput(LiliCoralConstants.Bottom);
         coral = new DigitalInput(LiliCoralConstants.Coral);
     }
 
-    private boolean top() {
-        return top.get();
-    }
+    // private boolean top() {
+    //     return top.get();
+    // }
 
     private boolean bottom() {
         return bottom.get();
@@ -37,24 +43,29 @@ public class LiliCoralSubystem extends SubsystemBase{
     }
 
     public boolean intakeCoral() {
-        if(!top()) {
-            gate.set(LiliCoralConstants.GateSpeed);
-        } else {
+        if ((lastKnownState == State.CLOSED || lastKnownState == State.CLOSING) && bottom()) {
             gate.set(0);
+            lastKnownState = State.CLOSED;
+            return coral();
         }
-        return coral();
+        gate.set(LiliCoralConstants.GateSpeed);
+        lastKnownState = State.CLOSING;
+        return false;
     }
 
     public boolean placeCoral() {
         if(!coral()) {
+            gate.set(0);
             return true;
         }
-        if(!bottom()) {
-            gate.set(LiliCoralConstants.GateSpeed * -1);
-        } else {
+        if ((lastKnownState == State.OPEN || lastKnownState == State.OPENING) && bottom()) {
             gate.set(0);
+            lastKnownState = State.OPEN;
+        } else {
+            gate.set(-LiliCoralConstants.GateSpeed);
+            lastKnownState = State.OPENING;
         }
-        return coral();
+        return false;
     }
 
     public boolean DropGate() {
