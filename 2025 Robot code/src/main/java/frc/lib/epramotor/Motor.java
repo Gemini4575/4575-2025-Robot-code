@@ -24,13 +24,19 @@ public class Motor extends MotorBase {
     }
 
     public void set(double value) {
+        if(!SparkMax) {
         super.MySpark.set(value);
+        } else {
         super.sparkMax.set(value);
+        }
     }
 
     public void stop() {
-        super.MySpark.stop();
-        super.sparkMax.stop();
+        if(!SparkMax) {
+            super.MySpark.set(0);
+            } else {
+            super.sparkMax.set(0);
+            }
     }
 
     public void setInverted() {
@@ -44,8 +50,11 @@ public class Motor extends MotorBase {
     }
 
     public void setVoltage(double value) {
-        super.sparkMax.setVoltage(value);
-        super.MySpark.setVoltage(value);
+        if(!SparkMax) {
+            super.MySpark.setVoltage(value);
+            } else {
+            super.sparkMax.setVoltage(value);
+            }
     }
 
     public RelativeEncoder getEncoder() {

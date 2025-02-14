@@ -63,7 +63,7 @@ public class SwerveModule extends Command {
   // Gains are for example purposes only - must be determined for your own robot!
   private final ProfiledPIDController m_turningPIDController =
       new ProfiledPIDController(
-          16.3,//5 ,//16.7 -- updated to 16.5
+          1,//16.3,//5 ,//16.7 -- updated to 16.5
           0,
           0,
           new TrapezoidProfile.Constraints(
@@ -71,10 +71,11 @@ public class SwerveModule extends Command {
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 1.5); // this was 3, changed to 1.5 because it was driving too far
-  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
+  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.25, 0.5);
 
   private double speedAdjustmentFactor;
   private SparkClosedLoopController driveController;
+  private SparkClosedLoopController turnController;
 
   /**
    * Constructs a SwerveModule with a drive motor, turning motor and turning encoder.
@@ -143,6 +144,7 @@ switch (moduleNumber) {
     configDriveMotor();
 
     driveController = m_driveMotor.getClosedLoopController();
+    turnController = m_driveMotor.getClosedLoopController();
   }
 
   // public SparkSim getDriveMotorSim() {
@@ -241,7 +243,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
         SmartDashboard.putNumber("Setpoint velocity", m_turningPIDController.getSetpoint().velocity);
         final double turnFeedforward =
             m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
-        SmartDashboard.putNumber("turnFeedforward",turnFeedforward);
+        SmartDashboard.putNumber("turnOutput",turnOutput);
 
         SmartDashboard.putNumber("Drive output " + moduleNumber, driveOutput);
         SmartDashboard.putNumber("Drive feedForward  " + moduleNumber, driveFeedforward);
@@ -282,6 +284,8 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
       }
 
     public void driveDistance(double meters) {
+      var angleRotations = (getRawAngle()-encoderOffset) * SwerveConstants.gearboxRatio / (2 * Math.PI);
+      turnController.setReference(angleRotations, ControlType.kPosition);
       var rotations = meters * SwerveConstants.gearboxRatio / (SwerveConstants.wheeldiameter * Math.PI);
       driveController.setReference(rotations, ControlType.kPosition);
       //TODO do we need to turn?
@@ -294,8 +298,8 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
     private void configAngleMotor() {
     var turnConfig = new SparkMaxConfig();
     turnConfig.inverted(true);
-    turnConfig.closedLoop.p(16.5);
-    turnConfig.closedLoop.outputRange(-Math.PI, Math.PI);
+    turnConfig.closedLoop.p(1);
+    //turnConfig.closedLoop.outputRange(-Math.PI, Math.PI);
     m_turningMotor.configure(
       turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }

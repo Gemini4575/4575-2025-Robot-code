@@ -112,7 +112,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     teleFirst = false;
-    new init(nc).schedule();
+    //new init(nc).schedule();
     D.setDefaultCommand(
         new TelopSwerve(
             D,
@@ -194,8 +194,21 @@ public class RobotContainer {
 
       new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
         .onTrue(new 
-          StartMotionSequence(motionService, turn(90), drive(0.5), 
-          turn(90), drive(0.5)));
+          StartMotionSequence(motionService, 
+          drive(1), turn(90), drive(1), turn(90), 
+          drive(1), turn(90), drive(1), turn(90)));
+
+          new JoystickButton(driver, 10)
+          .onTrue(new 
+            StartMotionSequence(motionService, turn(90)));
+
+      new JoystickButton(driver, 11)
+        .onTrue(new 
+          StartMotionSequence(motionService, turn(-90))); 
+
+          new JoystickButton(driver, 12)
+          .onTrue(new 
+            StartMotionSequence(motionService, drive(1)));
     // Supplier<Pose2d> bestTargetSupplier = () -> {
     //   var target = vision.getTargets();
     //   if (target != null && kTagLayout.getTagPose(target.fiduc                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ialId).isPresent()) {

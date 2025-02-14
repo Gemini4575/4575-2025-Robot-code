@@ -23,11 +23,11 @@ public class TurnService {
         SmartDashboard.putNumber("Incrmetning number", h);
         h++;
         this.degreesToTurn = degreesToTurn;
-        this.radiansPerSec = radiansPerSec;
+        this.radiansPerSec = Math.signum(degreesToTurn) * radiansPerSec;
         startingPose = driveTrain.getPose();
         startingDegrees = driveTrain.getYaw();
         completed = false;
-        driveTrain.drive(0, 0, radiansPerSec, false);
+        driveTrain.drive(0, 0, this.radiansPerSec, false);
     }
     
     public boolean keepTurning() {

@@ -28,7 +28,7 @@ public class DriveService {
 
     public void startDriving(int driveMethod, double meters, double speed) {
         this.distance = meters;
-        this.speed = speed;
+        this.speed = Math.signum(distance) * speed;
         this.driveMethod = driveMethod;
         this.startingPose = driveTrain.getPose();
         this.startingDriveValues = getEncoderPositions();
@@ -50,7 +50,7 @@ public class DriveService {
                 driveTrain.driveFieldRelative(new ChassisSpeeds(speed, 0, 0));
                 break;
             case 4:
-                driveTrain.driveViaController(distance);
+                driveTrain.driveViaController(1.05*distance);
                 break;
         }
     }
@@ -105,6 +105,6 @@ public class DriveService {
     }
 
     private double excessDistance(double val) {
-        return distance > 0 ? val - distance : distance - val;
+        return Math.abs(val) - Math.abs(distance);
     }
 }
