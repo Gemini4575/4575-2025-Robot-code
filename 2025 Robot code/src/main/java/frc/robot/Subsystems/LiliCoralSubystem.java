@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static frc.robot.datamodel.MotionDirective.turn;
 
+import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 
 import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
@@ -11,7 +12,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.PoseTools;
 import frc.robot.Constants.LiliCoralConstants;
 
 public class LiliCoralSubystem extends SubsystemBase{
@@ -94,35 +97,42 @@ public class LiliCoralSubystem extends SubsystemBase{
     //     }
     //     return false;
     // }
+    boolean pervois = false;
     boolean first = true;
     private void start() {
         if(first) {
-            timer.reset();
-            timer.start();
+            pervois = true;
             first = false;
         }
     }
-
+    public void isInterupted() {
+        pervois = false;
+        first = true;
+    }
+    
     public boolean DropGate() {
         start();
-        if(timer.advanceIfElapsed(0.5) && coral()) {
+        if(!pervois && bottom()) {
             gate.stopMotor();
             first = true;
+            return true;
         } else {
             gate.set(LiliCoralConstants.GateSpeed);
+            pervois = bottom();
         }
 
-        return !coral();
+        return false;//!coral();
     }
 
     public boolean CloseGate() {
         start();
-        if(timer.advanceIfElapsed(0.5)) {
+        if((!pervois && bottom()) || coral()) {
             gate.stopMotor();
             first = true;
             return true;
         } else {
             gate.set(-LiliCoralConstants.GateSpeed);
+            pervois = bottom();
             return false;
         }
     }
@@ -144,6 +154,7 @@ public class LiliCoralSubystem extends SubsystemBase{
 
     @Override
     public void periodic() {
+        SmartDashboard.putBoolean("Gate", bottom());
         if(first) {
             if(bottom() && lastKnownState == State.CLOSED) {
                 

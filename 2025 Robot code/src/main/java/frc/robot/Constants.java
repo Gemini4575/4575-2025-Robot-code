@@ -1,6 +1,12 @@
 package frc.robot;
 
 
+import static frc.robot.datamodel.MotionDirective.drive;
+import static frc.robot.datamodel.MotionDirective.dropCoral;
+import static frc.robot.datamodel.MotionDirective.strafe;
+import static frc.robot.datamodel.MotionDirective.turn;
+import static frc.robot.datamodel.MotionDirective.wait2;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +33,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.math.MesurementToRoation;
 import frc.lib.util.SwerveModuleConstants;
+import frc.robot.datamodel.MotionDirective;
 import frc.robot.subsystems.drive.DriveTrain;
 
 public class Constants {
@@ -362,7 +369,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 2;
             public static final int canCoderID = 0;
             public static final double angleOffset = 3.201315307;
-            public static final double speedAdjustmentFactor = 1;//1.798006206333298/4.0;//2.092980946810132;
+            public static final double speedAdjustmentFactor = 0.85;//1.798006206333298/4.0;//2.092980946810132;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
@@ -395,7 +402,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 8;
             public static final int canCoderID = 3;
             public static final double angleOffset = 3.769512307;
-            public static final double speedAdjustmentFactor = 1.1;
+            public static final double speedAdjustmentFactor = 1.05;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
@@ -480,7 +487,13 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public final static int Top = 2;
             public final static int Bottom = 3;
         /* Doubles */
-            public final static double GateSpeed = -.5;
+            public final static double GateSpeed = -1;
+    }
+
+    public final static class  Autos {
+        public static final MotionDirective[] AUTO_CORAL1 = new MotionDirective[]{drive((64.0)), turn(80), strafe((10)), drive((10)), dropCoral()};
+        public static final MotionDirective[] AUTO_CORAL2 = new MotionDirective[]{drive((64.0)), turn(80), strafe((10)), drive((10)), dropCoral(), wait2(1.5), drive((-105)), turn(-45), drive((55)), drive(175), turn(70)};//]\[], turn(-10), drive(-Units.inchesToMeters(90)), strafe(Units.inchesToMeters(230))};
+        
     }
 
 }

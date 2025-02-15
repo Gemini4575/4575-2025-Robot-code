@@ -126,16 +126,16 @@ public class SwerveModule extends Command {
 // hard coding the offset because its better?
 switch (moduleNumber) {
   case 0: 
-  encoderOffset = -4.134866561635598;
+  encoderOffset = -4.217277605920897;// +8.00*Math.PI/180.00;
   break;
   case 1: 
-  encoderOffset = -4.081087471919463;
+  encoderOffset = -4.103170391231414;
   break;
   case 2: 
-  encoderOffset = -3.065376453306297;//-13.00*Math.PI/180.00;
+  encoderOffset = -2.865185267477021-13.00*Math.PI/180.00;//-13.00*Math.PI/180.00;
   break;
   case 3: 
-  encoderOffset = -2.19447747117124317;
+  encoderOffset = -2.187059995042817;// -8.00*Math.PI/180.00;;
   break;
 }
 
@@ -253,7 +253,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
         if(RobotState.isAutonomous()) {
           m_driveMotor.set(speedAdjustmentFactor*((driveOutput + driveFeedforward) /2.1));
           System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
-          m_turningMotor.setVoltage(turnOutput + turnFeedforward);
+          m_turningMotor.setVoltage(turnOutput /*+ turnFeedforward*/);
         } else if (RobotState.isTeleop()) {
           m_driveMotor.set(speedAdjustmentFactor*((driveOutput + driveFeedforward) /2.1) );
           m_turningMotor.setVoltage(turnOutput + turnFeedforward);

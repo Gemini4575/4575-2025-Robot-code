@@ -21,6 +21,8 @@ public class DriveService {
     private Pose2d startingPose;
     private double[] startingDriveValues;
     private boolean completed = false;
+    private long startTime;
+    private boolean drivingTriggered;
 
     public DriveService(DriveTrain driveTrain) {
         this.driveTrain = driveTrain;
@@ -33,6 +35,8 @@ public class DriveService {
         this.startingPose = driveTrain.getPose();
         this.startingDriveValues = getEncoderPositions();
         this.completed = false;
+        this.startTime = System.currentTimeMillis();
+        this.drivingTriggered = false;
 
         //actually start driving now
         doDrive();
@@ -50,7 +54,14 @@ public class DriveService {
                 driveTrain.driveFieldRelative(new ChassisSpeeds(-speed, 0, 0));
                 break;
             case 4:
-                driveTrain.driveViaController(1.05*distance);
+                if (System.currentTimeMillis() > startTime + 1500) {
+                    if (!drivingTriggered) {
+                        driveTrain.driveViaController(1.05*distance);
+                        drivingTriggered = true;
+                    }
+                } else {
+                    driveTrain.driveRobotRelative(new ChassisSpeeds(speed, 0, 0));
+                }
                 break;
             case 5:
                 driveTrain.driveRobotRelative(new ChassisSpeeds(0, speed,0));

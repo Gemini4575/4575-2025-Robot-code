@@ -15,6 +15,8 @@ public class EXODropGate extends Command{
         isFinished = false;
     }
 
+    
+
     @Override
     public boolean isFinished() {
         return isFinished;

@@ -9,7 +9,7 @@ public class LIPlaceCoral extends SequentialCommandGroup{
         addCommands(
             new EXODropGate(c),
             new WaitCommand(.5),
-            new EXOOpenGate(c)
+            new EXOOpenGate(c).withTimeout(1.5)
         );
     }
 }

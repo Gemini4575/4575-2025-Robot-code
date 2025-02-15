@@ -1,10 +1,14 @@
 package frc.robot.datamodel;
 
+import edu.wpi.first.math.util.Units;
+
 public class MotionDirective {
     public static enum MotionType {
         DRIVE,
         TURN,
-        DROP_CORAL
+        STRAFE,
+        DROP_CORAL,
+        WAIT
     }
     
     private final MotionType type;
@@ -20,12 +24,18 @@ public class MotionDirective {
         return new MotionDirective(MotionType.TURN, amount);
     }
     public static MotionDirective drive(double amount) {
-        return new MotionDirective(MotionType.DRIVE, amount);
+        return new MotionDirective(MotionType.DRIVE, Units.inchesToMeters(amount));
+    }
+    public static MotionDirective strafe(double amount) {
+        return new MotionDirective(MotionType.STRAFE, Units.inchesToMeters(amount));
     }
     public static MotionDirective dropCoral() {
         return new MotionDirective(MotionType.DROP_CORAL, 0);
     }
-    
+    public static MotionDirective wait2(double amount) {
+        return new MotionDirective(MotionType.WAIT, amount);
+    }
+
     public MotionType getType() {
         return type;
     }

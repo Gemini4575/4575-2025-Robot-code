@@ -31,6 +31,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -93,18 +94,18 @@ private double rot_cur;
       new SwerveDriveKinematics(
           m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-  // private final SwerveDriveOdometry m_odometry =
-  //     new SwerveDriveOdometry(
-  //         m_kinematics,
-  //         m_gyro.getRotation2d(),
-  //         new SwerveModulePosition[] {
-  //           m_frontLeft.getPosition(),
-  //           m_frontRight.getPosition(),
-  //           m_backLeft.getPosition(),
-  //           m_backRight.getPosition()
-  //         },
-  //         new Pose2d(new Translation2d(),new Rotation2d(Units.degreesToRadians(180)))
-  //         );
+  private final SwerveDriveOdometry m_odometry =
+      new SwerveDriveOdometry(
+          m_kinematics,
+          m_gyro.getRotation2d(),
+          new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_backLeft.getPosition(),
+            m_backRight.getPosition()
+          },
+          new Pose2d(new Translation2d(),new Rotation2d(Units.degreesToRadians(180)))
+          );
 
   private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -141,8 +142,8 @@ private double rot_cur;
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(1, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(16.5, 0.0, 0.0) // Rotation PID constants
+                    new PIDConstants(5, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5, 0.0, 0.0) // Rotation PID constants
             ),
             config, // The robot configuration
             () -> {
@@ -276,11 +277,11 @@ private double rot_cur;
   }
 
   /** Updates the field relative position of the robot. */
-  // public void updateOdometry() {
-  //   m_odometry.update(
-  //       m_gyro.getRotation2d(),
-  //       getModulePositions());
-  // }
+  public void updateOdometry() {
+    m_odometry.update(
+        m_gyro.getRotation2d(),
+        getModulePositions());
+  }
 
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
@@ -292,12 +293,12 @@ private double rot_cur;
   }
 
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return m_odometry.getPoseMeters();
   } 
 
   public void resetPose(Pose2d aPose2d) {
-//    m_odometry.resetPosition(m_gyro.getRotation2d(),
-//         getModulePositions(), aPose2d );
+   m_odometry.resetPosition(m_gyro.getRotation2d(),
+        getModulePositions(), aPose2d );
     poseEstimator.resetPosition(m_gyro.getRotation2d(), getModulePositions(), aPose2d);
   }
   

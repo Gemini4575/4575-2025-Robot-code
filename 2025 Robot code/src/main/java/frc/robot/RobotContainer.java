@@ -7,8 +7,10 @@ package frc.robot;
 
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.Autos;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.StartMotionSequence;
 import frc.robot.commands.TelopSwerve;
@@ -32,11 +35,14 @@ import frc.robot.commands.coral.nora.L1;
 import frc.robot.commands.coral.nora.L2;
 import frc.robot.commands.coral.nora.L3;
 import frc.robot.commands.drive.DriveStraight;
+import frc.robot.datamodel.MotionDirective;
 import frc.robot.service.MotionService;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.drive.DriveTrain;
 
 import static frc.robot.datamodel.MotionDirective.drive;
+import static frc.robot.datamodel.MotionDirective.dropCoral;
+import static frc.robot.datamodel.MotionDirective.strafe;
 import static frc.robot.datamodel.MotionDirective.turn;
 
 // @Component
@@ -66,10 +72,15 @@ public class RobotContainer {
     private final SendableChooser<String> MyAutoChooser = new SendableChooser<>();
     private String MyAutoChooser_String;
     private final String DriveAndDrop1 = "Drive And Drop1";
+    private final String Nothing = "Nothing";
+    private final String DriveAndDRop2 = " Drive And Drop2";
 
   private Field2d autoField;
 
-  private final MotionService motionService = new MotionService(D);
+  private final MotionService motionService = new MotionService(D, c);
+
+
+
 
   public RobotContainer() {
     System.out.println("Starting RobotContainer()");
@@ -77,13 +88,16 @@ public class RobotContainer {
 
     PathplannerautoChoosers = AutoBuilder.buildAutoChooser();
 
-    MyAutoChooser.setDefaultOption("Drive And Drop1", DriveAndDrop1);
+    MyAutoChooser.addOption("Drive And Drop1", DriveAndDrop1);
+    MyAutoChooser.setDefaultOption("Nothing", Nothing);
+    MyAutoChooser.addOption(" Drive And Drop2", DriveAndDRop2);
     SmartDashboard.putData(MyAutoChooser);
 
     configureLogging();
 
     SmartDashboard.putData("Auto Chooser", PathplannerautoChoosers);
     SmartDashboard.putData("Vision Pose Estimate", visionPoseEstimate);
+    PathfindingCommand.warmupCommand().schedule();
     System.out.println("Ended RobotContainer()");
   }
 
@@ -155,11 +169,20 @@ public class RobotContainer {
     if(autoFirst == 0) {
       switch (MyAutoChooser_String) {
         case DriveAndDrop1:
-          new DriveAndDropToOne(motionService, c).schedule();
+          new  
+          StartMotionSequence(motionService, Autos.AUTO_CORAL1).schedule();
         break;
-      
+
+        case Nothing:
+
+        break;
+
+        case DriveAndDRop2:
+          new StartMotionSequence(motionService, Autos.AUTO_CORAL2).schedule();
+        break;
         default:
-          new DriveAndDropToOne(motionService, c).schedule();
+          new  
+          StartMotionSequence(motionService, Autos.AUTO_CORAL1).schedule();
         break;
       }
       autoFirst++;
@@ -200,11 +223,15 @@ public class RobotContainer {
         .onTrue(new DriveStraight(D, 1));
       //new JoystickButton(operator, JoystickConstants.BACK_BUTTON).onTrue(new Turn(s_swerve));
 
+      // new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
+      //   .onTrue(new 
+      //     StartMotionSequence(motionService, 
+      //     drive(1), turn(90), drive(1), turn(90), 
+      //     drive(1), turn(90), drive(1), turn(90)));
+      
       new JoystickButton(operator, JoystickConstants.GREEN_BUTTON)
-        .onTrue(new 
-          StartMotionSequence(motionService, 
-          drive(1), turn(90), drive(1), turn(90), 
-          drive(1), turn(90), drive(1), turn(90)));
+         .onTrue(new 
+           StartMotionSequence(motionService, Autos.AUTO_CORAL2));
 
           new JoystickButton(driver, 10)
           .onTrue(new 
