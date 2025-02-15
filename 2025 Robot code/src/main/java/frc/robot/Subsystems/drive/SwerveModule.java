@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -125,16 +126,16 @@ public class SwerveModule extends Command {
 // hard coding the offset because its better?
 switch (moduleNumber) {
   case 0: 
-  encoderOffset = -4.217277605920897;//3.769512307;//3.201315307;
+  encoderOffset = -4.134866561635598;
   break;
   case 1: 
-  encoderOffset = -4.103170391231414; //0.6210603266;// 6.9042456338;//5.333449307 + (Math.PI/2);
+  encoderOffset = -4.081087471919463;
   break;
   case 2: 
-  encoderOffset = -2.865185267477021-13.00*Math.PI/180.00; //4.9206722876;//0.2082833072 - (Math.PI/2);
+  encoderOffset = -3.065376453306297;//-13.00*Math.PI/180.00;
   break;
   case 3: 
-  encoderOffset = -2.187059995042817; //3.201315307;//3.769512307;
+  encoderOffset = -2.19447747117124317;
   break;
 }
 
@@ -250,7 +251,7 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
 
         SmartDashboard.putNumber("turnFeedforward",turnFeedforward);
         if(RobotState.isAutonomous()) {
-          m_driveMotor.set(speedAdjustmentFactor*((driveOutput + driveFeedforward) /2.1) /2);
+          m_driveMotor.set(speedAdjustmentFactor*((driveOutput + driveFeedforward) /2.1));
           System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
           m_turningMotor.setVoltage(turnOutput + turnFeedforward);
         } else if (RobotState.isTeleop()) {
@@ -269,6 +270,14 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
         }
         
       }
+
+    public void JustTurnTheFuckingWheels(ChassisSpeeds c) {
+      if(Math.abs(c.vxMetersPerSecond) > 0.2) {
+        setDesiredState(new SwerveModuleState(0, new Rotation2d(0)));
+      } else if (Math.abs(c.vyMetersPerSecond) > 0.2) {
+        setDesiredState(new SwerveModuleState(0, new Rotation2d(90)));
+      }
+    }
     
       public void setStateDirectly(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees

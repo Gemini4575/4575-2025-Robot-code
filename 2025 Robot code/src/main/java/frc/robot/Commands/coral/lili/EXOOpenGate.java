@@ -3,9 +3,9 @@ package frc.robot.commands.coral.lili;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.LiliCoralSubystem;
 
-public class LIIntakeCoral extends Command{
+public class EXOOpenGate extends Command{
     LiliCoralSubystem c;
-    public LIIntakeCoral(LiliCoralSubystem cc) {
+    public EXOOpenGate(LiliCoralSubystem cc){
         this.c = cc;
         addRequirements(c);
     }
@@ -22,8 +22,8 @@ public class LIIntakeCoral extends Command{
 
     @Override
     public void execute() {
-        // if(c.intakeCoral()) {
-        //     isFinished = true;
-        // }
+        if(c.CloseGate()) {
+            isFinished = true;
+        }
     }
 }

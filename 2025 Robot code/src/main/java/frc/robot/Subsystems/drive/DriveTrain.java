@@ -5,6 +5,7 @@
 package frc.robot.subsystems.drive;
 
 import java.io.IOException;
+import java.lang.constant.DirectMethodHandleDesc;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -186,7 +187,22 @@ private double rot_cur;
       drive(chassisSpeedsIn.vxMetersPerSecond, chassisSpeedsIn.vyMetersPerSecond, chassisSpeedsIn.omegaRadiansPerSecond, false);
     }
     public void driveFieldRelative(ChassisSpeeds c) {
-      drive(c.vxMetersPerSecond, c.vyMetersPerSecond, 0, true);
+      drive(c.vxMetersPerSecond, c.vyMetersPerSecond, c.omegaRadiansPerSecond, true);
+    }
+    public void JustTurnTheWheels(int up, int down, int right, int left) {
+      if(up > 1 || down > 1 ) {
+        ChassisSpeeds c = new ChassisSpeeds(1, 0, 0);
+        m_frontLeft.JustTurnTheFuckingWheels(c);
+        m_frontRight.JustTurnTheFuckingWheels(c);
+        m_backLeft.JustTurnTheFuckingWheels(c);
+        m_backRight.JustTurnTheFuckingWheels(c);
+      } else if (right > 1 || left > 1 ) {
+        ChassisSpeeds c = new ChassisSpeeds(0, 1, 0);
+        m_frontLeft.JustTurnTheFuckingWheels(c);
+        m_frontRight.JustTurnTheFuckingWheels(c);
+        m_backLeft.JustTurnTheFuckingWheels(c);
+        m_backRight.JustTurnTheFuckingWheels(c);
+      }
     }
     public void driveDirect(ChassisSpeeds chassisSpeedsIn) {
       var speeds = ChassisSpeeds.discretize(chassisSpeedsIn, LoggedRobot.defaultPeriodSecs);

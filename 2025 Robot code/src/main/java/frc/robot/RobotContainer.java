@@ -25,6 +25,7 @@ import frc.robot.commands.algea.EXO.OzOutake;
 import frc.robot.commands.auto.DriveAndDropToOne;
 import frc.robot.commands.climbing.Climb;
 import frc.robot.commands.climbing.init;
+import frc.robot.commands.coral.lili.LIPlaceCoral;
 import frc.robot.commands.coral.nora.CoralStation;
 //import frc.robot.commands.coral.nora.INtakeFromHuman;
 import frc.robot.commands.coral.nora.L1;
@@ -77,6 +78,7 @@ public class RobotContainer {
     PathplannerautoChoosers = AutoBuilder.buildAutoChooser();
 
     MyAutoChooser.setDefaultOption("Drive And Drop1", DriveAndDrop1);
+    SmartDashboard.putData(MyAutoChooser);
 
     configureLogging();
 
@@ -117,9 +119,13 @@ public class RobotContainer {
         new TelopSwerve(
             D,
             () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_Y_AXIS),
-            () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_X_AXIS),
+            () -> -driver.getRawAxis(Constants.JoystickConstants.LEFT_X_AXIS),
             () -> -driver.getTwist(),
-            () -> operator.getRawButton(JoystickConstants.START_BUTTON)));
+            () -> operator.getRawButton(JoystickConstants.START_BUTTON),
+            driver.getPOV(0),
+            driver.getPOV(0),
+            driver.getPOV(0),
+            driver.getPOV(0)));
   }
 
   public void periodic() {
@@ -141,6 +147,7 @@ public class RobotContainer {
   }
   double autoFirst = 0.0;
   public void autonomousInit() {
+    MyAutoChooser_String = MyAutoChooser.getSelected();
     autoFirst = 0.0;
   }
 
@@ -148,11 +155,11 @@ public class RobotContainer {
     if(autoFirst == 0) {
       switch (MyAutoChooser_String) {
         case DriveAndDrop1:
-          new DriveAndDropToOne(D, c).schedule();
+          new DriveAndDropToOne(motionService, c).schedule();
         break;
       
         default:
-          new DriveAndDropToOne(D, c).schedule();
+          new DriveAndDropToOne(motionService, c).schedule();
         break;
       }
       autoFirst++;
@@ -169,11 +176,12 @@ public class RobotContainer {
     //    .onTrue(new DriveTwoardsAprillTag(vision, s_swerve));
 
       new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)
-        .and(g.BeamBreak())
-        .onTrue(new Proceser(g, new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)))
-        .or(new JoystickButton(operator, JoystickConstants.BLUE_BUTTON))
-        .and(g.FalseBeamnBreak())
-        .onTrue(new IntakeAlgae(g));
+        .onTrue(new LIPlaceCoral(c));
+        // .and(g.BeamBreak())
+        // .onTrue(new Proceser(g, new JoystickButton(operator, JoystickConstants.BLUE_BUTTON)))
+        // .or(new JoystickButton(operator, JoystickConstants.BLUE_BUTTON))
+        // .and(g.FalseBeamnBreak())
+        // .onTrue(new IntakeAlgae(g));
 
       // new JoystickButton(operator, 1).//JoystickConstants.GREEN_BUTTON).
       //   and(c.Coral()).

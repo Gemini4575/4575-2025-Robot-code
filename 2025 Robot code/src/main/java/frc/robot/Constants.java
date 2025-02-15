@@ -349,6 +349,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             //public static final double driveAfterEncoderReduction = (4.0 / 39.37) * Math.PI * (1/6.75);
 //            public static final double driveAfterEncoderReduction = 0.0788114854;   // FWF this is the above calc * 1.6667 to see if the auto distance changes
 
+
             public static final double driveConversionFactor = (Math.PI  + 2.0 * kWheelRadius)/6.75;
             public static final double turnAfterEncoderReduction = -1 * (7/150);
             public static final double gearboxRatio = 6.75;
@@ -361,7 +362,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 2;
             public static final int canCoderID = 0;
             public static final double angleOffset = 3.201315307;
-            public static final double speedAdjustmentFactor = 0.85;//1.798006206333298/4.0;//2.092980946810132;
+            public static final double speedAdjustmentFactor = 1;//1.798006206333298/4.0;//2.092980946810132;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
@@ -394,7 +395,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public static final int angleMotorID = 8;
             public static final int canCoderID = 3;
             public static final double angleOffset = 3.769512307;
-            public static final double speedAdjustmentFactor = 1.05;
+            public static final double speedAdjustmentFactor = 1.1;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, speedAdjustmentFactor);
         }
@@ -449,7 +450,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             
     }
 
-    public final static class ClimbingConstants {
+    public final static class NickClimbingConstanst {
         /* Ints */
             public final static int ClimbingMotor1 = 14;
             public final static int ClimbingMotor2 = 13;
@@ -479,7 +480,7 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
             public final static int Top = 2;
             public final static int Bottom = 3;
         /* Doubles */
-            public final static double GateSpeed = 0.5;
+            public final static double GateSpeed = -.5;
     }
 
 }

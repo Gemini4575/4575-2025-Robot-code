@@ -17,6 +17,10 @@ public class TelopSwerve extends Command {
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier slowMode;
+    int up;
+    int down;
+    int right;
+    int left;
     private boolean isFinished;
     private double slowModeFactor = 1.0;
     double i = 0.0;
@@ -32,7 +36,8 @@ public class TelopSwerve extends Command {
      * @param rotationSup the axies that controlls the angle of your robot
      */
     public TelopSwerve(DriveTrain s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, 
-    DoubleSupplier rotationSup, BooleanSupplier slowMode) {
+    DoubleSupplier rotationSup, BooleanSupplier slowMode, int up, int down,
+    int right, int left) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
         isFinished = false;
@@ -40,6 +45,10 @@ public class TelopSwerve extends Command {
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
         this.slowMode = slowMode;
+        this.down = down;
+        this.up = up;
+        this.right = right;
+        this.left = left;
     }
 
     @Override
@@ -68,6 +77,12 @@ public class TelopSwerve extends Command {
             rotationVal,
             true
             );
+            // s_Swerve.JustTurnTheWheels(
+            //     up, 
+            //     down, 
+            //     right, 
+            //     left
+            //     );
         }
     }
 

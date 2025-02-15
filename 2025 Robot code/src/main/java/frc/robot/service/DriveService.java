@@ -47,10 +47,13 @@ public class DriveService {
                 driveTrain.driveDirect(new ChassisSpeeds(speed, 0, 0));
                 break;
             case 3:
-                driveTrain.driveFieldRelative(new ChassisSpeeds(speed, 0, 0));
+                driveTrain.driveFieldRelative(new ChassisSpeeds(-speed, 0, 0));
                 break;
             case 4:
                 driveTrain.driveViaController(1.05*distance);
+                break;
+            case 5:
+                driveTrain.driveRobotRelative(new ChassisSpeeds(0, speed,0));
                 break;
         }
     }
