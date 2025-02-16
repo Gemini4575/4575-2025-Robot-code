@@ -223,6 +223,10 @@ private double rot_cur;
     }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    drive(xSpeed, ySpeed, rot, fieldRelative, false);
+  }
+
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean turnonly) {
     SmartDashboard.putNumber("Gyro", m_gyro.getAngle());
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
@@ -344,6 +348,13 @@ private double rot_cur;
         SmartDashboard.putNumber("target", target);
         return false;
       }
+    }
+
+    public void turnToAngle(double radiansToTurn) {
+      m_frontLeft.turnToAngle(radiansToTurn);
+      m_frontRight.turnToAngle(radiansToTurn);
+      m_backLeft.turnToAngle(radiansToTurn);
+      m_backRight.turnToAngle(radiansToTurn);
     }
 
   @Override

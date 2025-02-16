@@ -48,6 +48,7 @@ public class SwerveModule extends Command {
   private double ahhhhhhhhhhh = 0.0;
 
   private double encoderOffset = 0;
+  private double revEncoderOffset = 0; //TODO set this to whatever value when straight
   
   private int moduleNumber = 0;
   @SuppressWarnings("unused")
@@ -64,7 +65,7 @@ public class SwerveModule extends Command {
   // Gains are for example purposes only - must be determined for your own robot!
   private final ProfiledPIDController m_turningPIDController =
       new ProfiledPIDController(
-          1,//16.3,//5 ,//16.7 -- updated to 16.5
+          6,//16.3,//5 ,//16.7 -- updated to 16.5
           0,
           0,
           new TrapezoidProfile.Constraints(
@@ -126,16 +127,20 @@ public class SwerveModule extends Command {
 // hard coding the offset because its better?
 switch (moduleNumber) {
   case 0: 
-  encoderOffset = -4.217277605920897;// +8.00*Math.PI/180.00;
+  encoderOffset = -4.134986246400915;
+  revEncoderOffset = 8.190497398376465;// +8.00*Math.PI/180.00;
   break;
   case 1: 
-  encoderOffset = -4.103170391231414;
+  encoderOffset = -4.08058153307745;
+  revEncoderOffset = 55.64335632324219;
   break;
   case 2: 
-  encoderOffset = -2.865185267477021-13.00*Math.PI/180.00;//-13.00*Math.PI/180.00;
+  encoderOffset = -3.023956665037501;//-13.00*Math.PI/180.00;
+  revEncoderOffset = 51.214351654052734;//-13.00*Math.PI/180.00;
   break;
   case 3: 
-  encoderOffset = -2.187059995042817;// -8.00*Math.PI/180.00;;
+  encoderOffset = -1.334522613764654;
+  revEncoderOffset = -41.66624069213867; // -8.00*Math.PI/180.00;;
   break;
 }
 
@@ -145,7 +150,7 @@ switch (moduleNumber) {
     configDriveMotor();
 
     driveController = m_driveMotor.getClosedLoopController();
-    turnController = m_driveMotor.getClosedLoopController();
+    turnController = m_turningMotor.getClosedLoopController();
   }
 
   // public SparkSim getDriveMotorSim() {
@@ -157,6 +162,7 @@ switch (moduleNumber) {
     //SmartDashboard.putNumber("module " + moduleNumber, retVal);
     if(RobotState.isTest()){
 SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
+SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.getPosition());
 
     
  SmartDashboard.putNumber("encoder " + moduleNumber, (retVal * 1000) / 1000.0);
@@ -214,62 +220,59 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
    *
    * @param desiredState Desired state with speed and angle.
    */
-  public void setDesiredState(SwerveModuleState desiredState) {
+  public void setDesiredState(SwerveModuleState desiredState, boolean t) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     @SuppressWarnings ("deprecation")
     SwerveModuleState state =
         SwerveModuleState.optimize(desiredState, new Rotation2d(encoderValue()));
 
-    //adjustSpeedVariability(state);
-    
-        // Calculate the drive output from the drive PID controller.
-    
-          /* this bit from the example uses driveencoder.getrate() - Get the current rate of the 
-           * encoder. Units are distance per second as scaled by the value from setDistancePerPulse().
-           * rev encoder doesn't have this value only 
-           * .getVelocity - Get the velocity of the motor. This returns the native units of 'rotations per second'
-           *  by default, and can be changed by a scale factor using setVelocityConversionFactor().
-           */
-    
-        final 
-        double driveOutput =
-            m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
-    
-        final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
-        // Calculate the turning motor output from the turning PID controller.
-        final double turnOutput =
-            m_turningPIDController.calculate(encoderValue(), state.angle.getRadians());
-    // SmartDashboard.putNumber("pid " + moduleNumber, turnOutput);
-     
-        SmartDashboard.putNumber("Setpoint velocity", m_turningPIDController.getSetpoint().velocity);
-        final double turnFeedforward =
-            m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
-        SmartDashboard.putNumber("turnOutput",turnOutput);
+    // Calculate the drive output from the drive PID controller.
 
-        SmartDashboard.putNumber("Drive output " + moduleNumber, driveOutput);
-        SmartDashboard.putNumber("Drive feedForward  " + moduleNumber, driveFeedforward);
+      /* this bit from the example uses driveencoder.getrate() - Get the current rate of the 
+       * encoder. Units are distance per second as scaled by the value from setDistancePerPulse().
+       * rev encoder doesn't have this value only 
+       * .getVelocity - Get the velocity of the motor. This returns the native units of 'rotations per second'
+       *  by default, and can be changed by a scale factor using setVelocityConversionFactor().
+       */
 
-        SmartDashboard.putNumber("turnFeedforward",turnFeedforward);
-        if(RobotState.isAutonomous()) {
-          m_driveMotor.set(speedAdjustmentFactor*((driveOutput + driveFeedforward) /2.1));
-          System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
-          m_turningMotor.setVoltage(turnOutput /*+ turnFeedforward*/);
-        } else if (RobotState.isTeleop()) {
-          m_driveMotor.set(speedAdjustmentFactor*((driveOutput + driveFeedforward) /2.1) );
-          m_turningMotor.setVoltage(turnOutput + turnFeedforward);
-        }
-        
-        SmartDashboard.putNumber("Velocity " + moduleNumber, m_driveEncoder.getVelocity());
-      
-        if(RobotState.isTest()) {
-          SmartDashboard.putNumber("turnOutput",turnOutput);
-          SmartDashboard.putNumber("Drive", ((driveOutput + driveFeedforward) /2.1) /2);
-          SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));
-          SmartDashboard.putNumber("Turning stuff", turnOutput + turnFeedforward);
-          SmartDashboard.putNumber("target " + moduleNumber, state.angle.getRadians());
-        }
-        
-      }
+    final 
+    double driveOutput =
+        m_drivePIDController.calculate(m_driveEncoder.getVelocity(), state.speedMetersPerSecond);
+
+    final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
+    // Calculate the turning motor output from the turning PID controller.
+    final double turnOutput =
+        m_turningPIDController.calculate(encoderValue(), state.angle.getRadians());
+// SmartDashboard.putNumber("pid " + moduleNumber, turnOutput);
+ 
+    SmartDashboard.putNumber("Setpoint velocity", m_turningPIDController.getSetpoint().velocity);
+    final double turnFeedforward =
+        m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+    SmartDashboard.putNumber("turnFeedforward",turnFeedforward);
+    if(RobotState.isAutonomous()) {
+      m_driveMotor.set(((driveOutput + driveFeedforward) /2.1) );
+      System.out.println("Output: " + driveOutput + " Feedforward: " + driveFeedforward);
+      m_turningMotor.setVoltage(turnOutput + turnFeedforward);
+    } else if (RobotState.isTeleop()) {
+      m_driveMotor.set(((driveOutput + driveFeedforward) /2.1) );
+      m_turningMotor.setVoltage(turnOutput + turnFeedforward);
+    }
+    
+    
+  
+    if(!RobotState.isTest()) {
+      SmartDashboard.putNumber("turnOutput",turnOutput);
+      SmartDashboard.putNumber("Drive", ((driveOutput + driveFeedforward) /2.1) /2);
+      SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));
+      SmartDashboard.putNumber("Turning stuff", turnOutput + turnFeedforward);
+      SmartDashboard.putNumber("target " + moduleNumber, state.angle.getRadians());
+    }
+    
+  }
+
+    public void setDesiredState(SwerveModuleState desiredState) {
+      setDesiredState(desiredState, false);
+    }
 
     public void JustTurnTheFuckingWheels(ChassisSpeeds c) {
       if(Math.abs(c.vxMetersPerSecond) > 0.2) {
@@ -293,11 +296,23 @@ SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
       }
 
     public void driveDistance(double meters) {
-      var angleRotations = (getRawAngle()-encoderOffset) * SwerveConstants.gearboxRatio / (2 * Math.PI);
-      turnController.setReference(angleRotations, ControlType.kPosition);
       var rotations = meters * SwerveConstants.gearboxRatio / (SwerveConstants.wheeldiameter * Math.PI);
       driveController.setReference(rotations, ControlType.kPosition);
       //TODO do we need to turn?
+    }
+
+    public void turnToAngle(double turnInRadians) {
+      double turnGear = 22.0;
+      //full 2PI turn is one set of gearbox rotations?
+      //var rotations = turnInRadians * SwerveConstants.gearboxRatio / (2*Math.PI);
+      var rotations = turnInRadians * turnGear / (2*Math.PI);
+      // current pos - offset is how far we are from "straight"
+      // our target minus that will tell us how far to move
+      var angleRotations = (revEncoderOffset + rotations - m_turningEncoderREV.getPosition()) % turnGear;
+      SmartDashboard.putNumber("Rotating " + moduleNumber, angleRotations);
+      turnController.setReference(angleRotations, ControlType.kPosition);
+      //turnController.setReference(100, ControlType.kPosition);
+      //m_turningMotor.set(1);
     }
     
     private double toPositiveAngle(double radians) {

@@ -56,7 +56,7 @@ public class Constants {
         REPLAY
     }
 
-    public static final String ROBOT_NAME = "5516-2024-OffSeason";
+    public static final String ROBOT_NAME = "4575-2025-OffSeason";
 
     // avoid typo errors
     public static final class LogConfigs {
@@ -468,15 +468,15 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
 
     public final static class OzzyGrabberConstants {
         /* Ints */
-            public final static int GrabberMotor = 16;
+            public final static int GrabberMotor = 21;
             public final static int PosetionMotor = 17;
-            public final static int BeamBreak = 4;
+            public final static int BeamBreak = 8;
         /* Doubles */
-            public final static double IntakeSpeed = 0.5;
-            public final static double OutakeSpeed = -0.5;
-            public final static double UpSpeed = 0.0;
-            public final static double DownSpeed = 0.0;
-            public final static double MovmentLength = 0.0;
+            public final static double IntakeSpeed = -0.3;
+            public final static double OutakeSpeed = 0.5;
+            public final static double UpSpeed = -0.05;
+            public final static double DownSpeed = 0.05;
+            public final static double MovmentLength = 12.5;
             public final static double MiddleLength = 0.0;
     }
 
@@ -491,8 +491,9 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
     }
 
     public final static class  Autos {
-        public static final MotionDirective[] AUTO_CORAL1 = new MotionDirective[]{drive((64.0)), turn(80), strafe((10)), drive((10)), dropCoral()};
-        public static final MotionDirective[] AUTO_CORAL2 = new MotionDirective[]{drive((64.0)), turn(80), strafe((10)), drive((10)), dropCoral(), wait2(1.5), drive((-105)), turn(-45), drive((55)), drive(175), turn(70)};//]\[], turn(-10), drive(-Units.inchesToMeters(90)), strafe(Units.inchesToMeters(230))};
+        public static final MotionDirective[] AUTO_CORAL1 = new MotionDirective[]{drive((68.0)), turn(80), strafe((10)), drive((10)), dropCoral()};
+        public static final MotionDirective[] AUTO_CORAL2 = new MotionDirective[]{drive((68.0)), turn(90), strafe((10)), drive((10)), dropCoral(), 
+            wait2(1.5), drive((-105)), turn(-45), drive((55)), drive(140), turn(-25), drive(50), turn(70)};//]\[], turn(-10), drive(-Units.inchesToMeters(90)), strafe(Units.inchesToMeters(230))};
         
     }
 

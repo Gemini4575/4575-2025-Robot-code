@@ -70,7 +70,7 @@ public class TelopSwerve extends Command {
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), 0.4) * slowModeFactor;
 
         /* Drive */
-        if (!RobotState.isAutonomous()) {
+        if (!RobotState.isAutonomous() /*&& (strafeVal > 0.01 || translationVal > 0.01 || rotationVal > 0.01)*/) {
             s_Swerve.drive(
             strafeVal,
             translationVal,

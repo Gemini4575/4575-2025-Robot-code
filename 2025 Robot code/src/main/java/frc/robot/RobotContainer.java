@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.Autos;
@@ -24,7 +25,10 @@ import frc.robot.commands.StartMotionSequence;
 import frc.robot.commands.TelopSwerve;
 import frc.robot.commands.algea.IntakeAlgae;
 import frc.robot.commands.algea.Proceser;
+import frc.robot.commands.algea.EXO.OzDown;
+import frc.robot.commands.algea.EXO.OzIntake;
 import frc.robot.commands.algea.EXO.OzOutake;
+import frc.robot.commands.algea.EXO.OzUp;
 import frc.robot.commands.auto.DriveAndDropToOne;
 import frc.robot.commands.climbing.Climb;
 import frc.robot.commands.climbing.init;
@@ -35,6 +39,7 @@ import frc.robot.commands.coral.nora.L1;
 import frc.robot.commands.coral.nora.L2;
 import frc.robot.commands.coral.nora.L3;
 import frc.robot.commands.drive.DriveStraight;
+import frc.robot.commands.drive.TestTurnCommand;
 import frc.robot.datamodel.MotionDirective;
 import frc.robot.service.MotionService;
 import frc.robot.subsystems.*;
@@ -143,6 +148,11 @@ public class RobotContainer {
   }
 
   public void periodic() {
+
+    if(driver.getRawButtonPressed(2)) {
+      CommandScheduler.getInstance().cancelAll();
+    }
+
     motionService.periodic();
 
     SmartDashboard.putNumber("Encoder", (nc.ClimbingMotor1.getEncoder().getPosition() + nc.ClimbingMotor2.getEncoder().getPosition()));
@@ -211,7 +221,14 @@ public class RobotContainer {
       //   onTrue(new LIPlaceCoral(c, s_swerve));
 
       new JoystickButton(operator, JoystickConstants.YELLOW_BUTTON)
+        .onTrue(new OzDown(g));
+      new JoystickButton(driver, 9)
+        .onTrue(new OzUp(g)); 
+      new JoystickButton(driver, 10)
+        .onTrue(new OzIntake(g));
+        new JoystickButton(driver, 11)
         .onTrue(new OzOutake(g));
+
 
       new JoystickButton(operator, JoystickConstants.RED_BUTTON)
         .onTrue(new Climb(nc));
@@ -233,17 +250,21 @@ public class RobotContainer {
          .onTrue(new 
            StartMotionSequence(motionService, Autos.AUTO_CORAL2));
 
-          new JoystickButton(driver, 10)
-          .onTrue(new 
-            StartMotionSequence(motionService, turn(90)));
+          // new JoystickButton(driver, 10)
+          // .onTrue(new 
+          //   StartMotionSequence(motionService, turn(90)));
 
-      new JoystickButton(driver, 11)
-        .onTrue(new 
-          StartMotionSequence(motionService, turn(-90))); 
+      // new JoystickButton(driver, 11)
+      //   .onTrue(new 
+      //     StartMotionSequence(motionService, turn(-90))); 
 
           new JoystickButton(driver, 12)
           .onTrue(new 
             StartMotionSequence(motionService, drive(1)));
+
+   
+      
+
     // Supplier<Pose2d> bestTargetSupplier = () -> {
     //   var target = vision.getTargets();
     //   if (target != null && kTagLayout.getTagPose(target.fiduc                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ialId).isPresent()) {

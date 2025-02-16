@@ -54,13 +54,13 @@ public class DriveService {
                 driveTrain.driveFieldRelative(new ChassisSpeeds(-speed, 0, 0));
                 break;
             case 4:
-                if (System.currentTimeMillis() > startTime + 1500) {
+                if (System.currentTimeMillis() > startTime + 500) {
                     if (!drivingTriggered) {
                         driveTrain.driveViaController(1.05*distance);
-                        drivingTriggered = true;
+                        //drivingTriggered = true;
                     }
                 } else {
-                    driveTrain.driveRobotRelative(new ChassisSpeeds(speed, 0, 0));
+                    driveTrain.drive(speed, 0, 0, false, true);
                 }
                 break;
             case 5:

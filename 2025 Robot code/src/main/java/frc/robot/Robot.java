@@ -7,6 +7,10 @@ package frc.robot;
 
 
 
+import java.util.logging.Logger;
+
+import org.littletonrobotics.junction.LoggedRobot;
+
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -17,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 // @Component
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private static final Constants.RobotMode JAVA_SIM_MODE = Constants.RobotMode.SIM;
     public static final Constants.RobotMode CURRENT_ROBOT_MODE = isReal() ? Constants.RobotMode.REAL : JAVA_SIM_MODE;
     public static final boolean IS_COMPETITION = true;
@@ -33,6 +37,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit () {
+      org.littletonrobotics.junction.Logger.start();
         // Set up data receivers & replay source
         
 
