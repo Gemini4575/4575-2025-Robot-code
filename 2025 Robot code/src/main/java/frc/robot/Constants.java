@@ -1,8 +1,10 @@
 package frc.robot;
 
 
+import static frc.robot.datamodel.MotionDirective.GetCoral;
 import static frc.robot.datamodel.MotionDirective.drive;
 import static frc.robot.datamodel.MotionDirective.dropCoral;
+import static frc.robot.datamodel.MotionDirective.stop;
 import static frc.robot.datamodel.MotionDirective.strafe;
 import static frc.robot.datamodel.MotionDirective.turn;
 import static frc.robot.datamodel.MotionDirective.wait2;
@@ -491,9 +493,10 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.45085, -0
     }
 
     public final static class  Autos {
-        public static final MotionDirective[] AUTO_CORAL1 = new MotionDirective[]{drive((68.0)), turn(80), strafe((10)), drive((10)), dropCoral()};
-        public static final MotionDirective[] AUTO_CORAL2 = new MotionDirective[]{drive((68.0)), turn(90), strafe((10)), drive((10)), dropCoral(), 
-            wait2(1.5), drive((-105)), turn(-45), drive((55)), drive(140), turn(-25), drive(50), turn(70)};//]\[], turn(-10), drive(-Units.inchesToMeters(90)), strafe(Units.inchesToMeters(230))};
+        public static final MotionDirective[] AUTO_CORAL1 = new MotionDirective[]{drive((68.0)), turn(80), dropCoral(), stop()};
+        public static final MotionDirective[] AUTO_CORAL2 = new MotionDirective[]{drive((78.0)), turn(80), dropCoral(), stop(),
+        GetCoral(), drive((-95)), turn(-90), drive((55 + 130)), strafe(-30), turn(-25), turn(70), strafe(16), 
+        drive(30), wait2(1), GetCoral()};//]\[], turn(-10), drive(-Units.inchesToMeters(90)), strafe(Units.inchesToMeters(230))};
         
     }
 

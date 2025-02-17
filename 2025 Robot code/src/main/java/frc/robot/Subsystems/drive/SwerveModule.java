@@ -8,16 +8,13 @@ package frc.robot.subsystems.drive;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -48,7 +45,6 @@ public class SwerveModule extends Command {
   private double ahhhhhhhhhhh = 0.0;
 
   private double encoderOffset = 0;
-  private double revEncoderOffset = 0; //TODO set this to whatever value when straight
   
   private int moduleNumber = 0;
   @SuppressWarnings("unused")
@@ -65,7 +61,7 @@ public class SwerveModule extends Command {
   // Gains are for example purposes only - must be determined for your own robot!
   private final ProfiledPIDController m_turningPIDController =
       new ProfiledPIDController(
-          6,//16.3,//5 ,//16.7 -- updated to 16.5
+          16.5 ,//16.7 -- updated to 16.5
           0,
           0,
           new TrapezoidProfile.Constraints(
@@ -73,11 +69,7 @@ public class SwerveModule extends Command {
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(1, 1.5); // this was 3, changed to 1.5 because it was driving too far
-  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0.25, 0.5);
-
-  private double speedAdjustmentFactor;
-  private SparkClosedLoopController driveController;
-  private SparkClosedLoopController turnController;
+  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
 
   /**
    * Constructs a SwerveModule with a drive motor, turning motor and turning encoder.
@@ -128,29 +120,19 @@ public class SwerveModule extends Command {
 switch (moduleNumber) {
   case 0: 
   encoderOffset = -4.134986246400915;
-  revEncoderOffset = 8.190497398376465;// +8.00*Math.PI/180.00;
   break;
   case 1: 
   encoderOffset = -4.08058153307745;
-  revEncoderOffset = 55.64335632324219;
   break;
   case 2: 
   encoderOffset = -3.023956665037501;//-13.00*Math.PI/180.00;
-  revEncoderOffset = 51.214351654052734;//-13.00*Math.PI/180.00;
   break;
   case 3: 
   encoderOffset = -1.334522613764654;
-  revEncoderOffset = -41.66624069213867; // -8.00*Math.PI/180.00;;
   break;
 }
-
-    this.speedAdjustmentFactor = moduleConstants.speedAdjustmentFactor;
-
     configAngleMotor();
     configDriveMotor();
-
-    driveController = m_driveMotor.getClosedLoopController();
-    turnController = m_turningMotor.getClosedLoopController();
   }
 
   // public SparkSim getDriveMotorSim() {
@@ -162,7 +144,6 @@ switch (moduleNumber) {
     //SmartDashboard.putNumber("module " + moduleNumber, retVal);
     if(RobotState.isTest()){
 SmartDashboard.putNumber("encoder raw " + moduleNumber, retVal);
-SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.getPosition());
 
     
  SmartDashboard.putNumber("encoder " + moduleNumber, (retVal * 1000) / 1000.0);
@@ -220,7 +201,7 @@ SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.
    *
    * @param desiredState Desired state with speed and angle.
    */
-  public void setDesiredState(SwerveModuleState desiredState, boolean t) {
+  public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     @SuppressWarnings ("deprecation")
     SwerveModuleState state =
@@ -260,7 +241,7 @@ SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.
     
     
   
-    if(!RobotState.isTest()) {
+    if(RobotState.isTest()) {
       SmartDashboard.putNumber("turnOutput",turnOutput);
       SmartDashboard.putNumber("Drive", ((driveOutput + driveFeedforward) /2.1) /2);
       SmartDashboard.putNumber("Turning stuff", Math.max(turnOutput, turnFeedforward));
@@ -270,19 +251,7 @@ SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.
     
   }
 
-    public void setDesiredState(SwerveModuleState desiredState) {
-      setDesiredState(desiredState, false);
-    }
-
-    public void JustTurnTheFuckingWheels(ChassisSpeeds c) {
-      if(Math.abs(c.vxMetersPerSecond) > 0.2) {
-        setDesiredState(new SwerveModuleState(0, new Rotation2d(0)));
-      } else if (Math.abs(c.vyMetersPerSecond) > 0.2) {
-        setDesiredState(new SwerveModuleState(0, new Rotation2d(90)));
-      }
-    }
-    
-      public void setStateDirectly(SwerveModuleState desiredState) {
+  public void setStateDirectly(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     desiredState.angle = desiredState.angle.minus(Rotation2d.fromRadians(encoderOffset));
     @SuppressWarnings("deprecation")
@@ -294,26 +263,6 @@ SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.
         //m_turningMotor.getClosedLoopController().setReference(state.angle.getRadians(), SparkMax.ControlType.kPosition);
         SmartDashboard.putBoolean("Driving auto", true);
       }
-
-    public void driveDistance(double meters) {
-      var rotations = meters * SwerveConstants.gearboxRatio / (SwerveConstants.wheeldiameter * Math.PI);
-      driveController.setReference(rotations, ControlType.kPosition);
-      //TODO do we need to turn?
-    }
-
-    public void turnToAngle(double turnInRadians) {
-      double turnGear = 22.0;
-      //full 2PI turn is one set of gearbox rotations?
-      //var rotations = turnInRadians * SwerveConstants.gearboxRatio / (2*Math.PI);
-      var rotations = turnInRadians * turnGear / (2*Math.PI);
-      // current pos - offset is how far we are from "straight"
-      // our target minus that will tell us how far to move
-      var angleRotations = (revEncoderOffset + rotations - m_turningEncoderREV.getPosition()) % turnGear;
-      SmartDashboard.putNumber("Rotating " + moduleNumber, angleRotations);
-      turnController.setReference(angleRotations, ControlType.kPosition);
-      //turnController.setReference(100, ControlType.kPosition);
-      //m_turningMotor.set(1);
-    }
     
     private double toPositiveAngle(double radians) {
         return radians < 0 ? (radians + 2.0 * Math.PI) : radians;
@@ -322,8 +271,8 @@ SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.
     private void configAngleMotor() {
     var turnConfig = new SparkMaxConfig();
     turnConfig.inverted(true);
-    turnConfig.closedLoop.p(1);
-    //turnConfig.closedLoop.outputRange(-Math.PI, Math.PI);
+    turnConfig.closedLoop.p(16.5);
+    turnConfig.closedLoop.outputRange(-Math.PI, Math.PI);
     m_turningMotor.configure(
       turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -333,8 +282,6 @@ SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.
     driveConfig.inverted(true);
     driveConfig.encoder.positionConversionFactor(1); //Constants.SwerveConstants.driveConversionFactor);
     driveConfig.closedLoop.p(1);
-    //driveConfig.closedLoop.maxMotion.maxAcceleration(1);
-    //driveConfig.closedLoop.maxMotion.maxVelocity(1);
     m_driveMotor.configure(
       driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_driveEncoder.setPosition(0.0);
@@ -342,13 +289,6 @@ SmartDashboard.putNumber("REV encoder raw " + moduleNumber, m_turningEncoderREV.
   
   public double getEncoderValue() {
     return m_driveMotor.getEncoder().getPosition();
-  }
-
-  public void stop() {
-    m_driveMotor.set(0);
-    m_turningMotor.set(0);
-    //m_driveMotor.
-    //m_driveMotor.getEncoder().getVelocity()
   }
   
 }

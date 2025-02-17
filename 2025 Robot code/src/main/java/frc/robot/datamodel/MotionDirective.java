@@ -8,7 +8,9 @@ public class MotionDirective {
         TURN,
         STRAFE,
         DROP_CORAL,
-        WAIT
+        WAIT,
+        STOP,
+        GET_CORAL
     }
     
     private final MotionType type;
@@ -34,6 +36,12 @@ public class MotionDirective {
     }
     public static MotionDirective wait2(double amount) {
         return new MotionDirective(MotionType.WAIT, amount);
+    }
+    public static MotionDirective stop() {
+        return new MotionDirective(MotionType.STOP, 0);
+    }
+    public static MotionDirective GetCoral() {
+        return new MotionDirective(MotionType.GET_CORAL, 0);
     }
 
     public MotionType getType() {

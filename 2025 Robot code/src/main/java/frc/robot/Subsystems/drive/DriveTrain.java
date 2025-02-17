@@ -5,7 +5,6 @@
 package frc.robot.subsystems.drive;
 
 import java.io.IOException;
-import java.lang.constant.DirectMethodHandleDesc;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -31,7 +30,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -94,18 +92,18 @@ private double rot_cur;
       new SwerveDriveKinematics(
           m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-  private final SwerveDriveOdometry m_odometry =
-      new SwerveDriveOdometry(
-          m_kinematics,
-          m_gyro.getRotation2d(),
-          new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_backLeft.getPosition(),
-            m_backRight.getPosition()
-          },
-          new Pose2d(new Translation2d(),new Rotation2d(Units.degreesToRadians(180)))
-          );
+  // private final SwerveDriveOdometry m_odometry =
+  //     new SwerveDriveOdometry(
+  //         m_kinematics,
+  //         m_gyro.getRotation2d(),
+  //         new SwerveModulePosition[] {
+  //           m_frontLeft.getPosition(),
+  //           m_frontRight.getPosition(),
+  //           m_backLeft.getPosition(),
+  //           m_backRight.getPosition()
+  //         },
+  //         new Pose2d(new Translation2d(),new Rotation2d(Units.degreesToRadians(180)))
+  //         );
 
   private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -115,6 +113,7 @@ private double rot_cur;
 
   public DriveTrain() {
     m_gyro.reset();
+
     
     RobotConfig config;
     try {
@@ -140,10 +139,10 @@ private double rot_cur;
             this::getPose, // Robot pose supplier
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            (speeds, feedforwards) -> driveDirect(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5, 0.0, 0.0) // Rotation PID constants
+                    new PIDConstants(1, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(16.5, 0.0, 0.0) // Rotation PID constants
             ),
             config, // The robot configuration
             () -> {
@@ -159,6 +158,9 @@ private double rot_cur;
             },
             this // Reference to this subsystem to set requirements
     );
+
+    poseEstimator.resetPosition(new Rotation2d(180), getModulePositions(), new Pose2d(7.558, 4.010, new Rotation2d(180)));
+
 
   }
   
@@ -188,22 +190,7 @@ private double rot_cur;
       drive(chassisSpeedsIn.vxMetersPerSecond, chassisSpeedsIn.vyMetersPerSecond, chassisSpeedsIn.omegaRadiansPerSecond, false);
     }
     public void driveFieldRelative(ChassisSpeeds c) {
-      drive(c.vxMetersPerSecond, c.vyMetersPerSecond, c.omegaRadiansPerSecond, true);
-    }
-    public void JustTurnTheWheels(int up, int down, int right, int left) {
-      if(up > 1 || down > 1 ) {
-        ChassisSpeeds c = new ChassisSpeeds(1, 0, 0);
-        m_frontLeft.JustTurnTheFuckingWheels(c);
-        m_frontRight.JustTurnTheFuckingWheels(c);
-        m_backLeft.JustTurnTheFuckingWheels(c);
-        m_backRight.JustTurnTheFuckingWheels(c);
-      } else if (right > 1 || left > 1 ) {
-        ChassisSpeeds c = new ChassisSpeeds(0, 1, 0);
-        m_frontLeft.JustTurnTheFuckingWheels(c);
-        m_frontRight.JustTurnTheFuckingWheels(c);
-        m_backLeft.JustTurnTheFuckingWheels(c);
-        m_backRight.JustTurnTheFuckingWheels(c);
-      }
+      drive(c.vxMetersPerSecond, c.vyMetersPerSecond, 0, true);
     }
     public void driveDirect(ChassisSpeeds chassisSpeedsIn) {
       var speeds = ChassisSpeeds.discretize(chassisSpeedsIn, LoggedRobot.defaultPeriodSecs);
@@ -215,18 +202,8 @@ private double rot_cur;
         m_backLeft.setStateDirectly(swerveModuleStates[2]);
         m_backRight.setStateDirectly(swerveModuleStates[3]);
     }
-    public void driveViaController(double meters) {
-      m_frontLeft.driveDistance(meters);
-      m_frontRight.driveDistance(meters);
-      m_backLeft.driveDistance(meters);
-      m_backRight.driveDistance(meters);
-    }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    drive(xSpeed, ySpeed, rot, fieldRelative, false);
-  }
-
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean turnonly) {
     SmartDashboard.putNumber("Gyro", m_gyro.getAngle());
     var swerveModuleStates =
         m_kinematics.toSwerveModuleStates(
@@ -256,11 +233,7 @@ private double rot_cur;
   }
 
   public void stop() {
-    //drive(-0, -0, -0, false);
-    m_frontLeft.stop();
-    m_frontRight.stop();
-    m_backLeft.stop();
-    m_backRight.stop();
+    drive(-0, -0, -0, false);
   }
 
   public ChassisSpeeds getSpeed() {
@@ -281,11 +254,11 @@ private double rot_cur;
   }
 
   /** Updates the field relative position of the robot. */
-  public void updateOdometry() {
-    m_odometry.update(
-        m_gyro.getRotation2d(),
-        getModulePositions());
-  }
+  // public void updateOdometry() {
+  //   m_odometry.update(
+  //       m_gyro.getRotation2d(),
+  //       getModulePositions());
+  // }
 
   public SwerveModulePosition[] getModulePositions() {
     return new SwerveModulePosition[] {
@@ -297,12 +270,12 @@ private double rot_cur;
   }
 
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   } 
 
   public void resetPose(Pose2d aPose2d) {
-   m_odometry.resetPosition(m_gyro.getRotation2d(),
-        getModulePositions(), aPose2d );
+//    m_odometry.resetPosition(m_gyro.getRotation2d(),
+//         getModulePositions(), aPose2d );
     poseEstimator.resetPosition(m_gyro.getRotation2d(), getModulePositions(), aPose2d);
   }
   
@@ -348,13 +321,6 @@ private double rot_cur;
         SmartDashboard.putNumber("target", target);
         return false;
       }
-    }
-
-    public void turnToAngle(double radiansToTurn) {
-      m_frontLeft.turnToAngle(radiansToTurn);
-      m_frontRight.turnToAngle(radiansToTurn);
-      m_backLeft.turnToAngle(radiansToTurn);
-      m_backRight.turnToAngle(radiansToTurn);
     }
 
   @Override

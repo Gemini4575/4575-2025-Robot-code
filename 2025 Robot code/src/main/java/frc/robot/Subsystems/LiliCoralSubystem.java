@@ -137,6 +137,31 @@ public class LiliCoralSubystem extends SubsystemBase{
         }
     }
 
+    public boolean GetCoral() {
+        if((pervois && bottom()) || coral()) {
+            gate.stopMotor();
+            first = true;
+            return true;
+        } else {
+            gate.set(-LiliCoralConstants.GateSpeed);
+            pervois = bottom();
+            return false;
+        }
+    }
+
+    public boolean CloseGateSlow() {
+        start();
+        if((!pervois && bottom()) || coral()) {
+            gate.stopMotor();
+            first = true;
+            return true;
+        } else {
+            gate.set(-LiliCoralConstants.GateSpeed*.25);
+            pervois = bottom();
+            return false;
+        }
+    }
+
     
     /**
      * SHOULD NOT BE USED IN COMP
@@ -154,7 +179,7 @@ public class LiliCoralSubystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Gate", bottom());
+        SmartDashboard.putBoolean("Gate", coral());
         if(first) {
             if(bottom() && lastKnownState == State.CLOSED) {
                 

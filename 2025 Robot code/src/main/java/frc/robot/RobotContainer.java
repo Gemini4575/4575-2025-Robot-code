@@ -39,7 +39,7 @@ import frc.robot.commands.coral.nora.L1;
 import frc.robot.commands.coral.nora.L2;
 import frc.robot.commands.coral.nora.L3;
 import frc.robot.commands.drive.DriveStraight;
-import frc.robot.commands.drive.TestTurnCommand;
+// import frc.robot.commands.drive.TestTurnCommand;
 import frc.robot.datamodel.MotionDirective;
 import frc.robot.service.MotionService;
 import frc.robot.subsystems.*;
@@ -140,11 +140,7 @@ public class RobotContainer {
             () -> driver.getRawAxis(Constants.JoystickConstants.LEFT_Y_AXIS),
             () -> -driver.getRawAxis(Constants.JoystickConstants.LEFT_X_AXIS),
             () -> -driver.getTwist(),
-            () -> operator.getRawButton(JoystickConstants.START_BUTTON),
-            driver.getPOV(0),
-            driver.getPOV(0),
-            driver.getPOV(0),
-            driver.getPOV(0)));
+            () -> operator.getRawButton(JoystickConstants.START_BUTTON)));
   }
 
   public void periodic() {

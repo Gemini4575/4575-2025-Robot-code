@@ -3,9 +3,12 @@ package frc.robot.service;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.coral.lili.EXOCloseGateSlow;
 import frc.robot.commands.coral.lili.EXODropGate;
+import frc.robot.commands.coral.lili.EXOGetCoral;
 import frc.robot.commands.coral.lili.EXOOpenGate;
 import frc.robot.commands.drive.DriveStraight;
+import frc.robot.commands.drive.Stop;
 import frc.robot.commands.drive.Strafe;
 import frc.robot.commands.drive.Turn;
 import frc.robot.datamodel.MotionDirective;
@@ -46,7 +49,7 @@ public class MotionService {
     public synchronized void periodic() {
         if (motions != null && currentStep >=0 && currentCommand != null && currentCommand.isFinished()) {
             if(motions[currentStep].getType() == MotionType.DROP_CORAL) {
-                new EXOOpenGate(c).schedule();
+                new EXOOpenGate(c).asProxy().schedule();
             }
             if (currentStep < motions.length-1) {
                 currentStep++;
@@ -73,6 +76,12 @@ public class MotionService {
                 break;
             case WAIT:
                 currentCommand = new WaitCommand(motions[currentStep].getAmount());
+                break;
+            case STOP:
+                currentCommand = new Stop(driveTrain);
+                break;
+            case GET_CORAL:
+                currentCommand = new EXOCloseGateSlow(c).withTimeout(1.5);
                 break;
         }
         publshStartStatus();
